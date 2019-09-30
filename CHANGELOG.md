@@ -1,7 +1,7 @@
-# Changelog for Thoth's Template GitHub Project
+# Changelog for Sesheta's actions Project
 
-## [0.1.0] - 2019-Sep-11 - goern
+## [0.1.0] - 2019-Sept-30 - goern
 
 ### Added
 
-all the things that you see...
+An `merge-master-into-pullrequest` script.
