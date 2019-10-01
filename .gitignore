@@ -103,3 +103,4 @@ venv.bak/
 # mypy
 .mypy_cache/
 .vscode/
+review-manager.2019-09-30.private-key.pem

@@ -6,7 +6,8 @@ name = "pypi"
 [packages]
 thoth-common = "*"
 click = "*"
-requests = "*"
+aiohttp = "<4.0"
+octomachinery = "*"
 
 [dev-packages]
 black = "*"

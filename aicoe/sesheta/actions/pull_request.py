@@ -19,45 +19,49 @@
 
 import logging
 
-import requests
-from requests.exceptions import HTTPError
+import gidgethub
+
+from octomachinery.github.api.tokens import GitHubOAuthToken
+from octomachinery.github.api.raw_client import RawGitHubAPI
+
+from aicoe.sesheta.actions.common import get_master_head_sha, get_pull_request, trigger_update_branch
 
 from thoth.common import init_logging
 
 
-_LOGGER = logging.getLogger("merge_master_into_pullrequest")
+_LOGGER = logging.getLogger("pull_request")
+_LOGGER.setLevel(logging.DEBUG)
 
 
-def merge_master_into_pullrequest(owner: str, repo: str, pull_request: int, token: str = None):
+async def merge_master_into_pullrequest(
+    owner: str, repo: str, pull_request: int, token: str = None, dry_run: bool = False
+) -> bool:
     """Merge the master branch into the Pull Request."""
-    if token == None:
-        _LOGGER.error("No GitHub Access Token has been provided.")
-        raise Exception()
+    triggered = True
 
-    try:
-        response = requests.get(
-            f"https://api.github.com/repos/{owner}/{repo}/pulls/{pull_request}",
-            headers={"Accept": "application/vnd.github.hawkgirl-preview+json"},
+    head_sha = await get_master_head_sha(owner, repo)
+    _r = await get_pull_request(owner, repo, pull_request)
+
+    # FIXME chk if PR exists, if not return
+
+    rebaseable = _r["rebaseable"]
+    base_sha = _r["base"]["sha"]
+
+    # TODO if rebaseable is None, we need to come back in a few seconds, github has not finished a background task
+    if rebaseable and (base_sha != head_sha):
+        _LOGGER.info(
+            f"rebasing Pull Request {pull_request} in {owner}/{repo} into master"
+            f", head sha = {head_sha} and pull requests's base sha = {base_sha}"
         )
+        if not dry_run:
+            triggered = await trigger_update_branch(owner, repo, pull_request)
 
-        _r = response.json()
+        else:
+            _LOGGER.info("just a dry-run...")
+    else:
+        _LOGGER.info(f"not triggering a rebase, head sha = {head_sha} and pull requests's base sha = {base_sha}")
 
-        mergeable = _r["mergeable"]
-        rebaseable = _r["rebaseable"]
-
-        # TODO if both are None, we need to come back in a few seconds, github has not finished a background task
-        if rebaseable and mergeable:
-            _LOGGER.info(f"rebasing Pull Request {pull_request} in {owner}/{repo} into master")
-            response = requests.put(
-                f"https://api.github.com/repos/{owner}/{repo}/pulls/{pull_request}/update-branch",
-                headers={"Accept": "application/vnd.github.lydian-preview+json", "Authorization": f"token {token}"},
-            )
-
-        response.raise_for_status()
-    except HTTPError as http_err:
-        _LOGGER.exception(f"HTTP error occurred: {http_err}", http_err)
-    except Exception as err:
-        _LOGGER.exception(f"Other error occurred: {err}", err)
+    return triggered
 
 
 if __name__ == "__main__":
