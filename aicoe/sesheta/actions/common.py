@@ -30,8 +30,7 @@ from octomachinery.github.api.tokens import GitHubOAuthToken
 from octomachinery.github.api.raw_client import RawGitHubAPI
 
 
-_LOGGER = logging.getLogger("common")
-_LOGGER.setLevel(logging.DEBUG)
+_LOGGER = logging.getLogger(__name__)
 
 
 def cocommand(f):

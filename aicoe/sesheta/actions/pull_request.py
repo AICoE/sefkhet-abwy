@@ -24,13 +24,14 @@ import gidgethub
 from octomachinery.github.api.tokens import GitHubOAuthToken
 from octomachinery.github.api.raw_client import RawGitHubAPI
 
+from dynaconf import settings
+
 from aicoe.sesheta.actions.common import get_master_head_sha, get_pull_request, trigger_update_branch
 
 from thoth.common import init_logging
 
 
-_LOGGER = logging.getLogger("pull_request")
-_LOGGER.setLevel(logging.DEBUG)
+_LOGGER = logging.getLogger(__name__)
 
 
 async def merge_master_into_pullrequest(

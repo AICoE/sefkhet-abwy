@@ -31,14 +31,14 @@ from aicoe.sesheta.actions.pull_request import merge_master_into_pullrequest
 
 init_logging()
 
-_LOGGER = logging.getLogger("merge_master_into_pullrequest")
+_LOGGER = logging.getLogger(__name__)
 _LOGGER.info(f"Sesheta action: merge_master_into_pullrequest, Version v{__version__}")
 
 
 @click.command()
 @cocommand
 @click.option(
-    "-v", "--verbose", is_flag=True, envvar="SESHETA_ACTION_VERBOSE", help="Be verbose about what's going on."
+    "--verbose", is_flag=True, default=False, envvar="SESHETA_ACTION_VERBOSE", help="Be verbose about what's going on."
 )
 @click.option(
     "-r",
@@ -50,6 +50,8 @@ _LOGGER.info(f"Sesheta action: merge_master_into_pullrequest, Version v{__versio
 @click.option(
     "-t",
     "--github-access-token",
+    required=True,
+    type=str,
     envvar="SESHETA_ACTION_GITHUB_ACCESS_TOKEN",
     help="A token to authenticate with GitHub.",
 )
