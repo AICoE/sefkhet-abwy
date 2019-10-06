@@ -45,8 +45,8 @@ def cocommand(f):
 
 async def get_master_head_sha(owner: str, repo: str) -> str:
     # TODO refactor this to a class? global variable?
-    access_token = GitHubOAuthToken(os.environ["SESHETA_ACTION_GITHUB_ACCESS_TOKEN"])
-    github_api = RawGitHubAPI(access_token, user_agent="sesheta")
+    access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
+    github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
     commits = await github_api.getitem(f"/repos/{owner}/{repo}/commits")
 
     _LOGGER.debug(f"HEAD commit of {owner}/{repo}: {commits[0]}")
@@ -56,8 +56,8 @@ async def get_master_head_sha(owner: str, repo: str) -> str:
 
 async def get_pull_request(owner: str, repo: str, pull_request: int) -> dict:
     """Get PR from owner/repo."""
-    access_token = GitHubOAuthToken(os.environ["SESHETA_ACTION_GITHUB_ACCESS_TOKEN"])
-    github_api = RawGitHubAPI(access_token, user_agent="sesheta")
+    access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
+    github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
 
     pr = await github_api.getitem(f"/repos/{owner}/{repo}/pulls/{pull_request}")
 
