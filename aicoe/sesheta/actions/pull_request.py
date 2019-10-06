@@ -24,8 +24,6 @@ import gidgethub
 from octomachinery.github.api.tokens import GitHubOAuthToken
 from octomachinery.github.api.raw_client import RawGitHubAPI
 
-from dynaconf import settings
-
 from aicoe.sesheta.actions.common import get_master_head_sha, get_pull_request, trigger_update_branch
 
 from thoth.common import init_logging
