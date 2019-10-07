@@ -63,5 +63,97 @@ async def merge_master_into_pullrequest(
     return triggered
 
 
+async def manage_label_and_check(github_api=None, pull_request: dict = None):
+    """Mange the WIP label and check for this Pull Request."""
+
+    if pull_request is None:
+        return
+
+    if github_api is None:
+        _LOGGER.error("no GitHub API object provided... bailing out!")
+        return
+
+    check_run_name = "Sesheta work-in-progress state"
+
+    pr_head_branch = pull_request["head"]["ref"]
+    pr_head_sha = pull_request["head"]["sha"]
+    repo_url = pull_request["head"]["repo"]["url"]
+    issue_url = pull_request["issue_url"]
+
+    check_runs_base_uri = f"{repo_url}/check-runs"
+
+    issue_labels_response = await github_api.getitem(f"{issue_url}/labels", preview_api_version="symmetra")
+
+    resp = await github_api.post(
+        check_runs_base_uri,
+        preview_api_version="antiope",
+        data={
+            "name": check_run_name,
+            "head_branch": pr_head_branch,
+            "head_sha": pr_head_sha,
+            "status": "queued",
+            "started_at": f"{datetime.utcnow().isoformat()}Z",
+        },
+    )
+
+    check_runs_updates_uri = f'{check_runs_base_uri}/{resp["id"]:d}'
+
+    resp = await github_api.patch(
+        check_runs_updates_uri, preview_api_version="antiope", data={"name": check_run_name, "status": "in_progress"}
+    )
+
+    pr_title = pull_request["title"].lower()
+    wip_markers = ("wip", "🚧", "dnm", "work in progress", "work-in-progress", "do not merge", "do-not-merge", "draft")
+
+    is_wip_pr = any(m in pr_title for m in wip_markers)
+
+    if is_wip_pr:
+        try:
+            await github_api.post(
+                f"{issue_url}/labels",
+                preview_api_version="symmetra",
+                data={"labels": ["do-not-merge/work-in-progress"]},
+            )
+        except gidgethub.BadRequest as err:
+            if err.status_code != 202:
+                _LOGGER.error(err)
+    else:
+        try:
+            await github_api.delete(
+                f"{issue_url}/labels/do-not-merge%2Fwork-in-progress", preview_api_version="symmetra"
+            )
+        except gidgethub.BadRequest as err:
+            if err.status_code != 200:
+                _LOGGER.error(err)
+
+    await github_api.patch(
+        check_runs_updates_uri,
+        preview_api_version="antiope",
+        data={
+            "name": check_run_name,
+            "status": "completed",
+            "conclusion": "success" if not is_wip_pr else "neutral",
+            "completed_at": f"{datetime.utcnow().isoformat()}Z",
+            "output": {
+                "title": "🤖 This PR is NOT work-in-progress: Good to go",
+                "text": "Debug info:\n"
+                f"is_wip_pr={is_wip_pr!s}\n"
+                f"pr_title={pr_title!s}\n"
+                f"wip_markers={wip_markers!r}",
+                "summary": "This change is no longer work-in-progress.",
+            }
+            if not is_wip_pr
+            else {
+                "title": "🤖 This PR is work-in-progress: It is incomplete",
+                "text": "Debug info:\n"
+                f"is_wip_pr={is_wip_pr!s}\n"
+                f"pr_title={pr_title!s}\n"
+                f"wip_markers={wip_markers!r}",
+                "summary": "🚧 Please do not merge this PR as it is still work-in-progress.",
+            },
+        },
+    )
+
+
 if __name__ == "__main__":
     pass
