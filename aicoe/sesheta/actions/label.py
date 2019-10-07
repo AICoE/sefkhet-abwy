@@ -36,20 +36,44 @@ DEFAULT_LABELS = [
     {"name": "approved", "color": "00cc00"},
     {"name": "do-not-merge", "color": "cc0000"},
     {"name": "do-not-merge/work-in-progress", "color": "cc0000"},
+    {"name": "do-not-merge/needs-rebase", "color": "cc0000"},
     {"name": "work-in-progress", "color": "cc0000"},
     {"name": "needs-rebase", "color": "cc0000"},
-    {"name": "do-not-merge/needs-rebase", "color": "cc0000"},
     {"name": "human_intervention_required", "color": "f3ccff"},
     {"name": "potential_flake", "color": "f3ccff"},
     {"name": "test:flake", "color": "f3ccff"},
     {"name": "priority/critical-urgent", "color": "e11d21"},
-    {"name": "hacktoberfest", "color": "99cdf8"},
-    {"name": "size/XS", "color": "00ff00"},
-    {"name": "size/S", "color": "00aa00"},
-    {"name": "size/M", "color": "999900"},
-    {"name": "size/L", "color": "ffff00"},
-    {"name": "size/XL", "color": "ff9900"},
-    {"name": "size/XXL", "color": "ff0000"},
+    {"name": "hacktoberfest", "color": "99cdf8", "description": "This might be something for Hacktoberfest"},
+    {
+        "name": "size/XS",
+        "color": "00ff00",
+        "description": "Denotes a PR that changes 0-9 lines, ignoring generated files.",
+    },
+    {
+        "name": "size/S",
+        "color": "00aa00",
+        "description": "Denotes a PR that changes 10-29 lines, ignoring generated files.",
+    },
+    {
+        "name": "size/M",
+        "color": "999900",
+        "description": "Denotes a PR that changes 30-99 lines, ignoring generated files.",
+    },
+    {
+        "name": "size/L",
+        "color": "ffff00",
+        "description": "Denotes a PR that changes 100-299 lines, ignoring generated files.",
+    },
+    {
+        "name": "size/XL",
+        "color": "ff9900",
+        "description": "Denotes a PR that changes 300-499 lines, ignoring generated files.",
+    },
+    {
+        "name": "size/XXL",
+        "color": "ff0000",
+        "description": "Denotes a PR that changes 500++ lines, ignoring generated files.",
+    },
 ]
 
 
