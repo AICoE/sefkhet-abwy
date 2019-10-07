@@ -68,7 +68,7 @@ async def get_pull_request(owner: str, repo: str, pull_request: int) -> dict:
 
 async def trigger_update_branch(owner: str, repo: str, pull_request: int) -> bool:
     """Trigger /update-branch API on Pull Request."""
-    access_token = GitHubOAuthToken(os.environ["SESHETA_ACTION_GITHUB_ACCESS_TOKEN"])
+    access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
     github_api = RawGitHubAPI(access_token, user_agent="sesheta")
 
     try:

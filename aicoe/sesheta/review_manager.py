@@ -19,16 +19,21 @@
 """This will handle all the GitHub webhooks."""
 
 
+import os
 import asyncio
 import pathlib
 import logging
 
 from datetime import datetime
 
+import gidgethub
+
 from octomachinery.app.server.runner import run as run_app
 from octomachinery.app.routing import process_event_actions
 from octomachinery.app.routing.decorators import process_webhook_payload
 from octomachinery.app.runtime.context import RUNTIME_CONTEXT
+from octomachinery.github.api.tokens import GitHubOAuthToken
+from octomachinery.github.api.raw_client import RawGitHubAPI
 
 from thoth.common import init_logging
 
@@ -49,7 +54,9 @@ async def on_pr_check_wip(*, action, number, pull_request, repository, sender, o
 
     Send a status update to GitHub via Checks API.
     """
-    github_api = RUNTIME_CONTEXT.app_installation_client
+    access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
+    github_api = RawGitHubAPI(access_token, user_agent="sesheta")
+    # github_api = RUNTIME_CONTEXT.app_installation_client
 
     check_run_name = "Sesheta work-in-progress state"
 
@@ -122,7 +129,7 @@ async def on_pr_check_wip(*, action, number, pull_request, repository, sender, o
             }
             if not is_wip_pr
             else {
-                "title": "🤖 This PR is work-in-progress: " "It is incomplete",
+                "title": "🤖 This PR is work-in-progress: It is incomplete",
                 "text": "Debug info:\n"
                 f"is_wip_pr={is_wip_pr!s}\n"
                 f"pr_title={pr_title!s}\n"
