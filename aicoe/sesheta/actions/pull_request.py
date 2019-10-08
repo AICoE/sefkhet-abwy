@@ -97,34 +97,39 @@ async def manage_label_and_check(github_api=None, pull_request: dict = None):
         _LOGGER.error("no GitHub API object provided... bailing out!")
         return
 
-    check_run_name = "Sesheta work-in-progress state"
+    check_run_name = "🤖 Sesheta work-in-progress state"
 
-    pr_head_branch = pull_request["head"]["ref"]
-    pr_head_sha = pull_request["head"]["sha"]
-    repo_url = pull_request["head"]["repo"]["url"]
+    pr_head_sha = pull_request["merge_commit_sha"]  # pull_request["head"]["sha"]
+    repo_url = pull_request["base"]["repo"]["url"]
     issue_url = pull_request["issue_url"]
 
     check_runs_base_uri = f"{repo_url}/check-runs"
 
+    _LOGGER.info(f"{check_runs_base_uri}: {pr_head_sha}")
+
     issue_labels_response = await github_api.getitem(f"{issue_url}/labels", preview_api_version="symmetra")
 
-    resp = await github_api.post(
-        check_runs_base_uri,
-        preview_api_version="antiope",
-        data={
-            "name": check_run_name,
-            "head_branch": pr_head_branch,
-            "head_sha": pr_head_sha,
-            "status": "queued",
-            "started_at": f"{datetime.utcnow().isoformat()}Z",
-        },
-    )
+    try:
+        resp = await github_api.post(
+            check_runs_base_uri,
+            preview_api_version="antiope",
+            data={
+                "name": check_run_name,
+                "head_sha": pr_head_sha,
+                "status": "queued",
+                "started_at": f"{datetime.utcnow().isoformat()}Z",
+            },
+        )
 
-    check_runs_updates_uri = f'{check_runs_base_uri}/{resp["id"]:d}'
+        check_runs_updates_uri = f'{check_runs_base_uri}/{resp["id"]:d}'
+
+    except gidgethub.BadRequest as err:
+        _LOGGER.error(f"status_code={err.status_code}, {str(err)}")
 
     resp = await github_api.patch(
         check_runs_updates_uri, preview_api_version="antiope", data={"name": check_run_name, "status": "in_progress"}
     )
+    _LOGGER.info(str(resp))
 
     pr_title = pull_request["title"].lower()
     wip_markers = ("wip", "🚧", "dnm", "work in progress", "work-in-progress", "do not merge", "do-not-merge", "draft")

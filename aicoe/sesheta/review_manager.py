@@ -62,6 +62,19 @@ async def on_ping(*, hook, hook_id, zen):
     _LOGGER.info("GitHub App from context in ping handler: %s", RUNTIME_CONTEXT.github_app)
 
 
+@process_event("integration_installation", action="created")
+@process_webhook_payload
+async def on_install(
+    action,  # pylint: disable=unused-argument
+    installation,
+    sender,  # pylint: disable=unused-argument
+    repositories=None,  # pylint: disable=unused-argument
+):
+    """React to GitHub App integration installation webhook event."""
+    _LOGGER.info("installed event install id %s", installation["id"])
+    _LOGGER.info("installation=%s", RUNTIME_CONTEXT.app_installation)
+
+
 @process_event_actions("pull_request", {"opened", "reopened", "synchronize", "edited"})
 @process_webhook_payload
 async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender, organization, installation, changes):
@@ -73,11 +86,17 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
 
     github_api = RUNTIME_CONTEXT.app_installation_client
 
-    await manage_label_and_check(github_api, pull_request)
+    try:
+        await manage_label_and_check(github_api, pull_request)
+    except gidgethub.BadRequest as err:
+        _LOGGER.error(f"status_code={err.status_code}, {str(err)}")
 
-    await merge_master_into_pullrequest2(
-        pull_request["head"]["user"]["login"], pull_request["head"]["repo"]["name"], pull_request["id"], github_api
-    )
+    try:
+        await merge_master_into_pullrequest2(
+            pull_request["base"]["user"]["login"], pull_request["base"]["repo"]["name"], pull_request["id"], github_api
+        )
+    except gidgethub.BadRequest as err:
+        _LOGGER.error(f"status_code={err.status_code}, {str(err)}")
 
 
 if __name__ == "__main__":
@@ -86,6 +105,6 @@ if __name__ == "__main__":
 
     run_app(  # pylint: disable=expression-not-assigned
         name="review-manager",
-        version=get_version_from_scm_tag(root="..", relative_to=__file__),
+        version=get_version_from_scm_tag(root="../..", relative_to=__file__),
         url="https://github.com/apps/review-manager",
     )
