@@ -15,4 +15,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+
 """Sesheta."""
+
+
+async def get_github_client(github_app, account):
+    """Get GitHub Client by Account."""
+    github_app_installations = await github_app.get_installations()
+    target_github_app_installation = next(
+        (i for n, i in github_app_installations.items() if i._metadata.account["login"] == account), None
+    )
+
+    return target_github_app_installation.get_github_api_client()

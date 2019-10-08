@@ -19,6 +19,8 @@
 
 import logging
 
+from datetime import datetime
+
 import gidgethub
 
 from octomachinery.github.api.tokens import GitHubOAuthToken
@@ -61,6 +63,28 @@ async def merge_master_into_pullrequest(
         _LOGGER.info(f"not triggering a rebase, head sha = {head_sha} and pull requests's base sha = {base_sha}")
 
     return triggered
+
+
+async def merge_master_into_pullrequest2(owner: str, repo: str, pull_request: int, github_api):
+    """Merge the master branch into the Pull Request."""
+    head_sha = await get_master_head_sha(owner, repo)
+    _r = await get_pull_request(owner, repo, pull_request)
+
+    rebaseable = _r["rebaseable"]
+    base_sha = _r["base"]["sha"]
+
+    # TODO if rebaseable is None, we need to come back in a few seconds, github has not finished a background task
+    if rebaseable and (base_sha != head_sha):
+        _LOGGER.info(
+            f"rebasing Pull Request {pull_request} in {owner}/{repo} into master"
+            f", head sha = {head_sha} and pull requests's base sha = {base_sha}"
+        )
+
+        await github_api.put(
+            f"/repos/{owner}/{repo}/pulls/{pull_request}/update-branch", preview_api_version="lydian", data=b""
+        )
+    else:
+        _LOGGER.info(f"not triggering a rebase, head sha = {head_sha} and pull requests's base sha = {base_sha}")
 
 
 async def manage_label_and_check(github_api=None, pull_request: dict = None):
