@@ -41,7 +41,7 @@ from aicoe.sesheta.actions.pull_request import manage_label_and_check, merge_mas
 from thoth.common import init_logging
 
 
-__version__ = "0.1.0-dev"
+__version__ = "0.2.0"
 
 
 init_logging()
@@ -82,7 +82,7 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
 
     Send a status update to GitHub via Checks API.
     """
-    _LOGGER.info(f"working on PR {pull_request['html_url']}")
+    _LOGGER.debug(f"working on PR {pull_request['html_url']}")
 
     github_api = RUNTIME_CONTEXT.app_installation_client
 
@@ -97,6 +97,34 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
         )
     except gidgethub.BadRequest as err:
         _LOGGER.error(f"status_code={err.status_code}, {str(err)}")
+
+
+@process_event_actions("issues", {"labeled"})
+@process_webhook_payload
+async def on_issue_labeled(*, action, issue, label, repository, organization, sender, installation):
+    """Take actions if an issue got labeled:
+        if it is labeled 'bug' we add the 'human_intervention_required' label
+    """
+    _LOGGER.info(f"working on Issue {issue['html_url']}")
+    issue_id = issue["id"]
+    issue_url = issue["url"]
+    issue_labels = issue["labels"]
+
+    for label in issue_labels:
+        if label["name"] == "bug":
+            _LOGGER.debug(f"I found a bug!! {issue['html_url']}")
+
+            github_api = RUNTIME_CONTEXT.app_installation_client
+
+            try:
+                await github_api.post(
+                    f"{issue_url}/labels",
+                    preview_api_version="symmetra",
+                    data={"labels": ["human_intervention_required"]},
+                )
+            except gidgethub.BadRequest as err:
+                if err.status_code != 202:
+                    _LOGGER.error(f"status_code={err.status_code}, {str(err)}")
 
 
 if __name__ == "__main__":

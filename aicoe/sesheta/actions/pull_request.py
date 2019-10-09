@@ -75,7 +75,7 @@ async def merge_master_into_pullrequest2(owner: str, repo: str, pull_request: in
 
     # TODO if rebaseable is None, we need to come back in a few seconds, github has not finished a background task
     if rebaseable and (base_sha != head_sha):
-        _LOGGER.info(
+        _LOGGER.debug(
             f"rebasing Pull Request {pull_request} in {owner}/{repo} into master"
             f", head sha = {head_sha} and pull requests's base sha = {base_sha}"
         )
@@ -84,7 +84,7 @@ async def merge_master_into_pullrequest2(owner: str, repo: str, pull_request: in
             f"/repos/{owner}/{repo}/pulls/{pull_request}/update-branch", preview_api_version="lydian", data=b""
         )
     else:
-        _LOGGER.info(f"not triggering a rebase, head sha = {head_sha} and pull requests's base sha = {base_sha}")
+        _LOGGER.debug(f"not triggering a rebase, head sha = {head_sha} and pull requests's base sha = {base_sha}")
 
 
 async def manage_label_and_check(github_api=None, pull_request: dict = None):
@@ -105,7 +105,7 @@ async def manage_label_and_check(github_api=None, pull_request: dict = None):
 
     check_runs_base_uri = f"{repo_url}/check-runs"
 
-    _LOGGER.info(f"{check_runs_base_uri}: {pr_head_sha}")
+    _LOGGER.debug(f"{check_runs_base_uri}: {pr_head_sha}")
 
     issue_labels_response = await github_api.getitem(f"{issue_url}/labels", preview_api_version="symmetra")
 
@@ -129,7 +129,6 @@ async def manage_label_and_check(github_api=None, pull_request: dict = None):
     resp = await github_api.patch(
         check_runs_updates_uri, preview_api_version="antiope", data={"name": check_run_name, "status": "in_progress"}
     )
-    _LOGGER.info(str(resp))
 
     pr_title = pull_request["title"].lower()
     wip_markers = ("wip", "🚧", "dnm", "work in progress", "work-in-progress", "do not merge", "do-not-merge", "draft")
