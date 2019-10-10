@@ -49,6 +49,7 @@ init_logging()
 _LOGGER = logging.getLogger(__name__)
 _LOGGER.info(f"AICoE's Review Manager, Version v{__version__}")
 logging.getLogger("octomachinery").setLevel(logging.DEBUG)
+logging.getLogger("aiohttp.server").setLevel(logging.DEBUG)
 
 
 @process_event("ping")
@@ -77,12 +78,12 @@ async def on_install(
 
 @process_event_actions("pull_request", {"opened", "reopened", "synchronize", "edited"})
 @process_webhook_payload
-async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender, organization, installation, changes):
+async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender, organization, installation, **kwargs):
     """React to an opened or changed PR event.
 
     Send a status update to GitHub via Checks API.
     """
-    _LOGGER.debug(f"working on PR {pull_request['html_url']}")
+    _LOGGER.debug(f"working on PR {pull_request['html_url']}: {pull_request}")
 
     github_api = RUNTIME_CONTEXT.app_installation_client
 
@@ -127,12 +128,53 @@ async def on_issue_labeled(*, action, issue, label, repository, organization, se
                     _LOGGER.error(f"status_code={err.status_code}, {str(err)}")
 
 
+@process_event_actions("issue_comment", {"created"})
+@process_webhook_payload
+async def on_check_gate_pass(*, action, issue, comment, repository, organization, sender, installation):
+    """
+    Determine if a 'check' gate was passed and the Pull Request is ready for review,
+    if so, assign a set of reviewers.
+    """
+    _LOGGER.debug(f"looking for a passed 'check' gate: {issue['url']}")
+
+    if comment["body"].startswith("Build succeeded."):
+        _LOGGER.debug(f"local/check status might have changed...")
+
+        pr_url = issue["url"].replace("issues", "pulls")
+        reviewable = True
+
+        github_api = RUNTIME_CONTEXT.app_installation_client
+        pr = await github_api.getitem(pr_url)
+
+        async for commit in github_api.getiter(f"{pr_url}/commits"):
+            # let's get the HEAD ref of the PR
+            if commit["sha"] == pr["head"]["sha"]:
+                statuses = await github_api.getitem(f"{commit['url']}/statuses")
+
+                # according to https://developer.github.com/v3/repos/statuses/#list-statuses-for-a-specific-ref
+                # the first of list is the latest status
+                gate_pass_status = statuses[0]  # FIXME except KeyError
+
+                for label in pr["labels"]:
+                    if label["name"].startswith("do-not-merge"):
+                        reviewable = False
+
+                _LOGGER.debug(f"commit: {commit['sha']}: {gate_pass_status}, reviewable: {reviewable}")
+
+                if (
+                    (gate_pass_status["context"] == "local/check")
+                    and (gate_pass_status["state"] == "success")
+                    and reviewable
+                ):
+                    _LOGGER.debug(f"PR {pr['html_url']} is ready for review!")
+
+
 if __name__ == "__main__":
     _LOGGER.setLevel(logging.DEBUG)
     _LOGGER.debug("Debug mode turned on")
 
     run_app(  # pylint: disable=expression-not-assigned
-        name="review-manager",
+        name="Sefkhet-Abwy",
         version=get_version_from_scm_tag(root="../..", relative_to=__file__),
-        url="https://github.com/apps/review-manager",
+        url="https://github.com/apps/Sefkhet-Abwy",
     )

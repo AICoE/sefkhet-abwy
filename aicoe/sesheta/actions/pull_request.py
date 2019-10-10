@@ -89,6 +89,7 @@ async def merge_master_into_pullrequest2(owner: str, repo: str, pull_request: in
 
 async def manage_label_and_check(github_api=None, pull_request: dict = None):
     """Mange the WIP label and check for this Pull Request."""
+    check_runs_updates_uri = None
 
     if pull_request is None:
         return
@@ -122,13 +123,18 @@ async def manage_label_and_check(github_api=None, pull_request: dict = None):
         )
 
         check_runs_updates_uri = f'{check_runs_base_uri}/{resp["id"]:d}'
-
     except gidgethub.BadRequest as err:
         _LOGGER.error(f"status_code={err.status_code}, {str(err)}")
 
-    resp = await github_api.patch(
-        check_runs_updates_uri, preview_api_version="antiope", data={"name": check_run_name, "status": "in_progress"}
-    )
+    if check_runs_updates_uri != None:
+        try:
+            resp = await github_api.patch(
+                check_runs_updates_uri,
+                preview_api_version="antiope",
+                data={"name": check_run_name, "status": "in_progress"},
+            )
+        except gidgethub.BadRequest as err:
+            _LOGGER.error(f"status_code={err.status_code}, {str(err)}")
 
     pr_title = pull_request["title"].lower()
     wip_markers = ("wip", "🚧", "dnm", "work in progress", "work-in-progress", "do not merge", "do-not-merge", "draft")
@@ -151,36 +157,39 @@ async def manage_label_and_check(github_api=None, pull_request: dict = None):
                 f"{issue_url}/labels/do-not-merge%2Fwork-in-progress", preview_api_version="symmetra"
             )
         except gidgethub.BadRequest as err:
-            if err.status_code != 200:
+            if err.status_code == 404:  # This is ok, label was not present......
+                pass
+            elif err.status_code != 200:
                 _LOGGER.error(err)
 
-    await github_api.patch(
-        check_runs_updates_uri,
-        preview_api_version="antiope",
-        data={
-            "name": check_run_name,
-            "status": "completed",
-            "conclusion": "success" if not is_wip_pr else "neutral",
-            "completed_at": f"{datetime.utcnow().isoformat()}Z",
-            "output": {
-                "title": "🤖 This PR is NOT work-in-progress: Good to go",
-                "text": "Debug info:\n"
-                f"is_wip_pr={is_wip_pr!s}\n"
-                f"pr_title={pr_title!s}\n"
-                f"wip_markers={wip_markers!r}",
-                "summary": "This change is no longer work-in-progress.",
-            }
-            if not is_wip_pr
-            else {
-                "title": "🤖 This PR is work-in-progress: It is incomplete",
-                "text": "Debug info:\n"
-                f"is_wip_pr={is_wip_pr!s}\n"
-                f"pr_title={pr_title!s}\n"
-                f"wip_markers={wip_markers!r}",
-                "summary": "🚧 Please do not merge this PR as it is still work-in-progress.",
+    if check_runs_updates_uri != None:
+        await github_api.patch(
+            check_runs_updates_uri,
+            preview_api_version="antiope",
+            data={
+                "name": check_run_name,
+                "status": "completed",
+                "conclusion": "success" if not is_wip_pr else "neutral",
+                "completed_at": f"{datetime.utcnow().isoformat()}Z",
+                "output": {
+                    "title": "🤖 This PR is NOT work-in-progress: Good to go",
+                    "text": "Debug info:\n"
+                    f"is_wip_pr={is_wip_pr!s}\n"
+                    f"pr_title={pr_title!s}\n"
+                    f"wip_markers={wip_markers!r}",
+                    "summary": "This change is no longer work-in-progress.",
+                }
+                if not is_wip_pr
+                else {
+                    "title": "🤖 This PR is work-in-progress: It is incomplete",
+                    "text": "Debug info:\n"
+                    f"is_wip_pr={is_wip_pr!s}\n"
+                    f"pr_title={pr_title!s}\n"
+                    f"wip_markers={wip_markers!r}",
+                    "summary": "🚧 Please do not merge this PR as it is still work-in-progress.",
+                },
             },
-        },
-    )
+        )
 
 
 if __name__ == "__main__":

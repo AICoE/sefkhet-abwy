@@ -59,7 +59,7 @@ async def get_pull_request(owner: str, repo: str, pull_request: int) -> dict:
     access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
     github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
 
-    pr = await github_api.getitem(f"/repos/{owner}/{repo}/pulls/{pull_request}")
+    pr = await github_api.getitem(f"/repos/{owner}/{repo}/pulls/{pull_request}")  # TODO exception handling
 
     _LOGGER.debug(f"{owner}/{repo}: PR {pull_request}: {pr}")
 
