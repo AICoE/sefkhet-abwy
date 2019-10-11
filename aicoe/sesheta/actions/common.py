@@ -29,6 +29,10 @@ from functools import wraps
 from octomachinery.github.api.tokens import GitHubOAuthToken
 from octomachinery.github.api.raw_client import RawGitHubAPI
 
+from thoth.common import init_logging
+
+
+init_logging()
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -25,11 +25,14 @@ import gidgethub
 
 from octomachinery.github.api.tokens import GitHubOAuthToken
 from octomachinery.github.api.raw_client import RawGitHubAPI
+from octomachinery.app.runtime.context import RUNTIME_CONTEXT
 
 from aicoe.sesheta.actions.common import get_master_head_sha, get_pull_request, trigger_update_branch
 
 from thoth.common import init_logging
 
+
+init_logging()
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -72,6 +75,8 @@ async def merge_master_into_pullrequest2(owner: str, repo: str, pull_request: in
 
     rebaseable = _r["rebaseable"]
     base_sha = _r["base"]["sha"]
+
+    _LOGGER.debug(f"head: {head_sha}, base: {base_sha}, rebaseable: {rebaseable}")
 
     # TODO if rebaseable is None, we need to come back in a few seconds, github has not finished a background task
     if rebaseable and (base_sha != head_sha):
@@ -190,6 +195,31 @@ async def manage_label_and_check(github_api=None, pull_request: dict = None):
                 },
             },
         )
+
+
+async def local_check_gate_passed(pr_url: str) -> bool:
+    """Check if the Pull Request has passed the 'local/check' gate successfully."""
+    gate_pass_status = None
+
+    try:
+        github_api = RUNTIME_CONTEXT.app_installation_client
+
+        async for commit in github_api.getiter(f"{pr_url}/commits"):
+            # let's get the HEAD ref of the PR
+            if commit["sha"] == pr["head"]["sha"]:
+                statuses = await github_api.getitem(f"{commit['url']}/statuses")
+
+                # according to https://developer.github.com/v3/repos/statuses/#list-statuses-for-a-specific-ref
+                # the first of list is the latest status
+                gate_pass_status = statuses[0]  # FIXME except KeyError
+    except Exception as err:
+        _LOGGER.error(str(err))
+
+    if gate_pass_status is not None:
+        if (gate_pass_status["context"] == "local/check") and (gate_pass_status["state"] == "success"):
+            return True
+
+    return False
 
 
 if __name__ == "__main__":

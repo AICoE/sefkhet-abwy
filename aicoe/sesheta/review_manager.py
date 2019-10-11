@@ -38,6 +38,7 @@ from octomachinery.utils.versiontools import get_version_from_scm_tag
 
 from aicoe.sesheta import get_github_client
 from aicoe.sesheta.actions.pull_request import manage_label_and_check, merge_master_into_pullrequest2
+from aicoe.sesheta.actions import do_not_merge, local_check_gate_passed
 from thoth.common import init_logging
 
 
@@ -46,7 +47,7 @@ __version__ = "0.2.0"
 
 init_logging()
 
-_LOGGER = logging.getLogger(__name__)
+_LOGGER = logging.getLogger("aicoe.sesheta")
 _LOGGER.info(f"AICoE's Review Manager, Version v{__version__}")
 logging.getLogger("octomachinery").setLevel(logging.DEBUG)
 logging.getLogger("aiohttp.server").setLevel(logging.DEBUG)
@@ -83,21 +84,21 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
 
     Send a status update to GitHub via Checks API.
     """
-    _LOGGER.debug(f"working on PR {pull_request['html_url']}: {pull_request}")
+    _LOGGER.debug(f"on_pr_open_or_edit: working on PR {pull_request['html_url']}")
 
     github_api = RUNTIME_CONTEXT.app_installation_client
 
     try:
         await manage_label_and_check(github_api, pull_request)
     except gidgethub.BadRequest as err:
-        _LOGGER.error(f"status_code={err.status_code}, {str(err)}")
+        _LOGGER.error(f"manage_label_and_check: status_code={err.status_code}, {str(err)}")
 
     try:
         await merge_master_into_pullrequest2(
             pull_request["base"]["user"]["login"], pull_request["base"]["repo"]["name"], pull_request["id"], github_api
         )
     except gidgethub.BadRequest as err:
-        _LOGGER.error(f"status_code={err.status_code}, {str(err)}")
+        _LOGGER.error(f"merge_master_into_pullrequest2: status_code={err.status_code}, {str(err)}")
 
 
 @process_event_actions("issues", {"labeled"})
@@ -130,7 +131,7 @@ async def on_issue_labeled(*, action, issue, label, repository, organization, se
 
 @process_event_actions("issue_comment", {"created"})
 @process_webhook_payload
-async def on_check_gate_pass(*, action, issue, comment, repository, organization, sender, installation):
+async def on_check_gate(*, action, issue, comment, repository, organization, sender, installation):
     """
     Determine if a 'check' gate was passed and the Pull Request is ready for review,
     if so, assign a set of reviewers.
@@ -141,32 +142,21 @@ async def on_check_gate_pass(*, action, issue, comment, repository, organization
         _LOGGER.debug(f"local/check status might have changed...")
 
         pr_url = issue["url"].replace("issues", "pulls")
-        reviewable = True
+        pr_body_ok = False
 
         github_api = RUNTIME_CONTEXT.app_installation_client
         pr = await github_api.getitem(pr_url)
+        do_not_merge_label = await do_not_merge(pr_url)
+        gate_passed = await local_check_gate_passed(pr_url)
 
-        async for commit in github_api.getiter(f"{pr_url}/commits"):
-            # let's get the HEAD ref of the PR
-            if commit["sha"] == pr["head"]["sha"]:
-                statuses = await github_api.getitem(f"{commit['url']}/statuses")
+        # TODO check if PR body is ok
 
-                # according to https://developer.github.com/v3/repos/statuses/#list-statuses-for-a-specific-ref
-                # the first of list is the latest status
-                gate_pass_status = statuses[0]  # FIXME except KeyError
+        # TODO check for size label
 
-                for label in pr["labels"]:
-                    if label["name"].startswith("do-not-merge"):
-                        reviewable = False
+        _LOGGER.debug(f"gate passed: {gate_passed}, do_not_merge_label: {do_not_merge_label}, body_ok: {pr_body_ok}")
 
-                _LOGGER.debug(f"commit: {commit['sha']}: {gate_pass_status}, reviewable: {reviewable}")
-
-                if (
-                    (gate_pass_status["context"] == "local/check")
-                    and (gate_pass_status["state"] == "success")
-                    and reviewable
-                ):
-                    _LOGGER.debug(f"PR {pr['html_url']} is ready for review!")
+        if gate_passed and not do_not_merge_label:
+            _LOGGER.debug(f"PR {pr['html_url']} is ready for review!")
 
 
 if __name__ == "__main__":
