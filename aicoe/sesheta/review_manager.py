@@ -38,11 +38,11 @@ from octomachinery.utils.versiontools import get_version_from_scm_tag
 
 from aicoe.sesheta import get_github_client
 from aicoe.sesheta.actions.pull_request import manage_label_and_check, merge_master_into_pullrequest2
-from aicoe.sesheta.actions import do_not_merge, local_check_gate_passed
+from aicoe.sesheta.actions import do_not_merge, local_check_gate_passed, conclude_reviewer_list
 from thoth.common import init_logging
 
 
-__version__ = "0.2.0"
+__version__ = "0.4.0-dev"
 
 
 init_logging()
@@ -51,6 +51,12 @@ _LOGGER = logging.getLogger("aicoe.sesheta")
 _LOGGER.info(f"AICoE's Review Manager, Version v{__version__}")
 logging.getLogger("octomachinery").setLevel(logging.DEBUG)
 logging.getLogger("aiohttp.server").setLevel(logging.DEBUG)
+
+
+def unpack(s):
+    """Unpack a list into a string, see 
+       https://stackoverflow.com/questions/42756537/f-string-syntax-for-unpacking-a-list-with-brace-suppression"""
+    return " ".join(map(str, s))  # map(), just for kicks
 
 
 @process_event("ping")
@@ -148,7 +154,7 @@ async def on_check_gate(*, action, issue, comment, repository, organization, sen
         pr = await github_api.getitem(pr_url)
         do_not_merge_label = await do_not_merge(pr_url)
         gate_passed = await local_check_gate_passed(pr_url)
-
+        reviewer_list = await conclude_reviewer_list(pr["base"]["repo"]["owner"]["login"], pr["base"]["repo"]["name"])
         # TODO check if PR body is ok
 
         # TODO check for size label
@@ -157,6 +163,9 @@ async def on_check_gate(*, action, issue, comment, repository, organization, sen
 
         if gate_passed and not do_not_merge_label:
             _LOGGER.debug(f"PR {pr['html_url']} is ready for review!")
+
+            if reviewer_list is not None:
+                _LOGGER.debug(f"PR {pr['html_url']} could be reviewed by {unpack(reviewer_list)}")
 
 
 if __name__ == "__main__":

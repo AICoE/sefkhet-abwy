@@ -19,8 +19,10 @@
 """Sesheta's actions."""
 
 
+from .common import conclude_reviewer_list
 from .label import do_not_merge
 from .pull_request import local_check_gate_passed
+
 
 __title__ = "sesheta-actions"
 __version__ = "0.4.0-dev"

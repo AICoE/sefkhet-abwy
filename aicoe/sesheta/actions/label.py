@@ -43,8 +43,11 @@ DEFAULT_LABELS = [
     {"name": "work-in-progress", "color": "cc0000"},
     {"name": "needs-rebase", "color": "cc0000"},
     {"name": "human_intervention_required", "color": "f3ccff"},
+    {"name": "thoth/human_intervention_required", "color": "f3ccff"},
+    {"name": "thoth/potential-observation", "color": "f3ccff"},
     {"name": "potential_flake", "color": "f3ccff"},
     {"name": "test:flake", "color": "f3ccff"},
+    {"name": "test/flake", "color": "f3ccff"},
     {"name": "priority/critical-urgent", "color": "e11d21"},
     {"name": "hacktoberfest", "color": "99cdf8", "description": "This might be something for Hacktoberfest"},
     {

@@ -21,6 +21,9 @@
 import asyncio
 import os
 import logging
+import typing
+import base64
+import re
 
 import gidgethub
 
@@ -28,6 +31,7 @@ from functools import wraps
 
 from octomachinery.github.api.tokens import GitHubOAuthToken
 from octomachinery.github.api.raw_client import RawGitHubAPI
+from octomachinery.app.runtime.context import RUNTIME_CONTEXT
 
 from thoth.common import init_logging
 
@@ -45,6 +49,38 @@ def cocommand(f):
         return asyncio.run(f(*args, **kwargs))
 
     return wrapper
+
+
+async def conclude_reviewer_list(owner: str = None, repo: str = None) -> typing.List[str]:
+    """Conclude on a list of Reviewers that could be assigned to a Pull Request."""
+    reviwers = []
+
+    if owner is None or repo is None:
+        return None
+
+    try:
+        github_api = RUNTIME_CONTEXT.app_installation_client
+
+        codeowners = await github_api.getitem(f"/repos/{owner}/{repo}/contents/.github/CODEOWNERS")
+        codeowners_content = base64.b64decode(codeowners["content"])
+
+        for line in codeowners_content.split("\n"):
+            line = re.sub(r"\n#.*", "", f"b{line}")
+            print(line)
+
+    except gidgethub.HTTPException as http_exception:  # if there is no CODEOWNERS, its always frido and francesco
+        if http_exception.status_code == 404:
+            reviwers.append("fridex")
+            reviwers.append("pacospace")
+        else:
+            _LOGGER.error(http_exception)
+            return None
+
+    except Exception as err:  # on any other Error, we can not generate a reviewers list
+        _LOGGER.error(str(err))
+        return None
+
+    return reviwers
 
 
 async def get_master_head_sha(owner: str, repo: str) -> str:
