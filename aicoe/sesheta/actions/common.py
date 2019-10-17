@@ -33,6 +33,7 @@ from itertools import takewhile
 from octomachinery.github.api.tokens import GitHubOAuthToken
 from octomachinery.github.api.raw_client import RawGitHubAPI
 from octomachinery.app.runtime.context import RUNTIME_CONTEXT
+from codeowners import CodeOwners
 
 from thoth.common import init_logging
 
@@ -72,27 +73,28 @@ def unpack(s):
     return " ".join(map(str, s))  # map(), just for kicks
 
 
-async def conclude_reviewer_list(owner: str = None, repo: str = None) -> typing.Set[str]:
+async def conclude_reviewer_list(owner: str = None, repo: str = None) -> typing.List[str]:
     """Conclude on a set of Reviewers (their GitHub user id) that could be assigned to a Pull Request."""
     reviewers = []
+    github_api = None
 
     if owner is None or repo is None:
         return None
 
     try:
         github_api = RUNTIME_CONTEXT.app_installation_client
+    except:
+        access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
+        github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
+
+    try:
 
         codeowners = await github_api.getitem(f"/repos/{owner}/{repo}/contents/.github/CODEOWNERS")
         codeowners_content = base64.b64decode(codeowners["content"]).decode("utf-8")
 
-        for line in codeowners_content.split("\n"):
-            line = stripComments("#")(line)
-            line = line.replace("@sesheta", "").strip()
-            potential_reviewers = line.split()
-
-            _LOGGER.debug(f"potential reviewers from CODEOWNERS: '{unpack(potential_reviewers)}'")
-
-            reviewers.extend(potential_reviewers)
+        code_owner = CodeOwners(codeowners_content)
+        for owner in code_owner.of("."):
+            reviewers.append(owner[1])
 
     except gidgethub.HTTPException as http_exception:  # if there is no CODEOWNERS, lets have some sane defaults
         if http_exception.status_code == 404:
@@ -112,9 +114,9 @@ async def conclude_reviewer_list(owner: str = None, repo: str = None) -> typing.
         _LOGGER.error(str(err))
         return None
 
-    _LOGGER.debug(f"final reviewers: '{unpack(set(reviewers))}'")
+    _LOGGER.debug(f"final reviewers: '{reviewers}'")
 
-    return set(reviewers)
+    return reviewers
 
 
 async def get_master_head_sha(owner: str, repo: str) -> str:

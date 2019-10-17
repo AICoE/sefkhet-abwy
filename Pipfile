@@ -8,6 +8,7 @@ thoth-common = "*"
 click = "*"
 aiohttp = "<4.0"
 octomachinery = "*"
+codeowners = "*"
 
 [dev-packages]
 black = "*"
