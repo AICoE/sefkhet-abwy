@@ -106,8 +106,9 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
 @process_event_actions("issues", {"labeled"})
 @process_webhook_payload
 async def on_issue_labeled(*, action, issue, label, repository, organization, sender, installation):
-    """Take actions if an issue got labeled:
-        if it is labeled 'bug' we add the 'human_intervention_required' label
+    """Take actions if an issue got labeled.
+
+    If it is labeled 'bug' we add the 'human_intervention_required' label
     """
     _LOGGER.info(f"working on Issue {issue['html_url']}")
     issue_id = issue["id"]
@@ -134,9 +135,9 @@ async def on_issue_labeled(*, action, issue, label, repository, organization, se
 @process_event_actions("issue_comment", {"created"})
 @process_webhook_payload
 async def on_check_gate(*, action, issue, comment, repository, organization, sender, installation):
-    """
-    Determine if a 'check' gate was passed and the Pull Request is ready for review,
-    if so, assign a set of reviewers.
+    """Determine if a 'check' gate was passed and the Pull Request is ready for review.
+
+    If the Pull Request is ready for review, assign a set of reviewers.
     """
     _LOGGER.debug(f"looking for a passed 'check' gate: {issue['url']}")
 

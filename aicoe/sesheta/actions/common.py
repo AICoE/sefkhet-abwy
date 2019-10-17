@@ -53,23 +53,11 @@ def cocommand(f):
     return wrapper
 
 
-def stripComments(cs="#"):
-    """The lines of the input text, with any
-       comments (defined as starting with one
-       of the characters in cs) stripped out.
-
-       seeAlso https://www.rosettacode.org/wiki/Strip_comments_from_a_string#Functional
-    """
-
-    def go(cs):
-        return lambda s: "".join(takewhile(lambda c: c not in cs, s)).strip()
-
-    return lambda txt: "\n".join(map(go(cs), txt.splitlines()))
-
-
 def unpack(s):
-    """Unpack a list into a string, see 
-       https://stackoverflow.com/questions/42756537/f-string-syntax-for-unpacking-a-list-with-brace-suppression"""
+    """Unpack a list into a string.
+
+    see https://stackoverflow.com/questions/42756537/f-string-syntax-for-unpacking-a-list-with-brace-suppression
+    """
     return " ".join(map(str, s))  # map(), just for kicks
 
 
@@ -83,7 +71,7 @@ async def conclude_reviewer_list(owner: str = None, repo: str = None) -> typing.
 
     try:
         github_api = RUNTIME_CONTEXT.app_installation_client
-    except:
+    except Exception:
         access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
         github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
 
@@ -120,6 +108,7 @@ async def conclude_reviewer_list(owner: str = None, repo: str = None) -> typing.
 
 
 async def get_master_head_sha(owner: str, repo: str) -> str:
+    """Get the SHA of the HEAD of the master."""
     # TODO refactor this to a class? global variable?
     access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
     github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")

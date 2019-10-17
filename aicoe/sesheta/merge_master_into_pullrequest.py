@@ -67,7 +67,6 @@ async def cli(
     github_access_token: str = None,
 ):
     """Command line interface for Sesheta action."""
-
     # TODO have a global configuration object, so that all subsequent loggers can set their level from it
     if verbose:
         _LOGGER.setLevel(logging.DEBUG)

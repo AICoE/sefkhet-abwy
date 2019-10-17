@@ -107,7 +107,7 @@ async def manage_label_and_check(github_api=None, pull_request: dict = None):
     check_run_name = "Sesheta work-in-progress state"
 
     pr_head_sha = pull_request["merge_commit_sha"]
-    if pr_head_sha == None:
+    if pr_head_sha is None:
         pr_head_sha = pull_request["head"]["sha"]
 
     repo_url = pull_request["base"]["repo"]["url"]
@@ -135,7 +135,7 @@ async def manage_label_and_check(github_api=None, pull_request: dict = None):
     except gidgethub.BadRequest as err:
         _LOGGER.error(f"status_code={err.status_code}, {str(err)}")
 
-    if check_runs_updates_uri != None:
+    if check_runs_updates_uri is not None:
         try:
             resp = await github_api.patch(
                 check_runs_updates_uri,
@@ -171,7 +171,7 @@ async def manage_label_and_check(github_api=None, pull_request: dict = None):
             elif err.status_code != 200:
                 _LOGGER.error(err)
 
-    if check_runs_updates_uri != None:
+    if check_runs_updates_uri is not None:
         await github_api.patch(
             check_runs_updates_uri,
             preview_api_version="antiope",
