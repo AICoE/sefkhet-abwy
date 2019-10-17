@@ -68,8 +68,9 @@ async def merge_master_into_pullrequest(
     return triggered
 
 
-async def merge_master_into_pullrequest2(owner: str, repo: str, pull_request: int, github_api):
+async def merge_master_into_pullrequest2(owner: str, repo: str, pull_request: int):
     """Merge the master branch into the Pull Request."""
+    github_api = RUNTIME_CONTEXT.app_installation_client
     head_sha = await get_master_head_sha(owner, repo)
     _r = await get_pull_request(owner, repo, pull_request)
 
@@ -103,9 +104,12 @@ async def manage_label_and_check(github_api=None, pull_request: dict = None):
         _LOGGER.error("no GitHub API object provided... bailing out!")
         return
 
-    check_run_name = "🤖 Sesheta work-in-progress state"
+    check_run_name = "Sesheta work-in-progress state"
 
-    pr_head_sha = pull_request["merge_commit_sha"]  # pull_request["head"]["sha"]
+    pr_head_sha = pull_request["merge_commit_sha"]
+    if pr_head_sha == None:
+        pr_head_sha = pull_request["head"]["sha"]
+
     repo_url = pull_request["base"]["repo"]["url"]
     issue_url = pull_request["issue_url"]
 
@@ -203,6 +207,8 @@ async def local_check_gate_passed(pr_url: str) -> bool:
 
     try:
         github_api = RUNTIME_CONTEXT.app_installation_client
+
+        pr = await github_api.getitem(pr_url)
 
         async for commit in github_api.getiter(f"{pr_url}/commits"):
             # let's get the HEAD ref of the PR

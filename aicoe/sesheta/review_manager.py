@@ -38,7 +38,7 @@ from octomachinery.utils.versiontools import get_version_from_scm_tag
 
 from aicoe.sesheta import get_github_client
 from aicoe.sesheta.actions.pull_request import manage_label_and_check, merge_master_into_pullrequest2
-from aicoe.sesheta.actions import do_not_merge, local_check_gate_passed, conclude_reviewer_list
+from aicoe.sesheta.actions import do_not_merge, local_check_gate_passed, conclude_reviewer_list, unpack
 from thoth.common import init_logging
 
 
@@ -51,12 +51,6 @@ _LOGGER = logging.getLogger("aicoe.sesheta")
 _LOGGER.info(f"AICoE's Review Manager, Version v{__version__}")
 logging.getLogger("octomachinery").setLevel(logging.DEBUG)
 logging.getLogger("aiohttp.server").setLevel(logging.DEBUG)
-
-
-def unpack(s):
-    """Unpack a list into a string, see 
-       https://stackoverflow.com/questions/42756537/f-string-syntax-for-unpacking-a-list-with-brace-suppression"""
-    return " ".join(map(str, s))  # map(), just for kicks
 
 
 @process_event("ping")
@@ -101,10 +95,12 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
 
     try:
         await merge_master_into_pullrequest2(
-            pull_request["base"]["user"]["login"], pull_request["base"]["repo"]["name"], pull_request["id"], github_api
+            pull_request["base"]["user"]["login"], pull_request["base"]["repo"]["name"], pull_request["id"]
         )
     except gidgethub.BadRequest as err:
-        _LOGGER.error(f"merge_master_into_pullrequest2: status_code={err.status_code}, {str(err)}")
+        _LOGGER.error(
+            f"merge_master_into_pullrequest2: status_code={err.status_code}, {str(err)}, {pull_request['html_url']}"
+        )
 
 
 @process_event_actions("issues", {"labeled"})
@@ -155,6 +151,8 @@ async def on_check_gate(*, action, issue, comment, repository, organization, sen
         do_not_merge_label = await do_not_merge(pr_url)
         gate_passed = await local_check_gate_passed(pr_url)
         reviewer_list = await conclude_reviewer_list(pr["base"]["repo"]["owner"]["login"], pr["base"]["repo"]["name"])
+        current_reviewers = pr["requested_reviewers"]
+
         # TODO check if PR body is ok
 
         # TODO check for size label
@@ -166,6 +164,12 @@ async def on_check_gate(*, action, issue, comment, repository, organization, sen
 
             if reviewer_list is not None:
                 _LOGGER.debug(f"PR {pr['html_url']} could be reviewed by {unpack(reviewer_list)}")
+
+        elif not gate_passed and not len(current_reviewers) == 0:
+            # if a review has been started we should not remove the reviewers
+            _LOGGER.debug(
+                f"PR {pr['html_url']} is NOT ready for review! Removing reviewers: {unpack(current_reviewers)}"
+            )
 
 
 if __name__ == "__main__":

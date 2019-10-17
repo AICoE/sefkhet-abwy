@@ -28,6 +28,7 @@ import re
 import gidgethub
 
 from functools import wraps
+from itertools import takewhile
 
 from octomachinery.github.api.tokens import GitHubOAuthToken
 from octomachinery.github.api.raw_client import RawGitHubAPI
@@ -51,9 +52,29 @@ def cocommand(f):
     return wrapper
 
 
-async def conclude_reviewer_list(owner: str = None, repo: str = None) -> typing.List[str]:
-    """Conclude on a list of Reviewers that could be assigned to a Pull Request."""
-    reviwers = []
+def stripComments(cs="#"):
+    """The lines of the input text, with any
+       comments (defined as starting with one
+       of the characters in cs) stripped out.
+
+       seeAlso https://www.rosettacode.org/wiki/Strip_comments_from_a_string#Functional
+    """
+
+    def go(cs):
+        return lambda s: "".join(takewhile(lambda c: c not in cs, s)).strip()
+
+    return lambda txt: "\n".join(map(go(cs), txt.splitlines()))
+
+
+def unpack(s):
+    """Unpack a list into a string, see 
+       https://stackoverflow.com/questions/42756537/f-string-syntax-for-unpacking-a-list-with-brace-suppression"""
+    return " ".join(map(str, s))  # map(), just for kicks
+
+
+async def conclude_reviewer_list(owner: str = None, repo: str = None) -> typing.Set[str]:
+    """Conclude on a set of Reviewers (their GitHub user id) that could be assigned to a Pull Request."""
+    reviewers = []
 
     if owner is None or repo is None:
         return None
@@ -62,16 +83,27 @@ async def conclude_reviewer_list(owner: str = None, repo: str = None) -> typing.
         github_api = RUNTIME_CONTEXT.app_installation_client
 
         codeowners = await github_api.getitem(f"/repos/{owner}/{repo}/contents/.github/CODEOWNERS")
-        codeowners_content = base64.b64decode(codeowners["content"])
+        codeowners_content = base64.b64decode(codeowners["content"]).decode("utf-8")
 
         for line in codeowners_content.split("\n"):
-            line = re.sub(r"\n#.*", "", f"b{line}")
-            print(line)
+            line = stripComments("#")(line)
+            line = line.replace("@sesheta", "").strip()
+            potential_reviewers = line.split()
 
-    except gidgethub.HTTPException as http_exception:  # if there is no CODEOWNERS, its always frido and francesco
+            _LOGGER.debug(f"potential reviewers from CODEOWNERS: '{unpack(potential_reviewers)}'")
+
+            reviewers.extend(potential_reviewers)
+
+    except gidgethub.HTTPException as http_exception:  # if there is no CODEOWNERS, lets have some sane defaults
         if http_exception.status_code == 404:
-            reviwers.append("fridex")
-            reviwers.append("pacospace")
+            if owner.lower() == "thoth-station":
+                reviewers.append("fridex")
+                reviewers.append("pacospace")
+            if "prometheus" in repo.lower():
+                reviewers.append("4n4nd")
+                reviewers.append("MichaelClifford")
+            if "log-" in repo.lower():
+                reviewers.append("zmhassan")
         else:
             _LOGGER.error(http_exception)
             return None
@@ -80,7 +112,9 @@ async def conclude_reviewer_list(owner: str = None, repo: str = None) -> typing.
         _LOGGER.error(str(err))
         return None
 
-    return reviwers
+    _LOGGER.debug(f"final reviewers: '{unpack(set(reviewers))}'")
+
+    return set(reviewers)
 
 
 async def get_master_head_sha(owner: str, repo: str) -> str:
