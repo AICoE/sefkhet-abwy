@@ -38,7 +38,13 @@ from octomachinery.utils.versiontools import get_version_from_scm_tag
 
 from aicoe.sesheta import get_github_client
 from aicoe.sesheta.actions.pull_request import manage_label_and_check, merge_master_into_pullrequest2
-from aicoe.sesheta.actions import do_not_merge, local_check_gate_passed, conclude_reviewer_list, unpack
+from aicoe.sesheta.actions import (
+    do_not_merge,
+    local_check_gate_passed,
+    conclude_reviewer_list,
+    unpack,
+    needs_rebase_label,
+)
 from thoth.common import init_logging
 
 
@@ -90,6 +96,7 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
 
     try:
         await manage_label_and_check(github_api, pull_request)
+        await needs_rebase_label(pull_request)
     except gidgethub.BadRequest as err:
         _LOGGER.error(f"manage_label_and_check: status_code={err.status_code}, {str(err)}")
 
@@ -100,6 +107,20 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
     except gidgethub.BadRequest as err:
         _LOGGER.error(
             f"merge_master_into_pullrequest2: status_code={err.status_code}, {str(err)}, {pull_request['html_url']}"
+        )
+
+
+@process_event_actions("pull_request_review", {"submitted"})
+@process_webhook_payload
+async def on_pull_request_review(
+    *, action, review, pull_request, repository, organization, sender, installation, **kwargs
+):
+    """React to Pull Request Review event."""
+    _LOGGER.debug(f"on_pull_request_review: working on PR {pull_request['html_url']}")
+
+    if await needs_rebase_label(pull_request) and not pull_request["base"]["merged"]:
+        await merge_master_into_pullrequest2(
+            pull_request["base"]["user"]["login"], pull_request["base"]["repo"]["name"], pull_request["id"]
         )
 
 
@@ -153,6 +174,7 @@ async def on_check_gate(*, action, issue, comment, repository, organization, sen
         gate_passed = await local_check_gate_passed(pr_url)
         reviewer_list = await conclude_reviewer_list(pr["base"]["repo"]["owner"]["login"], pr["base"]["repo"]["name"])
         current_reviewers = pr["requested_reviewers"]
+        pr_owner = pr["user"]["login"]
 
         # TODO check if PR body is ok
 

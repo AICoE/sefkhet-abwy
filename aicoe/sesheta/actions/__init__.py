@@ -21,7 +21,7 @@
 
 from .common import conclude_reviewer_list, unpack
 from .label import do_not_merge
-from .pull_request import local_check_gate_passed
+from .pull_request import local_check_gate_passed, needs_rebase_label
 
 
 __title__ = "sesheta-actions"

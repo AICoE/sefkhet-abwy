@@ -93,6 +93,26 @@ async def merge_master_into_pullrequest2(owner: str, repo: str, pull_request: in
         _LOGGER.debug(f"not triggering a rebase, head sha = {head_sha} and pull requests's base sha = {base_sha}")
 
 
+async def needs_rebase_label(_pull_request: dict = None) -> bool:
+    """Add a 'needs-rebase' labels if required."""
+    github_api = RUNTIME_CONTEXT.app_installation_client
+    issue_url = _pull_request["issue_url"]
+    pull_request = await github_api.getitem(_pull_request["url"])
+
+    if pull_request["mergeable_state"] == "dirty" and not pull_request["rebaseable"] and not pull_request["merged"]:
+        try:
+            await github_api.post(
+                f"{issue_url}/labels", preview_api_version="symmetra", data={"labels": ["do-not-merge/needs-rebase"]}
+            )
+            return True
+        except gidgethub.BadRequest as err:
+            if err.status_code != 202:
+                _LOGGER.error(err)
+
+    else:
+        return False
+
+
 async def manage_label_and_check(github_api=None, pull_request: dict = None):
     """Mange the WIP label and check for this Pull Request."""
     check_runs_updates_uri = None

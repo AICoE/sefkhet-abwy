@@ -76,13 +76,12 @@ async def conclude_reviewer_list(owner: str = None, repo: str = None) -> typing.
         github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
 
     try:
-
         codeowners = await github_api.getitem(f"/repos/{owner}/{repo}/contents/.github/CODEOWNERS")
         codeowners_content = base64.b64decode(codeowners["content"]).decode("utf-8")
 
         code_owner = CodeOwners(codeowners_content)
         for owner in code_owner.of("."):
-            reviewers.append(owner[1])
+            reviewers.append(owner[1][1:])  # remove the @
 
     except gidgethub.HTTPException as http_exception:  # if there is no CODEOWNERS, lets have some sane defaults
         if http_exception.status_code == 404:
@@ -94,6 +93,7 @@ async def conclude_reviewer_list(owner: str = None, repo: str = None) -> typing.
                 reviewers.append("MichaelClifford")
             if "log-" in repo.lower():
                 reviewers.append("zmhassan")
+                reviewers.append("4n4nd")
         else:
             _LOGGER.error(http_exception)
             return None
