@@ -10,7 +10,7 @@ bears = PycodestyleBear, PyDocStyleBear
 files = **.py
 language = Python
 editor = vim
-ignore = setup.py
+ignore = tests/**, setup.py
 
 [all.yaml]
 bears = YAMLLintBear

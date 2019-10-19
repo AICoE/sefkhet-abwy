@@ -43,7 +43,7 @@ init_logging()
 _LOGGER = logging.getLogger(__name__)
 
 
-def cocommand(f):
+def cocommand(f):  # Ignore PyDocStyleBear
     """Based on https://github.com/pallets/click/issues/85 ."""
 
     @wraps(f)
