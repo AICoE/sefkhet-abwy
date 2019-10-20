@@ -99,7 +99,11 @@ async def needs_rebase_label(_pull_request: dict = None) -> bool:
     issue_url = _pull_request["issue_url"]
     pull_request = await github_api.getitem(_pull_request["url"])
 
+    _LOGGER.debug(f"checking if {pull_request['html_url']} needs a rebase label")
+
     if pull_request["mergeable_state"] == "dirty" and not pull_request["rebaseable"] and not pull_request["merged"]:
+        _LOGGER.debug(f"adding 'needs-rebase' label to {pull_request['html_url']}")
+
         try:
             await github_api.post(
                 f"{issue_url}/labels", preview_api_version="symmetra", data={"labels": ["do-not-merge/needs-rebase"]}
@@ -107,10 +111,19 @@ async def needs_rebase_label(_pull_request: dict = None) -> bool:
             return True
         except gidgethub.BadRequest as err:
             if err.status_code != 202:
-                _LOGGER.error(err)
+                _LOGGER.error(str(err))
 
-    elif pull_request["mergable"] and has_label(pull_request, "do-not-merge/needs-rebase"):
-        # TODO we need to remove the label if we dont need it ;)
+    elif (
+        pull_request["mergeable"]
+        and pull_request["mergeable_state"] == "clean"
+        and has_label(pull_request, "do-not-merge/needs-rebase")
+    ):
+        _LOGGER.debug(f"removing 'needs-rebase' label from {pull_request['html_url']}")
+
+        try:
+            await github_api.delete(f"{issue_url}/labels/do-not-merge%2Fneeds-rebase", preview_api_version="symmetra")
+        except gidgethub.BadRequest as err:
+            _LOGGER.info(str(err))
 
         return False
 
@@ -141,7 +154,7 @@ async def manage_label_and_check(github_api=None, pull_request: dict = None):
 
     check_runs_base_uri = f"{repo_url}/check-runs"
 
-    _LOGGER.debug(f"{check_runs_base_uri}: {pr_head_sha}")
+    _LOGGER.debug(f"manage_label_and_check: check_runs base uri: {check_runs_base_uri}, PR head sha: {pr_head_sha}")
 
     issue_labels_response = await github_api.getitem(f"{issue_url}/labels", preview_api_version="symmetra")
 

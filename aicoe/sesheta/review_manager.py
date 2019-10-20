@@ -98,7 +98,7 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
         await manage_label_and_check(github_api, pull_request)
         await needs_rebase_label(pull_request)
     except gidgethub.BadRequest as err:
-        _LOGGER.error(f"manage_label_and_check: status_code={err.status_code}, {str(err)}")
+        _LOGGER.error(f"manage labels and checks: status_code={err.status_code}, {str(err)}")
 
     try:
         await merge_master_into_pullrequest2(
