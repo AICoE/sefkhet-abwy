@@ -109,7 +109,13 @@ async def needs_rebase_label(_pull_request: dict = None) -> bool:
             if err.status_code != 202:
                 _LOGGER.error(err)
 
+    elif pull_request["mergable"] and has_label(pull_request, "do-not-merge/needs-rebase"):
+        # TODO we need to remove the label if we dont need it ;)
+
+        return False
+
     else:
+
         return False
 
 
@@ -243,6 +249,18 @@ async def local_check_gate_passed(pr_url: str) -> bool:
 
     if gate_pass_status is not None:
         if (gate_pass_status["context"] == "local/check") and (gate_pass_status["state"] == "success"):
+            return True
+
+    return False
+
+
+def has_label(pull_request: dict, label: str) -> bool:
+    """Check if 'label' is present for the given Pull Request."""
+    if pull_request["labels"] == []:
+        return False
+
+    for github_label in pull_request["labels"]:
+        if label in github_label["name"]:
             return True
 
     return False
