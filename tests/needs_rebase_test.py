@@ -21,30 +21,43 @@
 import json
 import pytest
 
-from aicoe.sesheta.actions.pull_request import has_label
+from aicoe.sesheta.actions.pull_request import has_label, needs_rebase
 
 
 @pytest.fixture
-def no_work_in_progress_labeled_pull_request():
+def pr_needs_rebase():
+    with open("fixtures/pull_request_150.json") as json_file:
+        return json.load(json_file)
+
+
+@pytest.fixture
+def has_needs_rebase_label():
     with open("fixtures/pull_request_148.json") as json_file:
         return json.load(json_file)
 
 
 @pytest.fixture
-def has_work_in_progress_labeled():
+def doesnt_need_rebase():
     with open("fixtures/pull_request_2.json") as json_file:
         return json.load(json_file)
 
 
-class TestHasLabel:
+class TestNeedsRebase:
     @pytest.mark.asyncio
-    async def test_label_is_not_present(self, no_work_in_progress_labeled_pull_request):
-        assert no_work_in_progress_labeled_pull_request is not None
+    async def test_pull_request_needs_rebase(self, pr_needs_rebase, has_needs_rebase_label):
+        assert pr_needs_rebase is not None
+        assert has_needs_rebase_label is not None
 
-        assert not has_label(no_work_in_progress_labeled_pull_request, "do-not-merge/work-in-progress")
+        has_needs_rebase_label_actual = await needs_rebase(has_needs_rebase_label)
+        pr_needs_rebase_actual = await needs_rebase(pr_needs_rebase)
+
+        assert has_needs_rebase_label_actual
+        assert pr_needs_rebase_actual
 
     @pytest.mark.asyncio
-    async def test_label_is_present(self, has_work_in_progress_labeled):
-        assert has_work_in_progress_labeled is not None
+    async def test_pull_request_doesnt_need_rebase(self, doesnt_need_rebase):
+        assert doesnt_need_rebase is not None
 
-        assert has_label(has_work_in_progress_labeled, "do-not-merge/work-in-progress")
+        doesnt_need_rebase_actual = await needs_rebase(doesnt_need_rebase)
+
+        assert not doesnt_need_rebase_actual

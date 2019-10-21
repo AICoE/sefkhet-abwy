@@ -101,7 +101,7 @@ async def needs_rebase_label(_pull_request: dict = None) -> bool:
 
     _LOGGER.debug(f"checking if {pull_request['html_url']} needs a rebase label")
 
-    if pull_request["mergeable_state"] == "dirty" and not pull_request["rebaseable"] and not pull_request["merged"]:
+    if needs_rebase(pull_request):
         _LOGGER.debug(f"adding 'needs-rebase' label to {pull_request['html_url']}")
 
         try:
@@ -113,11 +113,7 @@ async def needs_rebase_label(_pull_request: dict = None) -> bool:
             if err.status_code != 202:
                 _LOGGER.error(str(err))
 
-    elif (
-        pull_request["mergeable"]
-        and pull_request["mergeable_state"] == "clean"
-        and has_label(pull_request, "do-not-merge/needs-rebase")
-    ):
+    elif not needs_rebase(pull_request) and has_label(pull_request, "do-not-merge/needs-rebase"):
         _LOGGER.debug(f"removing 'needs-rebase' label from {pull_request['html_url']}")
 
         try:
@@ -263,6 +259,22 @@ async def local_check_gate_passed(pr_url: str) -> bool:
     if gate_pass_status is not None:
         if (gate_pass_status["context"] == "local/check") and (gate_pass_status["state"] == "success"):
             return True
+
+    return False
+
+
+async def needs_rebase(pull_request: dict = None) -> bool:
+    """Determine if the Pull Request needs to be rebased."""
+    if pull_request["merged"]:
+        return False
+
+    if has_label(pull_request, "needs-rebase"):
+        return True
+
+    if pull_request["rebaseable"] and pull_request["mergeable"] and pull_request["mergeable_state"] == "clean":
+        return True
+    elif pull_request["mergeable"] and not pull_request["rebaseable"] and pull_request["mergeable_state"] == "clean":
+        return False
 
     return False
 

@@ -100,14 +100,6 @@
     "requested_reviewers": [],
     "requested_teams": [],
     "labels": [{
-            "id": 1626529173,
-            "node_id": "MDU6TGFiZWwxNjI2NTI5MTcz",
-            "url": "https://api.github.com/repos/AICoE/Sefkhet-Abwy/labels/do-not-merge/needs-rebase",
-            "name": "do-not-merge/needs-rebase",
-            "color": "ededed",
-            "default": false
-        },
-        {
             "id": 1607899373,
             "node_id": "MDU6TGFiZWwxNjA3ODk5Mzcz",
             "url": "https://api.github.com/repos/AICoE/Sefkhet-Abwy/labels/do-not-merge/work-in-progress",

@@ -41,14 +41,6 @@
     "requested_reviewers": [],
     "requested_teams": [],
     "labels": [{
-            "id": 1363468145,
-            "node_id": "MDU6TGFiZWwxMzYzNDY4MTQ1",
-            "url": "https://api.github.com/repos/thoth-station/srcops-testing/labels/do-not-merge/work-in-progress",
-            "name": "do-not-merge/work-in-progress",
-            "color": "cc0000",
-            "default": false
-        },
-        {
             "id": 1019253734,
             "node_id": "MDU6TGFiZWwxMDE5MjUzNzM0",
             "url": "https://api.github.com/repos/thoth-station/srcops-testing/labels/size/S",
