@@ -33,13 +33,14 @@ init_logging()
 
 _LOGGER = logging.getLogger(__name__)
 
+NEEDS_REBASE_LABEL_NAME = "do-not-merge/needs-rebase"
 
 DEFAULT_LABELS = [
     {"name": "bot", "color": "698b69"},
     {"name": "approved", "color": "00cc00"},
     {"name": "do-not-merge", "color": "cc0000"},
     {"name": "do-not-merge/work-in-progress", "color": "cc0000"},
-    {"name": "do-not-merge/needs-rebase", "color": "cc0000"},
+    {"name": NEEDS_REBASE_LABEL_NAME, "color": "cc0000"},
     {"name": "work-in-progress", "color": "cc0000"},
     {"name": "needs-rebase", "color": "cc0000"},
     {"name": "human_intervention_required", "color": "f3ccff"},

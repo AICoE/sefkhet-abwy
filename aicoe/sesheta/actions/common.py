@@ -114,7 +114,7 @@ async def get_master_head_sha(owner: str, repo: str) -> str:
     github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
     commits = await github_api.getitem(f"/repos/{owner}/{repo}/commits")
 
-    _LOGGER.debug(f"HEAD commit of {owner}/{repo}: {commits[0]}")
+    _LOGGER.debug(f"HEAD commit of {owner}/{repo}: {commits[0]['sha']}")
 
     return commits[0]["sha"]  # FIXME could raise IndexError
 
@@ -124,9 +124,11 @@ async def get_pull_request(owner: str, repo: str, pull_request: int) -> dict:
     access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
     github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
 
+    _LOGGER.debug(f"getting {owner}/{repo}: PR {pull_request}")
+
     pr = await github_api.getitem(f"/repos/{owner}/{repo}/pulls/{pull_request}")  # TODO exception handling
 
-    _LOGGER.debug(f"{owner}/{repo}: PR {pull_request}: {pr}")
+    _LOGGER.debug(f"got {owner}/{repo}: PR {pull_request}: {pr}")
 
     return pr
 

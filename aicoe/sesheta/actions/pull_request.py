@@ -101,7 +101,10 @@ async def needs_rebase_label(_pull_request: dict = None) -> bool:
 
     _LOGGER.debug(f"checking if {pull_request['html_url']} needs a rebase label")
 
-    if needs_rebase(pull_request):
+    needs_rebase_actual = await needs_rebase(pull_request)
+    has_rebase_label = has_label(pull_request, "do-not-merge/needs-rebase")
+
+    if needs_rebase_actual and not has_rebase_label:
         _LOGGER.debug(f"adding 'needs-rebase' label to {pull_request['html_url']}")
 
         try:
@@ -113,7 +116,7 @@ async def needs_rebase_label(_pull_request: dict = None) -> bool:
             if err.status_code != 202:
                 _LOGGER.error(str(err))
 
-    elif not needs_rebase(pull_request) and has_label(pull_request, "do-not-merge/needs-rebase"):
+    elif not needs_rebase_actual and has_rebase_label:
         _LOGGER.debug(f"removing 'needs-rebase' label from {pull_request['html_url']}")
 
         try:
@@ -268,13 +271,8 @@ async def needs_rebase(pull_request: dict = None) -> bool:
     if pull_request["merged"]:
         return False
 
-    if has_label(pull_request, "needs-rebase"):
+    if not pull_request["mergeable"]:
         return True
-
-    if pull_request["rebaseable"] and pull_request["mergeable"] and pull_request["mergeable_state"] == "clean":
-        return True
-    elif pull_request["mergeable"] and not pull_request["rebaseable"] and pull_request["mergeable_state"] == "clean":
-        return False
 
     return False
 
