@@ -105,7 +105,7 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
             pull_request["base"]["user"]["login"], pull_request["base"]["repo"]["name"], pull_request["id"]
         )
     except gidgethub.BadRequest as err:
-        _LOGGER.error(
+        _LOGGER.warning(
             f"merge_master_into_pullrequest2: status_code={err.status_code}, {str(err)}, {pull_request['html_url']}"
         )
 
