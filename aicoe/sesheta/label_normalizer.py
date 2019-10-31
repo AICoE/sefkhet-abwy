@@ -43,6 +43,7 @@ _LOGGER.info(f"Sesheta action: label_normalizer, Version v{__version__}")
 
 
 async def update_labels(org: str):
+    """Update Labels to comply to our standard."""
     access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
     github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
 

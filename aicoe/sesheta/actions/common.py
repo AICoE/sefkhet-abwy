@@ -21,19 +21,29 @@
 import asyncio
 import os
 import logging
+import typing
+import base64
+import re
 
 import gidgethub
 
 from functools import wraps
+from itertools import takewhile
 
 from octomachinery.github.api.tokens import GitHubOAuthToken
 from octomachinery.github.api.raw_client import RawGitHubAPI
+from octomachinery.app.runtime.context import RUNTIME_CONTEXT
+from codeowners import CodeOwners
 
+from thoth.common import init_logging
+
+
+init_logging()
 
 _LOGGER = logging.getLogger(__name__)
 
 
-def cocommand(f):
+def cocommand(f):  # Ignore PyDocStyleBear
     """Based on https://github.com/pallets/click/issues/85 ."""
 
     @wraps(f)
@@ -43,13 +53,68 @@ def cocommand(f):
     return wrapper
 
 
+def unpack(s):
+    """Unpack a list into a string.
+
+    see https://stackoverflow.com/questions/42756537/f-string-syntax-for-unpacking-a-list-with-brace-suppression
+    """
+    return " ".join(map(str, s))  # map(), just for kicks
+
+
+async def conclude_reviewer_list(owner: str = None, repo: str = None) -> typing.List[str]:
+    """Conclude on a set of Reviewers (their GitHub user id) that could be assigned to a Pull Request."""
+    reviewers = []
+    github_api = None
+
+    if owner is None or repo is None:
+        return None
+
+    try:
+        github_api = RUNTIME_CONTEXT.app_installation_client
+    except Exception:
+        access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
+        github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
+
+    try:
+        codeowners = await github_api.getitem(f"/repos/{owner}/{repo}/contents/.github/CODEOWNERS")
+        codeowners_content = base64.b64decode(codeowners["content"]).decode("utf-8")
+
+        code_owner = CodeOwners(codeowners_content)
+        for owner in code_owner.of("."):
+            reviewers.append(owner[1][1:])  # remove the @
+
+    except gidgethub.HTTPException as http_exception:  # if there is no CODEOWNERS, lets have some sane defaults
+        if http_exception.status_code == 404:
+            if owner.lower() == "thoth-station":
+                reviewers.append("fridex")
+                reviewers.append("pacospace")
+            if "prometheus" in repo.lower():
+                reviewers.append("4n4nd")
+                reviewers.append("MichaelClifford")
+            if "log-" in repo.lower():
+                reviewers.append("zmhassan")
+                reviewers.append("4n4nd")
+        else:
+            _LOGGER.error(http_exception)
+            return None
+
+    except Exception as err:  # on any other Error, we can not generate a reviewers list
+        _LOGGER.error(str(err))
+        return None
+
+    _LOGGER.debug(f"final reviewers: '{reviewers}'")
+
+    return reviewers
+
+
 async def get_master_head_sha(owner: str, repo: str) -> str:
+    """Get the SHA of the HEAD of the master."""
     # TODO refactor this to a class? global variable?
     access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
     github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
     commits = await github_api.getitem(f"/repos/{owner}/{repo}/commits")
 
-    _LOGGER.debug(f"HEAD commit of {owner}/{repo}: {commits[0]}")
+    _LOGGER.debug(f"HEAD commit of {owner}/{repo}: {commits[0]['sha']}")
 
     return commits[0]["sha"]  # FIXME could raise IndexError
 
@@ -59,9 +124,11 @@ async def get_pull_request(owner: str, repo: str, pull_request: int) -> dict:
     access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
     github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
 
-    pr = await github_api.getitem(f"/repos/{owner}/{repo}/pulls/{pull_request}")
+    _LOGGER.debug(f"getting {owner}/{repo}: PR {pull_request}")
 
-    _LOGGER.debug(f"{owner}/{repo}: PR {pull_request}: {pr}")
+    pr = await github_api.getitem(f"/repos/{owner}/{repo}/pulls/{pull_request}")  # TODO exception handling
+
+    _LOGGER.debug(f"got {owner}/{repo}: PR {pull_request}: {pr}")
 
     return pr
 

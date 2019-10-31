@@ -24,24 +24,31 @@ import gidgethub
 
 from octomachinery.github.api.tokens import GitHubOAuthToken
 from octomachinery.github.api.raw_client import RawGitHubAPI
+from octomachinery.app.runtime.context import RUNTIME_CONTEXT
 
 from thoth.common import init_logging
 
 
+init_logging()
+
 _LOGGER = logging.getLogger(__name__)
 
+NEEDS_REBASE_LABEL_NAME = "do-not-merge/needs-rebase"
 
 DEFAULT_LABELS = [
     {"name": "bot", "color": "698b69"},
     {"name": "approved", "color": "00cc00"},
     {"name": "do-not-merge", "color": "cc0000"},
     {"name": "do-not-merge/work-in-progress", "color": "cc0000"},
-    {"name": "do-not-merge/needs-rebase", "color": "cc0000"},
+    {"name": NEEDS_REBASE_LABEL_NAME, "color": "cc0000"},
     {"name": "work-in-progress", "color": "cc0000"},
     {"name": "needs-rebase", "color": "cc0000"},
     {"name": "human_intervention_required", "color": "f3ccff"},
+    {"name": "thoth/human_intervention_required", "color": "f3ccff"},
+    {"name": "thoth/potential-observation", "color": "f3ccff"},
     {"name": "potential_flake", "color": "f3ccff"},
     {"name": "test:flake", "color": "f3ccff"},
+    {"name": "test/flake", "color": "f3ccff"},
     {"name": "priority/critical-urgent", "color": "e11d21"},
     {"name": "hacktoberfest", "color": "99cdf8", "description": "This might be something for Hacktoberfest"},
     {
@@ -100,3 +107,20 @@ async def create_or_update_label(slug: str, name: str, color: str = "") -> str:
         except gidgethub.BadRequest as created:
             _LOGGER.info(f"Label '{name}', Repo: '{slug}': created")  # TODO maybe this should be a little more robust?
     return
+
+
+async def do_not_merge(pr_url: str) -> bool:
+    """Check if the given Pull Request has any of the DNM labels."""
+    try:
+        github_api = RUNTIME_CONTEXT.app_installation_client
+
+        pr = await github_api.getitem(pr_url)
+
+        for label in pr["labels"]:
+            if label["name"].startswith("do-not-merge") or label["name"].startswith("work-in-progress"):
+                return True
+
+    except Exception as err:
+        _LOGGER.error(str(err))
+
+    return False

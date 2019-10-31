@@ -15,14 +15,4 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-
-"""Sesheta's actions."""
-
-
-from .common import conclude_reviewer_list, unpack
-from .label import do_not_merge
-from .pull_request import local_check_gate_passed, needs_rebase_label
-
-
-__title__ = "sesheta-actions"
-__version__ = "0.4.0-dev"
+"""Sesheta's actions Tests."""

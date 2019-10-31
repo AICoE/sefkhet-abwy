@@ -38,17 +38,25 @@ from octomachinery.utils.versiontools import get_version_from_scm_tag
 
 from aicoe.sesheta import get_github_client
 from aicoe.sesheta.actions.pull_request import manage_label_and_check, merge_master_into_pullrequest2
+from aicoe.sesheta.actions import (
+    do_not_merge,
+    local_check_gate_passed,
+    conclude_reviewer_list,
+    unpack,
+    needs_rebase_label,
+)
 from thoth.common import init_logging
 
 
-__version__ = "0.2.0"
+__version__ = "0.4.0-dev"
 
 
 init_logging()
 
-_LOGGER = logging.getLogger(__name__)
+_LOGGER = logging.getLogger("aicoe.sesheta")
 _LOGGER.info(f"AICoE's Review Manager, Version v{__version__}")
 logging.getLogger("octomachinery").setLevel(logging.DEBUG)
+logging.getLogger("aiohttp.server").setLevel(logging.DEBUG)
 
 
 @process_event("ping")
@@ -77,33 +85,53 @@ async def on_install(
 
 @process_event_actions("pull_request", {"opened", "reopened", "synchronize", "edited"})
 @process_webhook_payload
-async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender, organization, installation, changes):
+async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender, organization, installation, **kwargs):
     """React to an opened or changed PR event.
 
     Send a status update to GitHub via Checks API.
     """
-    _LOGGER.debug(f"working on PR {pull_request['html_url']}")
+    _LOGGER.debug(f"on_pr_open_or_edit: working on PR {pull_request['html_url']}")
 
     github_api = RUNTIME_CONTEXT.app_installation_client
 
     try:
         await manage_label_and_check(github_api, pull_request)
+        await needs_rebase_label(pull_request)
     except gidgethub.BadRequest as err:
-        _LOGGER.error(f"status_code={err.status_code}, {str(err)}")
+        _LOGGER.error(f"manage labels and checks: status_code={err.status_code}, {str(err)}")
 
     try:
         await merge_master_into_pullrequest2(
-            pull_request["base"]["user"]["login"], pull_request["base"]["repo"]["name"], pull_request["id"], github_api
+            pull_request["base"]["user"]["login"], pull_request["base"]["repo"]["name"], pull_request["id"]
         )
     except gidgethub.BadRequest as err:
-        _LOGGER.error(f"status_code={err.status_code}, {str(err)}")
+        _LOGGER.warning(
+            f"merge_master_into_pullrequest2: status_code={err.status_code}, {str(err)}, {pull_request['html_url']}"
+        )
+
+
+@process_event_actions("pull_request_review", {"submitted"})
+@process_webhook_payload
+async def on_pull_request_review(
+    *, action, review, pull_request, repository, organization, sender, installation, **kwargs
+):
+    """React to Pull Request Review event."""
+    _LOGGER.debug(f"on_pull_request_review: working on PR {pull_request['html_url']}")
+
+    needs_rebase = await needs_rebase_label(pull_request)
+
+    if needs_rebase:
+        await merge_master_into_pullrequest2(
+            pull_request["base"]["user"]["login"], pull_request["base"]["repo"]["name"], pull_request["id"]
+        )
 
 
 @process_event_actions("issues", {"labeled"})
 @process_webhook_payload
 async def on_issue_labeled(*, action, issue, label, repository, organization, sender, installation):
-    """Take actions if an issue got labeled:
-        if it is labeled 'bug' we add the 'human_intervention_required' label
+    """Take actions if an issue got labeled.
+
+    If it is labeled 'bug' we add the 'human_intervention_required' label
     """
     _LOGGER.info(f"working on Issue {issue['html_url']}")
     issue_id = issue["id"]
@@ -127,12 +155,54 @@ async def on_issue_labeled(*, action, issue, label, repository, organization, se
                     _LOGGER.error(f"status_code={err.status_code}, {str(err)}")
 
 
+@process_event_actions("issue_comment", {"created"})
+@process_webhook_payload
+async def on_check_gate(*, action, issue, comment, repository, organization, sender, installation):
+    """Determine if a 'check' gate was passed and the Pull Request is ready for review.
+
+    If the Pull Request is ready for review, assign a set of reviewers.
+    """
+    _LOGGER.debug(f"looking for a passed 'check' gate: {issue['url']}")
+
+    if comment["body"].startswith("Build succeeded."):
+        _LOGGER.debug(f"local/check status might have changed...")
+
+        pr_url = issue["url"].replace("issues", "pulls")
+        pr_body_ok = False
+
+        github_api = RUNTIME_CONTEXT.app_installation_client
+        pr = await github_api.getitem(pr_url)
+        do_not_merge_label = await do_not_merge(pr_url)
+        gate_passed = await local_check_gate_passed(pr_url)
+        reviewer_list = await conclude_reviewer_list(pr["base"]["repo"]["owner"]["login"], pr["base"]["repo"]["name"])
+        current_reviewers = pr["requested_reviewers"]
+        pr_owner = pr["user"]["login"]
+
+        # TODO check if PR body is ok
+
+        # TODO check for size label
+
+        _LOGGER.debug(f"gate passed: {gate_passed}, do_not_merge_label: {do_not_merge_label}, body_ok: {pr_body_ok}")
+
+        if gate_passed and not do_not_merge_label:
+            _LOGGER.debug(f"PR {pr['html_url']} is ready for review!")
+
+            if reviewer_list is not None:
+                _LOGGER.debug(f"PR {pr['html_url']} could be reviewed by {unpack(reviewer_list)}")
+
+        elif not gate_passed and not len(current_reviewers) == 0:
+            # if a review has been started we should not remove the reviewers
+            _LOGGER.debug(
+                f"PR {pr['html_url']} is NOT ready for review! Removing reviewers: {unpack(current_reviewers)}"
+            )
+
+
 if __name__ == "__main__":
     _LOGGER.setLevel(logging.DEBUG)
     _LOGGER.debug("Debug mode turned on")
 
     run_app(  # pylint: disable=expression-not-assigned
-        name="review-manager",
+        name="Sefkhet-Abwy",
         version=get_version_from_scm_tag(root="../..", relative_to=__file__),
-        url="https://github.com/apps/review-manager",
+        url="https://github.com/apps/Sefkhet-Abwy",
     )
