@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Sesheta
+# Sefkhet-Abwy
 # Copyright(C) 2019 Christoph Görn
 #
 # This program is free software: you can redistribute it and / or modify
@@ -45,10 +45,11 @@ from aicoe.sesheta.actions import (
     unpack,
     needs_rebase_label,
 )
+from aicoe.sesheta.utils import notify_channel
 from thoth.common import init_logging
 
 
-__version__ = "0.4.0-dev"
+__version__ = "0.5.0-dev"
 
 
 init_logging()
@@ -56,7 +57,7 @@ init_logging()
 _LOGGER = logging.getLogger("aicoe.sesheta")
 _LOGGER.info(f"AICoE's Review Manager, Version v{__version__}")
 logging.getLogger("octomachinery").setLevel(logging.DEBUG)
-logging.getLogger("aiohttp.server").setLevel(logging.DEBUG)
+logging.getLogger("googleapiclient.discovery_cache").setLevel(logging.ERROR)
 
 
 @process_event("ping")
@@ -112,9 +113,7 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
 
 @process_event_actions("pull_request_review", {"submitted"})
 @process_webhook_payload
-async def on_pull_request_review(
-    *, action, review, pull_request, repository, organization, sender, installation, **kwargs
-):
+async def on_pull_request_review(*, action, review, pull_request, **kwargs):
     """React to Pull Request Review event."""
     _LOGGER.debug(f"on_pull_request_review: working on PR {pull_request['html_url']}")
 
@@ -123,6 +122,42 @@ async def on_pull_request_review(
     if needs_rebase:
         await merge_master_into_pullrequest2(
             pull_request["base"]["user"]["login"], pull_request["base"]["repo"]["name"], pull_request["id"]
+        )
+
+
+@process_event_actions("pull_request", {"review_requested"})
+@process_webhook_payload
+async def on_pull_request_review_requested(*, action, number, pull_request, requested_reviewer, **kwargs):
+    """Someone requested a Pull Request Review, so we notify the Google Hangouts Chat Room."""
+    _LOGGER.debug(
+        f"on_pull_request_review_requested: working on PR '{pull_request['title']}' {pull_request['html_url']}"
+    )
+
+    # we do not notify on standard automated SrcOps
+    if pull_request["title"].startswith("Automatic update of dependency") or pull_request["title"].startswith(
+        "Release of"
+    ):
+        return
+
+    for requested_reviewer in pull_request["requested_reviewers"]:
+        _LOGGER.info(f"requesting review by {requested_reviewer['login']} on {pull_request['html_url']}")
+
+        notify_channel(
+            "new_pull_request_review",
+            f"🔎 a review by "
+            f"{requested_reviewer['login']}"
+            f" has been requested for "
+            f"Pull Request '{pull_request['title']}'",
+            f"pull_request_{kwargs['repository']['name']}_{pull_request['id']}",
+            pull_request["html_url"],
+        )
+
+    if await local_check_gate_passed(pull_request["url"]):
+        notify_channel(
+            "plain",
+            f"🎊 This Pull Request seems to be *ready for review*...",
+            f"pull_request_{kwargs['repository']['name']}_{pull_request['id']}",
+            "thoth-station",
         )
 
 

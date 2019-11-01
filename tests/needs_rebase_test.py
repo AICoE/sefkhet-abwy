@@ -51,8 +51,8 @@ class TestNeedsRebase:
         has_needs_rebase_label_actual = await needs_rebase(has_needs_rebase_label)
         pr_needs_rebase_actual = await needs_rebase(pr_needs_rebase)
 
-        assert has_needs_rebase_label_actual
-        assert pr_needs_rebase_actual
+        assert has_needs_rebase_label_actual == False
+        assert pr_needs_rebase_actual == False
 
     @pytest.mark.asyncio
     async def test_pull_request_doesnt_need_rebase(self, doesnt_need_rebase):
