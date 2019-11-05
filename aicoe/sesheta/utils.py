@@ -41,7 +41,6 @@ AIOPS_DEVOPS_SPACE = os.getenv("SESHETA_AIOPS_DEVOPS_SPACE", None)
 
 def hangouts_room_for(data: str) -> str:
     """Return the Google Hangout Chat Room for the given GitHub repository name."""
-
     if "thoth-station" in data.lower():
         return THOTH_DEVOPS_SPACE
     elif "sefkhet-abwy" in data.lower():
