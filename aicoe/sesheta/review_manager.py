@@ -49,7 +49,7 @@ from aicoe.sesheta.utils import notify_channel
 from thoth.common import init_logging
 
 
-__version__ = "0.5.0-dev"
+__version__ = "0.6.0-dev"
 
 
 init_logging()
@@ -100,7 +100,7 @@ async def on_pr_closed(*, action, number, pull_request, repository, sender, orga
             "plain",
             f"👌 Pull Request *{pull_request['title']}* has been closed!",
             f"pull_request_{repository['name']}_{pull_request['id']}",
-            "thoth-station",
+            pull_request["html_url"],
         )
 
 
@@ -124,7 +124,7 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
                 "plain",
                 f"🆕 {pull_request['html_url']} *a new Pull Request has been opened!*",
                 f"pull_request_{repository['name']}_{pull_request['id']}",
-                "thoth-station",
+                pull_request["html_url"],
             )
 
     try:
@@ -182,14 +182,6 @@ async def on_pull_request_review_requested(*, action, number, pull_request, requ
             f"Pull Request '{pull_request['title']}'",
             f"pull_request_{kwargs['repository']['name']}_{pull_request['id']}",
             pull_request["html_url"],
-        )
-
-    if await local_check_gate_passed(pull_request["url"]):
-        notify_channel(
-            "plain",
-            f"🎊 This Pull Request seems to be *ready for review*...",
-            f"pull_request_{kwargs['repository']['name']}_{pull_request['id']}",
-            "thoth-station",
         )
 
 
