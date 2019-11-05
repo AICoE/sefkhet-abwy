@@ -9,6 +9,8 @@ click = "*"
 aiohttp = "<4.0"
 octomachinery = "*"
 codeowners = "*"
+google-api-python-client = "*"
+oauth2client = "*"
 
 [dev-packages]
 black = "*"

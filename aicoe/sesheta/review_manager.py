@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Sesheta
+# Sefkhet-Abwy
 # Copyright(C) 2019 Christoph Görn
 #
 # This program is free software: you can redistribute it and / or modify
@@ -45,10 +45,11 @@ from aicoe.sesheta.actions import (
     unpack,
     needs_rebase_label,
 )
+from aicoe.sesheta.utils import notify_channel
 from thoth.common import init_logging
 
 
-__version__ = "0.4.0-dev"
+__version__ = "0.5.0-dev"
 
 
 init_logging()
@@ -56,7 +57,7 @@ init_logging()
 _LOGGER = logging.getLogger("aicoe.sesheta")
 _LOGGER.info(f"AICoE's Review Manager, Version v{__version__}")
 logging.getLogger("octomachinery").setLevel(logging.DEBUG)
-logging.getLogger("aiohttp.server").setLevel(logging.DEBUG)
+logging.getLogger("googleapiclient.discovery_cache").setLevel(logging.ERROR)
 
 
 @process_event("ping")
@@ -83,6 +84,26 @@ async def on_install(
     _LOGGER.info("installation=%s", RUNTIME_CONTEXT.app_installation)
 
 
+@process_event_actions("pull_request", {"closed"})
+@process_webhook_payload
+async def on_pr_closed(*, action, number, pull_request, repository, sender, organization, installation, **kwargs):
+    """React to an closed PR event."""
+    _LOGGER.debug(f"on_pr_closed: working on PR {pull_request['html_url']}")
+
+    github_api = RUNTIME_CONTEXT.app_installation_client
+
+    # we do not notify on standard automated SrcOps
+    if not pull_request["title"].startswith("Automatic update of dependency") and not pull_request["title"].startswith(
+        "Release of"
+    ):
+        notify_channel(
+            "plain",
+            f"👌 Pull Request *{pull_request['title']}* has been closed!",
+            f"pull_request_{repository['name']}_{pull_request['id']}",
+            "thoth-station",
+        )
+
+
 @process_event_actions("pull_request", {"opened", "reopened", "synchronize", "edited"})
 @process_webhook_payload
 async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender, organization, installation, **kwargs):
@@ -93,6 +114,18 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
     _LOGGER.debug(f"on_pr_open_or_edit: working on PR {pull_request['html_url']}")
 
     github_api = RUNTIME_CONTEXT.app_installation_client
+
+    if action in ["opened", "reopened"]:
+        # we do not notify on standard automated SrcOps
+        if not pull_request["title"].startswith("Automatic update of dependency") and not pull_request[
+            "title"
+        ].startswith("Release of"):
+            notify_channel(
+                "plain",
+                f"🆕 {pull_request['html_url']} *a new Pull Request has been opened!*",
+                f"pull_request_{repository['name']}_{pull_request['id']}",
+                "thoth-station",
+            )
 
     try:
         await manage_label_and_check(github_api, pull_request)
@@ -112,9 +145,7 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
 
 @process_event_actions("pull_request_review", {"submitted"})
 @process_webhook_payload
-async def on_pull_request_review(
-    *, action, review, pull_request, repository, organization, sender, installation, **kwargs
-):
+async def on_pull_request_review(*, action, review, pull_request, **kwargs):
     """React to Pull Request Review event."""
     _LOGGER.debug(f"on_pull_request_review: working on PR {pull_request['html_url']}")
 
@@ -123,6 +154,42 @@ async def on_pull_request_review(
     if needs_rebase:
         await merge_master_into_pullrequest2(
             pull_request["base"]["user"]["login"], pull_request["base"]["repo"]["name"], pull_request["id"]
+        )
+
+
+@process_event_actions("pull_request", {"review_requested"})
+@process_webhook_payload
+async def on_pull_request_review_requested(*, action, number, pull_request, requested_reviewer, **kwargs):
+    """Someone requested a Pull Request Review, so we notify the Google Hangouts Chat Room."""
+    _LOGGER.debug(
+        f"on_pull_request_review_requested: working on PR '{pull_request['title']}' {pull_request['html_url']}"
+    )
+
+    # we do not notify on standard automated SrcOps
+    if pull_request["title"].startswith("Automatic update of dependency") or pull_request["title"].startswith(
+        "Release of"
+    ):
+        return
+
+    for requested_reviewer in pull_request["requested_reviewers"]:
+        _LOGGER.info(f"requesting review by {requested_reviewer['login']} on {pull_request['html_url']}")
+
+        notify_channel(
+            "new_pull_request_review",
+            f"🔎 a review by "
+            f"{requested_reviewer['login']}"
+            f" has been requested for "
+            f"Pull Request '{pull_request['title']}'",
+            f"pull_request_{kwargs['repository']['name']}_{pull_request['id']}",
+            pull_request["html_url"],
+        )
+
+    if await local_check_gate_passed(pull_request["url"]):
+        notify_channel(
+            "plain",
+            f"🎊 This Pull Request seems to be *ready for review*...",
+            f"pull_request_{kwargs['repository']['name']}_{pull_request['id']}",
+            "thoth-station",
         )
 
 
@@ -187,6 +254,13 @@ async def on_check_gate(*, action, issue, comment, repository, organization, sen
         if gate_passed and not do_not_merge_label:
             _LOGGER.debug(f"PR {pr['html_url']} is ready for review!")
 
+            notify_channel(
+                "plain",
+                f"🎊 This Pull Request seems to be *ready for review*... the local/check gate has been passed!",
+                f"pull_request_{repository['name']}_{pr['id']}",
+                "thoth-station",
+            )
+
             if reviewer_list is not None:
                 _LOGGER.debug(f"PR {pr['html_url']} could be reviewed by {unpack(reviewer_list)}")
 
@@ -195,6 +269,26 @@ async def on_check_gate(*, action, issue, comment, repository, organization, sen
             _LOGGER.debug(
                 f"PR {pr['html_url']} is NOT ready for review! Removing reviewers: {unpack(current_reviewers)}"
             )
+
+
+async def on_security_advisory(*, action, security_advisory, **kwargs):
+    """Send a notification to Hangout."""
+    _LOGGER.warning(
+        f"New information wrt GitHub security advisory {security_advisory['ghsa_id']} '{security_advisory['summary']}'"
+    )
+
+    ecosystem_name = security_advisory["vulnerabilities"]["package"]["ecosystem"]
+    references_url = security_advisory["references"]["url"]
+
+    notify_channel(
+        "plain",
+        f"🙀 🔐 GitHub issued some information on security advisory {security_advisory['ghsa_id']}, "
+        f"it is related to {ecosystem_name} ecosystem: "
+        f"{security_advisory['description']}"
+        f" see also: {references_url}",
+        f"{security_advisory['ghsa_id']}",
+        "thoth-station",
+    )
 
 
 if __name__ == "__main__":
