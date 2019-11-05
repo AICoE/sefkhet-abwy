@@ -272,7 +272,7 @@ async def on_check_gate(*, action, issue, comment, repository, organization, sen
 
 
 async def on_security_advisory(*, action, security_advisory, **kwargs):
-    """Let's send a notification to Hangout."""
+    """Send a notification to Hangout."""
     _LOGGER.warning(
         f"New information wrt GitHub security advisory {security_advisory['ghsa_id']} '{security_advisory['summary']}'"
     )
@@ -282,7 +282,8 @@ async def on_security_advisory(*, action, security_advisory, **kwargs):
 
     notify_channel(
         "plain",
-        f"🙀 🔐 GitHub issued some information on security advisory {security_advisory['ghsa_id']}, it is related to {ecosystem_name} ecosystem: "
+        f"🙀 🔐 GitHub issued some information on security advisory {security_advisory['ghsa_id']}, "
+        f"it is related to {ecosystem_name} ecosystem: "
         f"{security_advisory['description']}"
         f" see also: {references_url}",
         f"{security_advisory['ghsa_id']}",
