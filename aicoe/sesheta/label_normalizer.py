@@ -35,7 +35,7 @@ from aicoe.sesheta.actions.label import DEFAULT_LABELS, create_or_update_label
 
 init_logging()
 
-_LOGGER = logging.getLogger(__name__)
+_LOGGER = logging.getLogger("thoth.label_normalizer")
 _LOGGER.info(f"Sesheta action: label_normalizer, Version v{__version__}")
 
 
@@ -47,7 +47,7 @@ async def update_labels(org: str):
     repos = await github_api.getitem(f"/orgs/{org}/repos")
 
     for repo in repos:
-        slug = f"{org}/{repo['name']}"
+        slug = repo["full_name"]
         for label in DEFAULT_LABELS:
             _LOGGER.debug(f"looking for {label['name']} in {slug}")
             await create_or_update_label(slug, label["name"], label["color"])
