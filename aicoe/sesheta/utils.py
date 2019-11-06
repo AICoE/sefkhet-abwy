@@ -35,12 +35,26 @@ init_logging()
 
 _LOGGER = logging.getLogger(__name__)
 
-THOTH_DEVOPS_SPACE = os.getenv("SESHETA_GOOGLE_CHAT_SPACE", None)
+THOTH_DEVOPS_SPACE = os.getenv("SESHETA_THOTH_DEVOPS_SPACE", None)
+AIOPS_DEVOPS_SPACE = os.getenv("SESHETA_AIOPS_DEVOPS_SPACE", None)
+
+
+def hangouts_room_for(data: str) -> str:
+    """Return the Google Hangout Chat Room for the given GitHub repository name."""
+    if "thoth-station" in data.lower():
+        return THOTH_DEVOPS_SPACE
+    elif "sefkhet-abwy" in data.lower():
+        return THOTH_DEVOPS_SPACE
+    elif "sesheta" in data.lower():
+        return THOTH_DEVOPS_SPACE
+    if "AICoE" in data:
+        return AIOPS_DEVOPS_SPACE
+    else:
+        return None
 
 
 def notify_channel(kind: str, message: str, thread_key: str, url: str) -> None:
     """Send message to a Google Hangouts Chat space."""
-    SPACE = ""
     response = None
     scopes = ["https://www.googleapis.com/auth/chat.bot"]
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
@@ -50,11 +64,9 @@ def notify_channel(kind: str, message: str, thread_key: str, url: str) -> None:
 
     chat = build("chat", "v1", http=http_auth)
 
-    if "thoth-station" in url:
-        SPACE = THOTH_DEVOPS_SPACE
-    elif "AICoE" in url:
-        return
-    else:
+    SPACE = hangouts_room_for(url)
+
+    if SPACE is None:
         return
 
     if kind.upper() in ["NEW_PULL_REQUEST", "NEW_PULL_REQUEST_REVIEW", "PULL_REQUEST_REVIEW", "REBASE_PULL_REQUEST"]:
