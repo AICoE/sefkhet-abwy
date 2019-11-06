@@ -33,9 +33,6 @@ from aicoe.sesheta.actions import __version__
 from aicoe.sesheta.actions.label import DEFAULT_LABELS, create_or_update_label
 
 
-REPOS = ["AICoE/sesheta", "thoth-station/srcops-testing"]
-
-
 init_logging()
 
 _LOGGER = logging.getLogger(__name__)

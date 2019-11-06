@@ -256,7 +256,7 @@ async def on_check_gate(*, action, issue, comment, repository, organization, sen
 
             notify_channel(
                 "plain",
-                f"🎊 This Pull Request seems to be *ready for review*... the local/check gate has been passed!",
+                f"🎊 This Pull Request seems to be *ready for review*... the local/check gate has been passed! ✅",
                 f"pull_request_{repository['name']}_{pr['id']}",
                 "thoth-station",
             )
