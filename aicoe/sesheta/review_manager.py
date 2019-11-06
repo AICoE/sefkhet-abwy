@@ -90,18 +90,25 @@ async def on_pr_closed(*, action, number, pull_request, repository, sender, orga
     """React to an closed PR event."""
     _LOGGER.debug(f"on_pr_closed: working on PR {pull_request['html_url']}")
 
-    github_api = RUNTIME_CONTEXT.app_installation_client
-
     # we do not notify on standard automated SrcOps
     if not pull_request["title"].startswith("Automatic update of dependency") and not pull_request["title"].startswith(
         "Release of"
     ):
-        notify_channel(
-            "plain",
-            f"👌 Pull Request *{pull_request['title']}* has been closed!",
-            f"pull_request_{repository['name']}_{pull_request['id']}",
-            pull_request["html_url"],
-        )
+        if pull_request["merged"]:
+            notify_channel(
+                "plain",
+                f"👌 Pull Request *{pull_request['title']}* has been merged! 🍻",
+                f"pull_request_{repository['name']}_{pull_request['id']}",
+                pull_request["html_url"],
+            )
+
+        else:
+            notify_channel(
+                "plain",
+                f"👌 Pull Request *{pull_request['title']}* has been *closed* with *unmerged commits*! 🚧",
+                f"pull_request_{repository['name']}_{pull_request['id']}",
+                pull_request["html_url"],
+            )
 
 
 @process_event_actions("pull_request", {"opened", "reopened", "synchronize", "edited"})
