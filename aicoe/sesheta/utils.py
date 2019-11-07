@@ -104,7 +104,7 @@ def hangouts_room_for(data: str) -> str:
 
 def hangouts_userid(github_user: str) -> str:
     """Map GitHub user to Google Hangout Chat user ID."""
-    return f"<users/{REALNAME_HANGOUTS_MAP[GITHUB_REALNAME_MAP[github_user.lowwer()]]}>"
+    return f"<users/{REALNAME_HANGOUTS_MAP[GITHUB_REALNAME_MAP[github_user.lower()]]}>"
 
 
 def notify_channel(kind: str, message: str, thread_key: str, url: str) -> None:
