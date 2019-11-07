@@ -45,7 +45,7 @@ from aicoe.sesheta.actions import (
     unpack,
     needs_rebase_label,
 )
-from aicoe.sesheta.utils import notify_channel, hangouts_userid
+from aicoe.sesheta.utils import notify_channel, hangouts_userid, realname
 from thoth.common import init_logging
 
 
@@ -165,7 +165,7 @@ async def on_pull_request_review(*, action, review, pull_request, **kwargs):
 
     notify_channel(
         "plain",
-        f"📖 some new comments by '{review['user']['login']}' has arrived...",
+        f"📖 some new comments by '{realname(review['user']['login'])}' has arrived...",
         f"pull_request_{kwargs['repository']['name']}_{pull_request['id']}",
         pull_request["html_url"],
     )

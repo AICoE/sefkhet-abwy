@@ -64,27 +64,27 @@ GITHUB_REALNAME_MAP = {
 }
 
 REALNAME_HANGOUTS_MAP = {
-    "Michael McCune": "users/100013946388765536921",
-    "Subin Modeel": "users/100912928295723672901",
-    "Dominik Tuchyna": "users/101087488035276666197",
-    "Kevin Postlethwait": "users/102547849534309033904",
-    "Harshad Reddy Nalla": "users/102648456274370715335",
-    "Christoph Goern": "users/102814839969738411580",
-    "Shruthi Raghuraman": "users/103427213209555601141",
-    "Anish Asthana": "users/106581684824747208909",
-    "Frido Pokorny": "users/106810069271823707995",
-    "Daniel Riek": "users/108515811437474839783",
-    "Francesco Murdaca": "users/108929048208403662680",
-    "Anand Sanmukhani": "users/109564390983160712413",
-    "Bissenbay Dauletbayev": "users/110216803169387301467",
-    "Steven Huels": "users/110846043168213103522",
-    "Devin de Hueck": "users/111891587601330012211",
-    "Diane Feddema": "users/113993930213573634504",
-    "Marcel Hild": "users/116445288136441446998",
-    "Marek Cermak": "users/117060213919893996148",
-    "Hema Veeradhi": "users/108530691726729807637",
-    "Zak Hassan": "users/114160859808923634114",
-    "Humair Khan": "users/117385119761143413973",
+    "Michael McCune": "100013946388765536921",
+    "Subin Modeel": "100912928295723672901",
+    "Dominik Tuchyna": "101087488035276666197",
+    "Kevin Postlethwait": "102547849534309033904",
+    "Harshad Reddy Nalla": "102648456274370715335",
+    "Christoph Goern": "102814839969738411580",
+    "Shruthi Raghuraman": "103427213209555601141",
+    "Anish Asthana": "106581684824747208909",
+    "Frido Pokorny": "106810069271823707995",
+    "Daniel Riek": "108515811437474839783",
+    "Francesco Murdaca": "108929048208403662680",
+    "Anand Sanmukhani": "109564390983160712413",
+    "Bissenbay Dauletbayev": "110216803169387301467",
+    "Steven Huels": "110846043168213103522",
+    "Devin de Hueck": "111891587601330012211",
+    "Diane Feddema": "113993930213573634504",
+    "Marcel Hild": "116445288136441446998",
+    "Marek Cermak": "117060213919893996148",
+    "Hema Veeradhi": "108530691726729807637",
+    "Zak Hassan": "114160859808923634114",
+    "Humair Khan": "117385119761143413973",
 }
 
 
@@ -105,6 +105,11 @@ def hangouts_room_for(data: str) -> str:
 def hangouts_userid(github_user: str) -> str:
     """Map GitHub user to Google Hangout Chat user ID."""
     return f"<users/{REALNAME_HANGOUTS_MAP[GITHUB_REALNAME_MAP[github_user.lower()]]}>"
+
+
+def realname(github_user: str) -> str:
+    """Map GitHub user to Real Name."""
+    return GITHUB_REALNAME_MAP[github_user.lower()]
 
 
 def notify_channel(kind: str, message: str, thread_key: str, url: str) -> None:
