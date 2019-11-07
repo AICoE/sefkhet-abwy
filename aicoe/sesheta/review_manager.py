@@ -45,7 +45,7 @@ from aicoe.sesheta.actions import (
     unpack,
     needs_rebase_label,
 )
-from aicoe.sesheta.utils import notify_channel
+from aicoe.sesheta.utils import notify_channel, hangouts_userid
 from thoth.common import init_logging
 
 
@@ -129,7 +129,7 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
         ].startswith("Release of"):
             notify_channel(
                 "plain",
-                f"🆕 {pull_request['html_url']} *a new Pull Request has been opened!*",
+                f"🆕 {pull_request['html_url']} a new Pull Request has been *opened*!",
                 f"pull_request_{repository['name']}_{pull_request['id']}",
                 pull_request["html_url"],
             )
@@ -163,6 +163,13 @@ async def on_pull_request_review(*, action, review, pull_request, **kwargs):
             pull_request["base"]["user"]["login"], pull_request["base"]["repo"]["name"], pull_request["id"]
         )
 
+    notify_channel(
+        "plain",
+        f"📖 some new comments by '{review['user']['login']}' has arrived...",
+        f"pull_request_{kwargs['repository']['name']}_{pull_request['id']}",
+        pull_request["html_url"],
+    )
+
 
 @process_event_actions("pull_request", {"review_requested"})
 @process_webhook_payload
@@ -179,14 +186,14 @@ async def on_pull_request_review_requested(*, action, number, pull_request, requ
         return
 
     for requested_reviewer in pull_request["requested_reviewers"]:
+        if requested_reviewer["login"] == "sesheta":
+            continue
+
         _LOGGER.info(f"requesting review by {requested_reviewer['login']} on {pull_request['html_url']}")
 
         notify_channel(
-            "new_pull_request_review",
-            f"🔎 a review by "
-            f"{requested_reviewer['login']}"
-            f" has been requested for "
-            f"Pull Request '{pull_request['title']}'",
+            "plain",
+            f"🔎 a review by " f"{hangouts_userid(requested_reviewer['login'])}" f" has been requested",
             f"pull_request_{kwargs['repository']['name']}_{pull_request['id']}",
             pull_request["html_url"],
         )
@@ -253,12 +260,16 @@ async def on_check_gate(*, action, issue, comment, repository, organization, sen
         if gate_passed and not do_not_merge_label:
             _LOGGER.debug(f"PR {pr['html_url']} is ready for review!")
 
-            notify_channel(
-                "plain",
-                f"🎊 This Pull Request seems to be *ready for review*... the local/check gate has been passed! ✅",
-                f"pull_request_{repository['name']}_{pr['id']}",
-                "thoth-station",
-            )
+            # we do not notify on standard automated SrcOps
+            if not pr["title"].startswith("Automatic update of dependency") and not pr["title"].startswith(
+                "Release of"
+            ):
+                notify_channel(
+                    "plain",
+                    f"🎊 This Pull Request seems to be *ready for review*... the local/check gate has been passed! 💚",
+                    f"pull_request_{repository['name']}_{pr['id']}",
+                    "thoth-station",
+                )
 
             if reviewer_list is not None:
                 _LOGGER.debug(f"PR {pr['html_url']} could be reviewed by {unpack(reviewer_list)}")

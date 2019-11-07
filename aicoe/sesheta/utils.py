@@ -38,6 +38,55 @@ _LOGGER = logging.getLogger(__name__)
 THOTH_DEVOPS_SPACE = os.getenv("SESHETA_THOTH_DEVOPS_SPACE", None)
 AIOPS_DEVOPS_SPACE = os.getenv("SESHETA_AIOPS_DEVOPS_SPACE", None)
 
+GITHUB_REALNAME_MAP = {
+    "elmiko": "Michael McCune",
+    "sub-mod": "Subin Modeel",
+    "xtuchyna": "Dominik Tuchyna",
+    "kpostoffice": "Kevin Postlethwait",
+    "harshad16": "Harshad Reddy Nalla",
+    "goern": "Christoph Goern",
+    "shruthi-raghuraman": "Shruthi Raghuraman",
+    "anishasthana": "Anish Asthana",
+    "fridex": "Frido Pokorny",
+    "llunved": "Daniel Riek",
+    "pacospace": "Francesco Murdaca",
+    "4n4nd": "Anand Sanmukhani",
+    "bissenbay": "Bissenbay Dauletbayev",
+    "shuels": "Steven Huels",
+    "ddehueck": "Devin de Hueck",
+    "dfeddema": "Diane Feddema",
+    "durandom": "Marcel Hild",
+    "cermakm": "Marek Cermak",
+    "hemajv": "Hema Veeradhi",
+    "zmhassan": "Zak Hassan",
+    "humairak": "Humair Khan",
+    "sesheta": "Thoth Bot",
+}
+
+REALNAME_HANGOUTS_MAP = {
+    "Michael McCune": "users/100013946388765536921",
+    "Subin Modeel": "users/100912928295723672901",
+    "Dominik Tuchyna": "users/101087488035276666197",
+    "Kevin Postlethwait": "users/102547849534309033904",
+    "Harshad Reddy Nalla": "users/102648456274370715335",
+    "Christoph Goern": "users/102814839969738411580",
+    "Shruthi Raghuraman": "users/103427213209555601141",
+    "Anish Asthana": "users/106581684824747208909",
+    "Frido Pokorny": "users/106810069271823707995",
+    "Daniel Riek": "users/108515811437474839783",
+    "Francesco Murdaca": "users/108929048208403662680",
+    "Anand Sanmukhani": "users/109564390983160712413",
+    "Bissenbay Dauletbayev": "users/110216803169387301467",
+    "Steven Huels": "users/110846043168213103522",
+    "Devin de Hueck": "users/111891587601330012211",
+    "Diane Feddema": "users/113993930213573634504",
+    "Marcel Hild": "users/116445288136441446998",
+    "Marek Cermak": "users/117060213919893996148",
+    "Hema Veeradhi": "users/108530691726729807637",
+    "Zak Hassan": "users/114160859808923634114",
+    "Humair Khan": "users/117385119761143413973",
+}
+
 
 def hangouts_room_for(data: str) -> str:
     """Return the Google Hangout Chat Room for the given GitHub repository name."""
@@ -51,6 +100,11 @@ def hangouts_room_for(data: str) -> str:
         return AIOPS_DEVOPS_SPACE
     else:
         return None
+
+
+def hangouts_userid(github_user: str) -> str:
+    """Map GitHub user to Google Hangout Chat user ID."""
+    return f"<users/{REALNAME_HANGOUTS_MAP[GITHUB_REALNAME_MAP[github_user.lowwer()]]}>"
 
 
 def notify_channel(kind: str, message: str, thread_key: str, url: str) -> None:
