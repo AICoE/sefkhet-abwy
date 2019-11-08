@@ -2,9 +2,17 @@
     check:
       jobs:
         - "thoth-coala"
+        - "thoth-pytest"
     gate:
       jobs:
         - "thoth-coala"
     kebechet-auto-gate:
       jobs:
         - "thoth-coala"
+    post:
+      jobs:
+        - "trigger-build":
+            vars:
+              cluster: "paas.psi.redhat.com"
+              namespace: "aicoe-prod-bots"
+              buildConfigName: "review-manager-webhooks"
