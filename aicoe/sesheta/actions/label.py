@@ -83,6 +83,24 @@ DEFAULT_LABELS = [
     },
 ]
 
+DEFAULT_MILESTONES_THOTH = [{"title": "v0.6.0", "description": "Tracking Milestone for v0.6.0 (end-2019)"}]
+
+
+async def create_or_update_milestone(slug: str, title: str, description: str, state: str = "open"):
+    """Create or update the Milestone in the given repository."""
+    access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
+    github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
+
+    try:
+        resp = await github_api.post(
+            f"/repos/{slug}/milestones", data={"title": title, "description": description, "state": state}
+        )
+
+    except gidgethub.BadRequest as bad:
+        _LOGGER.error(f"Milestone '{title}', Repo: '{slug}': {bad}")
+
+    return
+
 
 async def create_or_update_label(slug: str, name: str, color: str = "") -> str:
     """Create or update the label in the given repository."""

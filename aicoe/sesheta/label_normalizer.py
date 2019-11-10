@@ -30,7 +30,12 @@ from octomachinery.github.api.raw_client import RawGitHubAPI
 
 from thoth.common import init_logging
 from aicoe.sesheta.actions import __version__
-from aicoe.sesheta.actions.label import DEFAULT_LABELS, create_or_update_label
+from aicoe.sesheta.actions.label import (
+    DEFAULT_LABELS,
+    DEFAULT_MILESTONES_THOTH,
+    create_or_update_label,
+    create_or_update_milestone,
+)
 
 
 init_logging()
@@ -47,12 +52,34 @@ async def update_labels(org: str):
     repos = await github_api.getitem(f"/orgs/{org}/repos")
 
     for repo in repos:
+        if repo["archived"]:
+            continue
+
         slug = repo["full_name"]
         for label in DEFAULT_LABELS:
             _LOGGER.debug(f"looking for {label['name']} in {slug}")
             await create_or_update_label(slug, label["name"], label["color"])
 
 
+async def update_milestones(org: str = "thoth-station"):
+    """Update Milestones for one org."""
+    access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
+    github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
+
+    repos = await github_api.getitem(f"/orgs/{org}/repos")
+
+    for repo in repos:
+        if repo["archived"]:
+            continue
+
+        slug = repo["full_name"]
+        for milestone in DEFAULT_MILESTONES_THOTH:
+            await create_or_update_milestone(slug, milestone["title"], milestone["description"])
+
+
 if __name__ == "__main__":
+    asyncio.run(update_milestones())
+
     for org in ["AICoE", "thoth-station"]:
         asyncio.run(update_labels(org))
+
