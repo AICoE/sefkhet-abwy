@@ -61,6 +61,7 @@ GITHUB_REALNAME_MAP = {
     "zmhassan": "Zak Hassan",
     "humairak": "Humair Khan",
     "sesheta": "Thoth Bot",
+    "thoth-zuul[bot]": "Thoth's Zuul",
 }
 
 REALNAME_HANGOUTS_MAP = {

@@ -97,7 +97,7 @@ async def on_pr_closed(*, action, number, pull_request, repository, sender, orga
         if pull_request["merged"]:
             notify_channel(
                 "plain",
-                f"👌 Pull Request *{pull_request['title']}* has been merged! 🍻",
+                f"👌 Pull Request *{pull_request['title']}* has been merged by '{realname(sender['login'])}' 🍻",
                 f"pull_request_{repository['name']}_{pull_request['id']}",
                 pull_request["html_url"],
             )
