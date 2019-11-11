@@ -82,4 +82,3 @@ if __name__ == "__main__":
 
     for org in ["AICoE", "thoth-station"]:
         asyncio.run(update_labels(org))
-
