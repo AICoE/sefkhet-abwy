@@ -40,8 +40,9 @@ from aicoe.sesheta.actions.label import (
 
 init_logging()
 
-_LOGGER = logging.getLogger("thoth.label_normalizer")
+_LOGGER = logging.getLogger("thoth.labelnormalizer")
 _LOGGER.info(f"Sesheta action: label_normalizer, Version v{__version__}")
+_LOGGER.debug(f"DEBUG mode is enabled")
 
 
 async def update_labels(org: str):
@@ -78,8 +79,10 @@ async def update_milestones(org: str = "thoth-station"):
 
 
 if __name__ == "__main__":
+    _LOGGER.info(f"updating milestones")
     asyncio.run(update_milestones())
 
+    _LOGGER.info(f"updating labels")
     for org in ["AICoE", "thoth-station"]:
         asyncio.run(update_labels(org))
 

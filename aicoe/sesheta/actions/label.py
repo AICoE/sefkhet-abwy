@@ -83,18 +83,43 @@ DEFAULT_LABELS = [
     },
 ]
 
-DEFAULT_MILESTONES_THOTH = [{"title": "v0.6.0", "description": "Tracking Milestone for v0.6.0 (end-2019)"}]
+DEFAULT_MILESTONES_THOTH = [
+    {
+        "title": "v0.6.0-dev",
+        "description": "Tracking Milestone for v0.6.0 development",
+        "due_on": "2010-11-29T23:59:59Z",
+    },
+    {"title": "v0.6.0", "description": "Tracking Milestone for v0.6.0", "due_on": "2010-12-06T19:00:00Z"},
+]
 
 
-async def create_or_update_milestone(slug: str, title: str, description: str, state: str = "open"):
+async def create_or_update_milestone(slug: str, title: str, description: str, state: str = "open", due_on: str = None):
     """Create or update the Milestone in the given repository."""
     access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
     github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
 
+    # prepare a milestone
+    milestone_data = {"title": title, "description": description, "state": state}
+
+    if due_on is not None:
+        milestone_data["due_on"] = due_on
+
     try:
-        resp = await github_api.post(
-            f"/repos/{slug}/milestones", data={"title": title, "description": description, "state": state}
-        )
+        # and see if it exists
+        _LOGGER.debug("checking %s for %s", slug, title)
+
+        async for milestone in github_api.getiter(f"/repos/{slug}/milestones"):
+            _LOGGER.debug("found %s: %s", slug, milestone["title"])
+
+            if milestone["title"] == title:
+                if (milestone["due_on"] != due_on) or (milestone["description"] != description):
+                    _LOGGER.debug("updating %s: %s", slug, milestone_data)
+                    await github_api.patch(f"/repos/{slug}/milestones/{milestone['number']}", data=milestone_data)
+
+                return
+
+        _LOGGER.debug("creating %s: %s", slug, milestone_data)
+        await github_api.post(f"/repos/{slug}/milestones", data=milestone_data)
 
     except gidgethub.BadRequest as bad:
         _LOGGER.error(f"Milestone '{title}', Repo: '{slug}': {bad}")
