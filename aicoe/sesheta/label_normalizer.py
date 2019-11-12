@@ -75,7 +75,9 @@ async def update_milestones(org: str = "thoth-station"):
 
         slug = repo["full_name"]
         for milestone in DEFAULT_MILESTONES_THOTH:
-            await create_or_update_milestone(slug, milestone["title"], milestone["description"])
+            await create_or_update_milestone(
+                slug, milestone["title"], milestone["description"], due_on=milestone["due_on"]
+            )
 
 
 if __name__ == "__main__":

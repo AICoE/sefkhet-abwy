@@ -87,9 +87,9 @@ DEFAULT_MILESTONES_THOTH = [
     {
         "title": "v0.6.0-dev",
         "description": "Tracking Milestone for v0.6.0 development",
-        "due_on": "2010-11-29T23:59:59Z",
+        "due_on": "2019-11-29T23:59:59Z",
     },
-    {"title": "v0.6.0", "description": "Tracking Milestone for v0.6.0", "due_on": "2010-12-06T19:00:00Z"},
+    {"title": "v0.6.0", "description": "Tracking Milestone for v0.6.0", "due_on": "2019-12-06T19:00:00Z"},
 ]
 
 
@@ -109,12 +109,14 @@ async def create_or_update_milestone(slug: str, title: str, description: str, st
         _LOGGER.debug("checking %s for %s", slug, title)
 
         async for milestone in github_api.getiter(f"/repos/{slug}/milestones"):
-            _LOGGER.debug("found %s: %s", slug, milestone["title"])
+            _LOGGER.debug("found %s: %s", slug, milestone)
 
-            if milestone["title"] == title:
-                if (milestone["due_on"] != due_on) or (milestone["description"] != description):
-                    _LOGGER.debug("updating %s: %s", slug, milestone_data)
-                    await github_api.patch(f"/repos/{slug}/milestones/{milestone['number']}", data=milestone_data)
+            if (milestone["title"] == title) and (
+                (milestone["due_on"] != due_on) or (milestone["description"] != description)
+            ):
+                _LOGGER.debug("updating %s: %s", slug, milestone_data)
+                del milestone_data["title"]
+                await github_api.patch(f"/repos/{slug}/milestones/{milestone['number']}", data=milestone_data)
 
                 return
 
