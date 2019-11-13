@@ -87,4 +87,3 @@ if __name__ == "__main__":
     _LOGGER.info(f"updating labels")
     for org in ["AICoE", "thoth-station"]:
         asyncio.run(update_labels(org))
-

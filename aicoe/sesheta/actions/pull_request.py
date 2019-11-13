@@ -93,6 +93,31 @@ async def merge_master_into_pullrequest2(owner: str, repo: str, pull_request: in
         _LOGGER.debug(f"not triggering a rebase, head sha = {head_sha} and pull requests's base sha = {base_sha}")
 
 
+async def needs_approved_label(_pull_request: dict = None) -> bool:
+    """Add a 'approved' label if review approved."""
+    github_api = RUNTIME_CONTEXT.app_installation_client
+    issue_url = _pull_request["issue_url"]
+    pull_request = await github_api.getitem(_pull_request["url"])
+
+    _LOGGER.debug(f"checking if {pull_request['html_url']} needs a approved label")
+
+    needs_approved_actual = await is_mergeable(pull_request)
+    has_approved_label = has_label(pull_request, "approved")
+
+    if needs_approved_actual and not has_approved_label:
+        _LOGGER.debug(f"adding 'approved' label to {pull_request['html_url']}")
+
+        try:
+            await github_api.post(f"{issue_url}/labels", preview_api_version="symmetra", data={"labels": ["approved"]})
+            return True
+        except gidgethub.BadRequest as err:
+            if err.status_code != 202:
+                _LOGGER.error(str(err))
+    else:
+
+        return False
+
+
 async def needs_rebase_label(_pull_request: dict = None) -> bool:
     """Add a 'needs-rebase' labels if required."""
     github_api = RUNTIME_CONTEXT.app_installation_client
@@ -101,7 +126,7 @@ async def needs_rebase_label(_pull_request: dict = None) -> bool:
 
     _LOGGER.debug(f"checking if {pull_request['html_url']} needs a rebase label")
 
-    needs_rebase_actual = await needs_rebase(pull_request)
+    needs_rebase_actual = await is_mergeable(pull_request)
     has_rebase_label = has_label(pull_request, "do-not-merge/needs-rebase")
 
     if needs_rebase_actual and not has_rebase_label:
@@ -266,8 +291,8 @@ async def local_check_gate_passed(pr_url: str) -> bool:
     return False
 
 
-async def needs_rebase(pull_request: dict = None) -> bool:
-    """Determine if the Pull Request needs to be rebased."""
+async def is_mergeable(pull_request: dict = None) -> bool:
+    """Determine if the Pull Request is mergeable."""
     if pull_request["merged"]:
         return False
 

@@ -44,6 +44,7 @@ from aicoe.sesheta.actions import (
     conclude_reviewer_list,
     unpack,
     needs_rebase_label,
+    needs_approved_label,
 )
 from aicoe.sesheta.utils import notify_channel, hangouts_userid, realname
 from thoth.common import init_logging
@@ -166,6 +167,7 @@ async def on_pull_request_review(*, action, review, pull_request, **kwargs):
 
     if review["state"] == "approved":
         notification_text = f"📗 '{realname(review['user']['login'])}' *approved* this Pull Request!"
+        await needs_approved_label(pull_request)
     else:
         notification_text = f"📔 some new comment by '{realname(review['user']['login'])}' has arrived..."
 
