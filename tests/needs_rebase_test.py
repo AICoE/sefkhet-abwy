@@ -21,7 +21,7 @@
 import json
 import pytest
 
-from aicoe.sesheta.actions.pull_request import has_label, is_mergeable
+from aicoe.sesheta.actions.pull_request import has_label, is_rebaseable
 
 
 @pytest.fixture
@@ -48,8 +48,8 @@ class TestNeedsRebase:
         assert pr_needs_rebase is not None
         assert has_needs_rebase_label is not None
 
-        has_needs_rebase_label_actual = await is_mergeable(has_needs_rebase_label)
-        pr_needs_rebase_actual = await is_mergeable(pr_needs_rebase)
+        has_needs_rebase_label_actual = await is_rebaseable(has_needs_rebase_label)
+        pr_needs_rebase_actual = await is_rebaseable(pr_needs_rebase)
 
         assert has_needs_rebase_label_actual == False
         assert pr_needs_rebase_actual == False
@@ -58,6 +58,6 @@ class TestNeedsRebase:
     async def test_pull_request_doesnt_need_rebase(self, doesnt_need_rebase):
         assert doesnt_need_rebase is not None
 
-        doesnt_need_rebase_actual = await is_mergeable(doesnt_need_rebase)
+        doesnt_need_rebase_actual = await is_rebaseable(doesnt_need_rebase)
 
         assert not doesnt_need_rebase_actual
