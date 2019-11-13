@@ -20,7 +20,7 @@
 import logging
 
 from datetime import datetime
-
+from typing import Optional
 import gidgethub
 
 from octomachinery.github.api.tokens import GitHubOAuthToken
@@ -91,6 +91,48 @@ async def merge_master_into_pullrequest2(owner: str, repo: str, pull_request: in
         )
     else:
         _LOGGER.debug(f"not triggering a rebase, head sha = {head_sha} and pull requests's base sha = {base_sha}")
+
+
+async def needs_size_label(_pull_request: dict = None) -> bool:
+    """Add size label to the pull request."""
+    github_api = RUNTIME_CONTEXT.app_installation_client
+    issue_url = _pull_request["issue_url"]
+    pull_request = await github_api.getitem(_pull_request["url"])
+
+    needs_size_actual = await is_mergeable(pull_request)
+    size_label = calculate_pr_size(pull_request)
+    has_size_label = get_pr_size_label(pull_request)
+    _LOGGER.debug(f"calculated the size of {pull_request['html_url']} to be: {size_label}")
+
+    if needs_size_actual and not has_size_label:
+        _LOGGER.debug(f"adding '{size_label}' label to {pull_request['html_url']}")
+
+        try:
+            await github_api.post(f"{issue_url}/labels", preview_api_version="symmetra", data={"labels": [size_label]})
+            return True
+        except gidgethub.BadRequest as err:
+            if err.status_code != 202:
+                _LOGGER.error(str(err))
+    elif needs_size_actual and has_size_label:
+        _LOGGER.debug(f"removing pervious size label '{has_size_label}' from {pull_request['html_url']}")
+
+        try:
+            has_size_label = has_size_label.replace("/", "%2F")
+            await github_api.delete(f"{issue_url}/labels/{has_size_label}", preview_api_version="symmetra")
+        except gidgethub.BadRequest as err:
+            _LOGGER.info(str(err))
+
+        _LOGGER.debug(f"adding '{size_label}' label to {pull_request['html_url']}")
+
+        try:
+            await github_api.post(f"{issue_url}/labels", preview_api_version="symmetra", data={"labels": [size_label]})
+            return True
+        except gidgethub.BadRequest as err:
+            if err.status_code != 202:
+                _LOGGER.error(str(err))
+    else:
+
+        return False
 
 
 async def needs_approved_label(_pull_request: dict = None) -> bool:
@@ -312,6 +354,37 @@ def has_label(pull_request: dict, label: str) -> bool:
             return True
 
     return False
+
+
+def get_pr_size_label(pull_request: dict) -> Optional[str]:
+    """Get the pervious size label added to pull request."""
+    for github_label in pull_request["labels"]:
+        if "size" in github_label["name"]:
+            return github_label["name"]
+
+    return None
+
+
+def calculate_pr_size(pull_request: dict) -> Optional[str]:
+    """Calculate the number of additions/deletions of this Pull Request."""
+    try:
+        lines_changes = pull_request["additions"] + pull_request["deletions"]
+
+        if lines_changes > 1000:
+            return "size/XXL"
+        elif lines_changes >= 500 and lines_changes <= 999:
+            return "size/XL"
+        elif lines_changes >= 100 and lines_changes <= 499:
+            return "size/L"
+        elif lines_changes >= 30 and lines_changes <= 99:
+            return "size/M"
+        elif lines_changes >= 10 and lines_changes <= 29:
+            return "size/S"
+        elif lines_changes >= 0 and lines_changes <= 9:
+            return "size/XS"
+    except KeyError as err:
+        _LOGGER.error(str(err))
+        return None
 
 
 if __name__ == "__main__":

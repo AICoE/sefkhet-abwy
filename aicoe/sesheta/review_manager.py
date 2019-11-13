@@ -45,6 +45,7 @@ from aicoe.sesheta.actions import (
     unpack,
     needs_rebase_label,
     needs_approved_label,
+    needs_size_label,
 )
 from aicoe.sesheta.utils import notify_channel, hangouts_userid, realname
 from thoth.common import init_logging
@@ -138,6 +139,7 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
     try:
         await manage_label_and_check(github_api, pull_request)
         await needs_rebase_label(pull_request)
+        await needs_size_label(pull_request)
     except gidgethub.BadRequest as err:
         _LOGGER.error(f"manage labels and checks: status_code={err.status_code}, {str(err)}")
 
