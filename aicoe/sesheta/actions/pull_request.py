@@ -113,7 +113,7 @@ async def needs_size_label(_pull_request: dict = None) -> bool:
         except gidgethub.BadRequest as err:
             if err.status_code != 202:
                 _LOGGER.error(str(err))
-    elif needs_size_actual and has_size_label:
+    elif needs_size_actual and has_size_label != size_label:
         _LOGGER.debug(f"removing pervious size label '{has_size_label}' from {pull_request['html_url']}")
 
         try:
@@ -168,7 +168,7 @@ async def needs_rebase_label(_pull_request: dict = None) -> bool:
 
     _LOGGER.debug(f"checking if {pull_request['html_url']} needs a rebase label")
 
-    needs_rebase_actual = await is_mergeable(pull_request)
+    needs_rebase_actual = await is_rebaseable(pull_request)
     has_rebase_label = has_label(pull_request, "do-not-merge/needs-rebase")
 
     if needs_rebase_actual and not has_rebase_label:
@@ -333,8 +333,8 @@ async def local_check_gate_passed(pr_url: str) -> bool:
     return False
 
 
-async def is_mergeable(pull_request: dict = None) -> bool:
-    """Determine if the Pull Request is mergeable."""
+async def is_rebaseable(pull_request: dict = None) -> bool:
+    """Determine if the Pull Request is rebaseable."""
     if pull_request["merged"]:
         return False
 
@@ -342,6 +342,14 @@ async def is_mergeable(pull_request: dict = None) -> bool:
         return True
 
     return False
+
+
+async def is_mergeable(pull_request: dict = None) -> bool:
+    """Determine if the Pull Request is mergeable."""
+    if pull_request["merged_at"]:
+        return False
+    else:
+        return True
 
 
 def has_label(pull_request: dict, label: str) -> bool:
