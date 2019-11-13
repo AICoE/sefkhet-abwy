@@ -1,0 +1,23 @@
+{
+    "type": "MESSAGE",
+    "eventTime": "2017-03-02T19:02:59.910959Z",
+    "space": {
+        "name": "spaces/AAAAAAAAAAA",
+        "displayName": "Best Dogs Discussion Room",
+        "type": "ROOM"
+    },
+    "message": {
+        "name": "spaces/AAAAAAAAAAA/messages/CCCCCCCCCCC",
+        "sender": {
+            "name": "users/12345678901234567890",
+            "displayName": "Chris Corgi",
+            "avatarUrl": "https://lh3.googleusercontent.com/.../photo.jpg",
+            "email": "chriscorgi@example.com"
+        },
+        "createTime": "2017-03-02T19:02:59.910959Z",
+        "text": "I mean is there any good reason their legs should be longer?",
+        "thread": {
+            "name": "spaces/AAAAAAAAAAA/threads/BBBBBBBBBBB"
+        }
+    }
+}
