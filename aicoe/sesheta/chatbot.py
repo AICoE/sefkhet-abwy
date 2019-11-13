@@ -46,6 +46,11 @@ routes = web.RouteTableDef()
 app = web.Application()
 
 
+async def process_user_text(text: str) -> str:
+    """Process the Text, get the intent, and schedule actions accordingly."""
+    return text
+
+
 @routes.get("/")
 async def hello(request):
     return web.Response(text="Hello, world")
@@ -58,10 +63,11 @@ async def hangouts_handler(request):
     if event["type"] == "ADDED_TO_SPACE" and event["space"]["type"] == "ROOM":
         text = 'Thanks for adding me to "%s"!' % event["space"]["displayName"]
     elif event["type"] == "MESSAGE":
-        text = "You said: `%s`" % event["message"]["text"]
+        intend = await process_user_text(event["message"]["text"])
+        text = "You said: `%s`" % intend
     else:
         return
-    return web.Response(text=text)
+    return web.json_response({"text": text})
 
 
 if __name__ == "__main__":
