@@ -67,7 +67,6 @@ notifications = ExpiringDict(max_len=100, max_age_seconds=10)
 
 def send_notification(repository_name: str, pull_request_id: int, requested_reviewer_login: str) -> bool:
     """Decide if we need to send a notification."""
-
     if requested_reviewer_login == "sesheta":
         return False  # we never want to send notifications for Sesheta
 
