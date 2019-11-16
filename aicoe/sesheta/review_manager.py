@@ -35,6 +35,7 @@ from octomachinery.github.api.app_client import GitHubApp
 from octomachinery.app.server.machinery import run_forever
 from octomachinery.utils.versiontools import get_version_from_scm_tag
 
+from expiringdict import ExpiringDict
 
 from aicoe.sesheta import get_github_client
 from aicoe.sesheta.actions.pull_request import manage_label_and_check, merge_master_into_pullrequest2
@@ -60,6 +61,22 @@ _LOGGER = logging.getLogger("aicoe.sesheta")
 _LOGGER.info(f"AICoE's Review Manager, Version v{__version__}")
 logging.getLogger("octomachinery").setLevel(logging.DEBUG)
 logging.getLogger("googleapiclient.discovery_cache").setLevel(logging.ERROR)
+
+notifications = ExpiringDict(max_len=100, max_age_seconds=10)
+
+
+def send_notification(slug: str, requested_reviewer_login: str) -> bool:
+    """Decide if we need to send a notification."""
+
+    if requested_reviewer_login == "sesheta":
+        return False  # we never want to send notifications for Sesheta
+
+    if notifications.get(f"{slug}_{requested_reviewer_login}"):
+        return False
+
+    notifications[f"{slug}_{requested_reviewer_login}"] = True
+
+    return True
 
 
 @process_event("ping")
@@ -196,17 +213,15 @@ async def on_pull_request_review_requested(*, action, number, pull_request, requ
         return
 
     for requested_reviewer in pull_request["requested_reviewers"]:
-        if requested_reviewer["login"] == "sesheta":
-            continue
+        if send_notification(kwargs["repository"]["fullname"], requested_reviewer["login"]):
+            _LOGGER.info(f"requesting review by {requested_reviewer['login']} on {pull_request['html_url']}")
 
-        _LOGGER.info(f"requesting review by {requested_reviewer['login']} on {pull_request['html_url']}")
-
-        notify_channel(
-            "plain",
-            f"🔎 a review by " f"{hangouts_userid(requested_reviewer['login'])}" f" has been requested",
-            f"pull_request_{kwargs['repository']['name']}_{pull_request['id']}",
-            pull_request["html_url"],
-        )
+            notify_channel(
+                "plain",
+                f"🔎 a review by " f"{hangouts_userid(requested_reviewer['login'])}" f" has been requested",
+                f"pull_request_{kwargs['repository']['name']}_{pull_request['id']}",
+                pull_request["html_url"],
+            )
 
 
 @process_event_actions("issues", {"labeled"})
