@@ -65,16 +65,16 @@ logging.getLogger("googleapiclient.discovery_cache").setLevel(logging.ERROR)
 notifications = ExpiringDict(max_len=100, max_age_seconds=10)
 
 
-def send_notification(slug: str, requested_reviewer_login: str) -> bool:
+def send_notification(repository_name: str, requested_reviewer_login: str) -> bool:
     """Decide if we need to send a notification."""
 
     if requested_reviewer_login == "sesheta":
         return False  # we never want to send notifications for Sesheta
 
-    if notifications.get(f"{slug}_{requested_reviewer_login}"):
+    if notifications.get(f"{repository_name}_{requested_reviewer_login}"):
         return False
 
-    notifications[f"{slug}_{requested_reviewer_login}"] = True
+    notifications[f"{repository_name}_{requested_reviewer_login}"] = True
 
     return True
 
@@ -213,7 +213,7 @@ async def on_pull_request_review_requested(*, action, number, pull_request, requ
         return
 
     for requested_reviewer in pull_request["requested_reviewers"]:
-        if send_notification(kwargs["repository"]["fullname"], requested_reviewer["login"]):
+        if send_notification(kwargs["repository"]["name"], requested_reviewer["login"]):
             _LOGGER.info(f"requesting review by {requested_reviewer['login']} on {pull_request['html_url']}")
 
             notify_channel(
