@@ -11,12 +11,12 @@ octomachinery = "*"
 codeowners = "*"
 google-api-python-client = "*"
 oauth2client = "*"
+expiringdict = "*"
 
 [dev-packages]
 black = "*"
 pylint = "*"
 pytest = "*"
-rope = "*"
 pytest-asyncio = "*"
 
 [requires]
