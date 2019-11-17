@@ -52,7 +52,7 @@ from aicoe.sesheta.utils import notify_channel, hangouts_userid, realname
 from thoth.common import init_logging
 
 
-__version__ = "0.6.0-dev"
+__version__ = "0.7.0-dev"
 
 
 init_logging()
