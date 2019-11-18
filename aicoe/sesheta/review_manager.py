@@ -52,7 +52,7 @@ from aicoe.sesheta.utils import notify_channel, hangouts_userid, realname
 from thoth.common import init_logging
 
 
-__version__ = "0.6.0-dev"
+__version__ = "0.7.0-dev"
 
 
 init_logging()
@@ -221,6 +221,32 @@ async def on_pull_request_review_requested(*, action, number, pull_request, requ
                 f"pull_request_{kwargs['repository']['name']}_{pull_request['id']}",
                 pull_request["html_url"],
             )
+
+
+@process_event_actions("issues", {"opened", "reopened"})
+@process_webhook_payload
+async def on_issue_opened(*, action, issue, changes, repository, sender, **kwargs):
+    """Take actions if an issue got opened."""
+    _LOGGER.info(f"working on Issue {issue['html_url']}: opened")
+
+    if issue["title"].startswith("Automatic update of dependency"):
+        _LOGGER.debug(f"{issue['url']} is an 'automatic update of dependencies', not sending notification")
+        return
+
+    if issue["title"].startswith("Initial dependency lock"):
+        _LOGGER.debug(f"{issue['url']} is an 'automatic dependency lock', not sending notification")
+        return
+
+    if issue["title"].startswith("Failed to update dependencies to their latest version"):
+        _LOGGER.debug(f"{issue['url']} is an 'failed to update dependencies', not sending notification")
+        return
+
+    notify_channel(
+        "plain",
+        f"{realname(issue['user']['login'])} just opened an issue: *{issue['title']}*... 🚨",
+        f"issue_{repository['name']}_{issue['id']}",
+        issue["html_url"],
+    )
 
 
 @process_event_actions("issues", {"labeled"})
