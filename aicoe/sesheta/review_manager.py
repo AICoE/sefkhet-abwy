@@ -52,7 +52,7 @@ from aicoe.sesheta.actions import (
     needs_approved_label,
     needs_size_label,
 )
-from aicoe.sesheta.utils import notify_channel, hangouts_userid, realname
+from aicoe.sesheta.utils import notify_channel, hangouts_userid, realname, random_positive_emoji2
 from thoth.common import init_logging
 
 
@@ -132,7 +132,15 @@ async def on_pr_closed(*, action, number, pull_request, repository, sender, orga
                 pull_request["html_url"],
             )
     elif pull_request["title"].startswith("Release of"):
-        await handle_release_pull_request(pull_request)
+        commit_hash, release = await handle_release_pull_request(pull_request)
+
+        notify_channel(
+            "plain",
+            f" I have tagged {commit_hash} to be release {release} of"
+            f" {pull_request['base']['repo']['full_name']} " + random_positive_emoji2(),
+            f"pull_request_{repository['name']}_{pull_request['id']}",
+            pull_request["url"],
+        )
 
 
 @process_event_actions("pull_request", {"opened", "reopened", "synchronize", "edited"})
