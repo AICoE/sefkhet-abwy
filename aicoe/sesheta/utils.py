@@ -22,6 +22,8 @@ import asyncio
 import os
 import logging
 import typing
+import random
+
 
 from httplib2 import Http
 from apiclient.discovery import build, build_from_document
@@ -87,6 +89,9 @@ REALNAME_HANGOUTS_MAP = {
     "Zak Hassan": "114160859808923634114",
     "Humair Khan": "117385119761143413973",
 }
+
+# pragma: no cover
+POSITIVE_GOOGLE_CHAT_EMOJIS = ["😊", "😌", "🙏", "👍", "😇", "☺️", "👌", "ヽ(ヅ)ノ"]
 
 
 def hangouts_room_for(data: str) -> str:
@@ -220,3 +225,47 @@ def create_issue_response(message: str, url: str) -> dict:
     response["name"] = f"issue-{id}"
 
     return response
+
+
+def eligible_release_pullrequest(pullrequest: dict) -> bool:
+    """Check if the merged Pull Request is eligible to trigger a release."""
+    # check if we have the 'bots' label
+    try:
+        if not any(label.get("name", None) == "bot" for label in pullrequest["labels"]):
+            _LOGGER.debug(
+                f"No 'bot' label on Release Pull Request: '{pullrequest['title']}', not eligible for release!"
+            )
+            return False
+    except KeyError as exc:
+        _LOGGER.debug(f"Not any label on Release Pull Request")
+        _LOGGER.exception(exc)
+        return False
+
+    # check if Kebechet was the author pullrequest['user']['login']
+    if pullrequest["user"]["login"] != "sesheta":
+        _LOGGER.debug(
+            f"Author of Release Pull Request: '{pullrequest['title']}' is not 'Sesheta', not eligible for release!"
+        )
+        return False
+
+    return True
+
+
+def get_release_issue(pullrequest: dict) -> int:
+    """Figure out which Issue is related to this Release Pull Request."""
+    try:
+        # TODO maybe we need to split the body by \n and process each line?!
+        for line in pullrequest["body"].splitlines():
+            if line.upper().startswith("RELATED"):
+                _, issue = line.split("#", maxsplit=1)
+                return int(issue)  # FIXME this might fail
+    except KeyError as exc:
+        _LOGGER.error(exc)
+        return None
+
+    return None
+
+
+def random_positive_emoji2() -> str:
+    """Pick a random positive emoji."""
+    return random.choice(POSITIVE_GOOGLE_CHAT_EMOJIS)

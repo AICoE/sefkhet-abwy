@@ -28,6 +28,7 @@ from octomachinery.github.api.raw_client import RawGitHubAPI
 from octomachinery.app.runtime.context import RUNTIME_CONTEXT
 
 from aicoe.sesheta.actions.common import get_master_head_sha, get_pull_request, trigger_update_branch
+from aicoe.sesheta.utils import eligible_release_pullrequest, get_release_issue
 
 from thoth.common import init_logging
 
@@ -393,6 +394,60 @@ def calculate_pr_size(pull_request: dict) -> Optional[str]:
     except KeyError as err:
         _LOGGER.error(str(err))
         return None
+
+
+async def handle_release_pull_request(pullrequest: dict) -> (str, str):
+    """Handle a Pull Request we created for a release."""
+    github_api = RUNTIME_CONTEXT.app_installation_client
+
+    if not eligible_release_pullrequest(pullrequest):
+        _LOGGER.warning(f"Merged Release Pull Request: '{pullrequest['title']}', not eligible for release!")
+        return
+
+    commit_hash = pullrequest["merge_commit_sha"]
+    release_issue = get_release_issue(pullrequest)
+    # TODO this could use a try-except
+    release = pullrequest["head"]["ref"][1:]
+
+    # tag
+    _LOGGER.info(f"Tagging release {release}: hash {commit_hash}.")
+
+    tag = {"tag": str(release), "message": f"v{release}\n", "object": str(commit_hash), "type": "commit"}
+    response = await github_api.post(
+        f"{pullrequest['base']['repo']['url']}/git/tags", preview_api_version="lydian", data=tag
+    )
+
+    _LOGGER.debug("response: %s", response)
+
+    tag_sha = response["sha"]
+
+    tag_ref = {"ref": f"refs/tags/{release}", "sha": f"{tag_sha}"}
+    await github_api.post(
+        f"{pullrequest['base']['repo']['url']}/git/refs", data=tag_ref,
+    )
+
+    # comment on issue
+    _LOGGER.info(f"Commenting on {release_issue} that we tagged {release} on hash {commit_hash}.")
+
+    comment = {
+        "body": f"I have tagged commit "
+        f"[{commit_hash}]({pullrequest['base']['repo']['html_url']}/{commit_hash}) "
+        f"as release {release} :+1:"
+    }
+    await github_api.post(
+        f"{pullrequest['base']['repo']['url']}/issues/{release_issue}/comments", data=comment,
+    )
+
+    # close issue
+    _LOGGER.info(f"Closing {release_issue}.")
+
+    await github_api.patch(
+        f"{pullrequest['base']['repo']['url']}/issues/{release_issue}", data={"state": "closed"},
+    )
+
+    return commit_hash, release
+
+    # happy! 💕
 
 
 if __name__ == "__main__":

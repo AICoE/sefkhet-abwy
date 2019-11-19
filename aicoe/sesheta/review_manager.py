@@ -38,7 +38,11 @@ from octomachinery.utils.versiontools import get_version_from_scm_tag
 from expiringdict import ExpiringDict
 
 from aicoe.sesheta import get_github_client
-from aicoe.sesheta.actions.pull_request import manage_label_and_check, merge_master_into_pullrequest2
+from aicoe.sesheta.actions.pull_request import (
+    manage_label_and_check,
+    merge_master_into_pullrequest2,
+    handle_release_pull_request,
+)
 from aicoe.sesheta.actions import (
     do_not_merge,
     local_check_gate_passed,
@@ -48,11 +52,11 @@ from aicoe.sesheta.actions import (
     needs_approved_label,
     needs_size_label,
 )
-from aicoe.sesheta.utils import notify_channel, hangouts_userid, realname
+from aicoe.sesheta.utils import notify_channel, hangouts_userid, realname, random_positive_emoji2
 from thoth.common import init_logging
 
 
-__version__ = "0.7.0-dev"
+__version__ = "0.8.0-dev"
 
 
 init_logging()
@@ -127,6 +131,16 @@ async def on_pr_closed(*, action, number, pull_request, repository, sender, orga
                 f"pull_request_{repository['name']}_{pull_request['id']}",
                 pull_request["html_url"],
             )
+    elif pull_request["title"].startswith("Release of"):
+        commit_hash, release = await handle_release_pull_request(pull_request)
+
+        notify_channel(
+            "plain",
+            f" I have tagged {commit_hash} to be release {release} of"
+            f" {pull_request['base']['repo']['full_name']} " + random_positive_emoji2(),
+            f"pull_request_{repository['name']}_{pull_request['id']}",
+            pull_request["url"],
+        )
 
 
 @process_event_actions("pull_request", {"opened", "reopened", "synchronize", "edited"})
@@ -240,6 +254,15 @@ async def on_issue_opened(*, action, issue, changes, repository, sender, **kwarg
     if issue["title"].startswith("Failed to update dependencies to their latest version"):
         _LOGGER.debug(f"{issue['url']} is an 'failed to update dependencies', not sending notification")
         return
+
+    if issue["title"].startswith("Release of version"):
+        _LOGGER.debug(f"{issue['url']} is a 'release issue'")
+
+        github_api = RUNTIME_CONTEXT.app_installation_client
+
+        await github_api.post(
+            f"{issue['url']}/labels", preview_api_version="symmetra", data={"labels": ["bot"]},
+        )
 
     notify_channel(
         "plain",
