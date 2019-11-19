@@ -24,10 +24,12 @@ import asyncio
 import pathlib
 import logging
 
+
 from aiohttp import web
 
 
 from thoth.common import init_logging
+
 
 from aicoe.sesheta.utils import notify_channel, hangouts_userid, realname
 
@@ -46,8 +48,17 @@ routes = web.RouteTableDef()
 app = web.Application()
 
 
-async def process_user_text(text: str) -> str:
+async def get_intent(text: str,) -> (str, float, dict):
+    """Get the Intent of the provided text, and assign it a score."""
+    if text.startswith("assign"):
+        return ("assign", 1.0, {})
+
+    return (None, 0.0, {})
+
+
+async def process_user_text(thread_id: str, text: str) -> str:
     """Process the Text, get the intent, and schedule actions accordingly."""
+    _LOGGER.info(f"message on thread {thread_id}: {text}")
     return text
 
 
@@ -63,7 +74,7 @@ async def hangouts_handler(request):
     if event["type"] == "ADDED_TO_SPACE" and event["space"]["type"] == "ROOM":
         text = 'Thanks for adding me to "%s"!' % event["space"]["displayName"]
     elif event["type"] == "MESSAGE":
-        intend = await process_user_text(event["message"]["text"])
+        intend = await process_user_text(event["message"]["thread"]["name"], event["message"]["text"])
         text = "You said: `%s`" % intend
     else:
         return
