@@ -59,7 +59,7 @@ from thoth.common import init_logging
 __version__ = "0.8.0-dev"
 
 
-init_logging()
+init_logging(logging_env_var_start="SEFKHET__ABWY_LOG_")
 
 _LOGGER = logging.getLogger("aicoe.sesheta")
 _LOGGER.info(f"AICoE's Review Manager, Version v{__version__}")

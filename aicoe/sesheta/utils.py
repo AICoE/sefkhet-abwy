@@ -23,11 +23,11 @@ import os
 import logging
 import typing
 import random
+import re
 
 
 from httplib2 import Http
 from apiclient.discovery import build, build_from_document
-from httplib2 import Http
 from oauth2client.service_account import ServiceAccountCredentials
 
 from thoth.common import init_logging
@@ -97,6 +97,19 @@ REALNAME_HANGOUTS_MAP = {
 POSITIVE_GOOGLE_CHAT_EMOJIS = ["😸", "😊", "😌", "🙏", "👍", "😇", "☺️", "👌", "ヽ(ヅ)ノ"]
 
 
+# pragma: no cover
+URL_REGEX = re.compile(
+    r"^(?:http|ftp)s?://"  # http:// or https://
+    r"(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|"  # domain...
+    r"localhost|"  # localhost...
+    r"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}|"  # ...or ipv4
+    r"\[?[A-F0-9]*:[A-F0-9:]+\]?)"  # ...or ipv6
+    r"(?::\d+)?"  # optional port
+    r"(?:/?|[/?]\S+)$",
+    re.IGNORECASE,
+)
+
+
 def hangouts_room_for(data: str) -> str:
     """Return the Google Hangout Chat Room for the given GitHub repository name."""
     if any(org in data.lower() for org in ["thoth-station", "sefkhet-abwy", "sesheta", "srcopsmetrics"]):
@@ -113,7 +126,6 @@ def hangouts_userid(github_user: str) -> str:
         return f"<users/{REALNAME_HANGOUTS_MAP[GITHUB_REALNAME_MAP[github_user.lower()]]}>"
     except KeyError as exc:
         return github_user
-
 
 
 def realname(github_user: str) -> str:
@@ -272,3 +284,8 @@ def get_release_issue(pullrequest: dict) -> int:
 def random_positive_emoji2() -> str:
     """Pick a random positive emoji."""
     return random.choice(POSITIVE_GOOGLE_CHAT_EMOJIS)
+
+
+def extract_url_from_text(text: str) -> typing.Union[typing.List[str], str, None]:
+    """Extract the URL from a piece of text."""
+    return URL_REGEX.search(text)
