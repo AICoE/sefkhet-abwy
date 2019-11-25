@@ -37,9 +37,10 @@ init_logging()
 
 _LOGGER = logging.getLogger(__name__)
 
-THOTH_DEVOPS_SPACE = os.getenv("SESHETA_THOTH_DEVOPS_SPACE", None)
-AIOPS_DEVOPS_SPACE = os.getenv("SESHETA_AIOPS_DEVOPS_SPACE", None)
+THOTH_DEVOPS_SPACE = os.getenv("SESHETA_THOTH_DEVOPS_SPACE", None)  # pragma: no cover
+AIOPS_DEVOPS_SPACE = os.getenv("SESHETA_AIOPS_DEVOPS_SPACE", None)  # pragma: no cover
 
+# pragma: no cover
 GITHUB_REALNAME_MAP = {
     "elmiko": "Michael McCune",
     "sub-mod": "Subin Modeel",
@@ -66,6 +67,7 @@ GITHUB_REALNAME_MAP = {
     "thoth-zuul[bot]": "Thoth's Zuul",
 }
 
+# pragma: no cover
 REALNAME_HANGOUTS_MAP = {
     "Michael McCune": "100013946388765536921",
     "Subin Modeel": "100912928295723672901",
@@ -96,11 +98,7 @@ POSITIVE_GOOGLE_CHAT_EMOJIS = ["😊", "😌", "🙏", "👍", "😇", "☺️",
 
 def hangouts_room_for(data: str) -> str:
     """Return the Google Hangout Chat Room for the given GitHub repository name."""
-    if "thoth-station" in data.lower():
-        return THOTH_DEVOPS_SPACE
-    elif "sefkhet-abwy" in data.lower():
-        return THOTH_DEVOPS_SPACE
-    elif "sesheta" in data.lower():
+    if any(org in data.lower() for org in ["thoth-station", "sefkhet-abwy", "sesheta", "srcopsmetrics"]):
         return THOTH_DEVOPS_SPACE
     if "AICoE" in data:
         return AIOPS_DEVOPS_SPACE
