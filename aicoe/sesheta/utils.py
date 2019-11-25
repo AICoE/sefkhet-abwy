@@ -65,6 +65,7 @@ GITHUB_REALNAME_MAP = {
     "humairak": "Humair Khan",
     "sesheta": "Thoth Bot",
     "thoth-zuul[bot]": "Thoth's Zuul",
+    "sentry-io[bot]": "Sentry",
 }
 
 # pragma: no cover
@@ -108,7 +109,11 @@ def hangouts_room_for(data: str) -> str:
 
 def hangouts_userid(github_user: str) -> str:
     """Map GitHub user to Google Hangout Chat user ID."""
-    return f"<users/{REALNAME_HANGOUTS_MAP[GITHUB_REALNAME_MAP[github_user.lower()]]}>"
+    try:
+        return f"<users/{REALNAME_HANGOUTS_MAP[GITHUB_REALNAME_MAP[github_user.lower()]]}>"
+    except KeyError as exc:
+        return github_user
+
 
 
 def realname(github_user: str) -> str:
