@@ -93,7 +93,7 @@ REALNAME_HANGOUTS_MAP = {
 }
 
 # pragma: no cover
-POSITIVE_GOOGLE_CHAT_EMOJIS = ["😊", "😌", "🙏", "👍", "😇", "☺️", "👌", "ヽ(ヅ)ノ"]
+POSITIVE_GOOGLE_CHAT_EMOJIS = ["😸", "😊", "😌", "🙏", "👍", "😇", "☺️", "👌", "ヽ(ヅ)ノ"]
 
 
 def hangouts_room_for(data: str) -> str:
