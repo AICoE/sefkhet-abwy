@@ -64,11 +64,13 @@ async def process_user_text(thread_id: str, text: str) -> str:
 
 @routes.get("/")
 async def hello(request):
+    """Print just a Hello World."""
     return web.Response(text="Hello, world")
 
 
 @routes.post("/api/v1alpha1")
 async def hangouts_handler(request):
+    """Handle Google Hangouts Chat incoming webhooks."""
     event = await request.json()
 
     if event["type"] == "ADDED_TO_SPACE" and event["space"]["type"] == "ROOM":
