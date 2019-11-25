@@ -38,7 +38,7 @@ from aicoe.sesheta.actions.label import (
 )
 
 
-init_logging()
+init_logging(logging_env_var_start="SEFKHET__ABWY_LOG_")
 
 _LOGGER = logging.getLogger("thoth.labelnormalizer")
 _LOGGER.info(f"Sesheta action: label_normalizer, Version v{__version__}")

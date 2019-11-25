@@ -29,7 +29,7 @@ from aicoe.sesheta.actions.common import cocommand
 from aicoe.sesheta.actions.pull_request import merge_master_into_pullrequest
 
 
-init_logging()
+init_logging(logging_env_var_start="SEFKHET__ABWY_LOG_")
 
 _LOGGER = logging.getLogger(__name__)
 _LOGGER.info(f"Sesheta action: merge_master_into_pullrequest, Version v{__version__}")
