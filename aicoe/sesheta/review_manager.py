@@ -156,9 +156,7 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
 
     if action in ["opened", "reopened"]:
         # we do not notify on standard automated SrcOps
-        if not pull_request["title"].startswith("Automatic update of dependency") and not pull_request[
-            "title"
-        ].startswith("Release of"):
+        if not pull_request["title"].startswith("Automatic ") and not pull_request["title"].startswith("Release of"):
             notify_channel(
                 "plain",
                 f"🆕 {pull_request['html_url']} a new Pull Request has been *opened*!",
@@ -244,15 +242,19 @@ async def on_issue_opened(*, action, issue, repository, sender, **kwargs):
     _LOGGER.info(f"working on Issue {issue['html_url']}: opened")
 
     if issue["title"].startswith("Automatic update of dependency"):
-        _LOGGER.debug(f"{issue['url']} is an 'automatic update of dependencies', not sending notification")
+        _LOGGER.debug(f"{issue['url']} is an 'Automatic update of dependencies', not sending notification")
+        return
+
+    if issue["title"].startswith("Automatic dependency re-locking"):
+        _LOGGER.debug(f"{issue['url']} is an 'Automatic dependency re-locking', not sending notification")
         return
 
     if issue["title"].startswith("Initial dependency lock"):
-        _LOGGER.debug(f"{issue['url']} is an 'automatic dependency lock', not sending notification")
+        _LOGGER.debug(f"{issue['url']} is an 'Initial dependency lock', not sending notification")
         return
 
-    if issue["title"].startswith("Failed to update dependencies to their latest version"):
-        _LOGGER.debug(f"{issue['url']} is an 'failed to update dependencies', not sending notification")
+    if issue["title"].startswith("Failed to update dependencies"):
+        _LOGGER.debug(f"{issue['url']} is an 'Failed to update dependencies', not sending notification")
         return
 
     if issue["title"].startswith("Release of version"):
