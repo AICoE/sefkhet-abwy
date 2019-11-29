@@ -244,15 +244,22 @@ async def on_issue_opened(*, action, issue, repository, sender, **kwargs):
     _LOGGER.info(f"working on Issue {issue['html_url']}: opened")
 
     if issue["title"].startswith("Automatic update of dependency"):
-        _LOGGER.debug(f"{issue['url']} is an 'automatic update of dependencies', not sending notification")
+        _LOGGER.debug(f"{issue['url']} is an 'Automatic update of dependencies', not sending notification")
+        return
+
+    if issue["title"].startswith("Automatic dependency re-locking"):
+        _LOGGER.debug(f"{issue['url']} is an 'Automatic dependency re-locking', not sending notification")
         return
 
     if issue["title"].startswith("Initial dependency lock"):
-        _LOGGER.debug(f"{issue['url']} is an 'automatic dependency lock', not sending notification")
+        _LOGGER.debug(f"{issue['url']} is an 'Initial dependency lock', not sending notification")
         return
 
     if issue["title"].startswith("Failed to update dependencies to their latest version"):
-        _LOGGER.debug(f"{issue['url']} is an 'failed to update dependencies', not sending notification")
+        _LOGGER.debug(
+            f"{issue['url']} is an 'Failed to update dependencies to their latest version',"
+            f" not sending notification"
+        )
         return
 
     if issue["title"].startswith("Release of version"):
