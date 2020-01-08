@@ -138,7 +138,7 @@ async def on_pr_closed(*, action, number, pull_request, repository, sender, orga
             "plain",
             f" I have tagged {commit_hash} to be release {release} of"
             f" {pull_request['base']['repo']['full_name']} " + random_positive_emoji2(),
-            f"pull_request_{repository['name']}_{pull_request['id']}",
+            f"pull_request_{repository['name']}",
             pull_request["url"],
         )
 
