@@ -139,7 +139,9 @@ async def create_or_update_label(slug: str, name: str, color: str = "") -> str:
 
             if label["color"] != color:
                 await github_api.patch(
-                    f"/repos/{slug}/labels/{name}", preview_api_version="symmetra", data={"new_name": name, "color": color}
+                    f"/repos/{slug}/labels/{name}",
+                    preview_api_version="symmetra",
+                    data={"new_name": name, "color": color},
                 )
 
         except gidgethub.BadRequest as bad:
@@ -150,7 +152,9 @@ async def create_or_update_label(slug: str, name: str, color: str = "") -> str:
                     f"/repos/{slug}/labels", preview_api_version="symmetra", data={"name": name, "color": color}
                 )
             except gidgethub.BadRequest as created:
-                _LOGGER.info(f"Label '{name}', Repo: '{slug}': created")  # TODO maybe this should be a little more robust?
+                _LOGGER.info(
+                    f"Label '{name}', Repo: '{slug}': created"
+                )  # TODO maybe this should be a little more robust?
         return
 
 
