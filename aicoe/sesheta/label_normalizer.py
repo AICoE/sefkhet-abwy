@@ -25,6 +25,8 @@ import logging
 
 from datetime import datetime
 
+import aiohttp
+
 from octomachinery.github.api.tokens import GitHubOAuthToken
 from octomachinery.github.api.raw_client import RawGitHubAPI
 
@@ -48,36 +50,40 @@ _LOGGER.debug(f"DEBUG mode is enabled")
 async def update_labels(org: str):
     """Update Labels to comply to our standard."""
     access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
-    github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
 
-    repos = await github_api.getitem(f"/orgs/{org}/repos")
+    async with aiohttp.ClientSession() as client:
+        github_api = RawGitHubAPI(access_token, session=client, user_agent="sesheta-actions")
 
-    for repo in repos:
-        if repo["archived"]:
-            continue
+        repos = await github_api.getitem(f"/orgs/{org}/repos")
 
-        slug = repo["full_name"]
-        for label in DEFAULT_LABELS:
-            _LOGGER.debug(f"looking for {label['name']} in {slug}")
-            await create_or_update_label(slug, label["name"], label["color"])
+        for repo in repos:
+            if repo["archived"]:
+                continue
+
+            slug = repo["full_name"]
+            for label in DEFAULT_LABELS:
+                _LOGGER.debug(f"looking for {label['name']} in {slug}")
+                await create_or_update_label(slug, label["name"], label["color"])
 
 
 async def update_milestones(org: str = "thoth-station"):
     """Update Milestones for one org."""
     access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
-    github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
 
-    repos = await github_api.getitem(f"/orgs/{org}/repos")
+    async with aiohttp.ClientSession() as client:
+        github_api = RawGitHubAPI(access_token, session=client, user_agent="sesheta-actions")
 
-    for repo in repos:
-        if repo["archived"]:
-            continue
+        repos = await github_api.getitem(f"/orgs/{org}/repos")
 
-        slug = repo["full_name"]
-        for milestone in DEFAULT_MILESTONES_THOTH:
-            await create_or_update_milestone(
-                slug, milestone["title"], milestone["description"], due_on=milestone["due_on"]
-            )
+        for repo in repos:
+            if repo["archived"]:
+                continue
+
+            slug = repo["full_name"]
+            for milestone in DEFAULT_MILESTONES_THOTH:
+                await create_or_update_milestone(
+                    slug, milestone["title"], milestone["description"], due_on=milestone["due_on"]
+                )
 
 
 if __name__ == "__main__":
