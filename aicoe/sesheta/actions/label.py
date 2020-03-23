@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # sesheta-actions
-# Copyright(C) 2019 Christoph Görn
+# Copyright(C) 2019,2020 Christoph Görn
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 import os
 import logging
 
+import aiohttp
 import gidgethub
 
 from octomachinery.github.api.tokens import GitHubOAuthToken
@@ -84,74 +85,77 @@ DEFAULT_LABELS = [
 ]
 
 DEFAULT_MILESTONES_THOTH = [
-    {
-        "title": "v0.6.0-dev",
-        "description": "Tracking Milestone for v0.6.0 development",
-        "due_on": "2019-11-29T23:59:59Z",
-    },
-    {"title": "v0.6.0", "description": "Tracking Milestone for v0.6.0", "due_on": "2019-12-06T19:00:00Z"},
+    {"title": "v0.6.0", "description": "Tracking Milestone for v0.6.0", "due_on": "2020-04-01T19:00:00Z"},
 ]
 
 
 async def create_or_update_milestone(slug: str, title: str, description: str, state: str = "open", due_on: str = None):
     """Create or update the Milestone in the given repository."""
     access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
-    github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
 
-    # prepare a milestone
-    milestone_data = {"title": title, "description": description, "state": state}
+    async with aiohttp.ClientSession() as client:
+        github_api = RawGitHubAPI(access_token, session=client, user_agent="sesheta-actions")
 
-    if due_on is not None:
-        milestone_data["due_on"] = due_on
+        # prepare a milestone
+        milestone_data = {"title": title, "description": description, "state": state}
 
-    try:
-        # and see if it exists
-        _LOGGER.debug("checking %s for %s", slug, title)
+        if due_on is not None:
+            milestone_data["due_on"] = due_on
 
-        async for milestone in github_api.getiter(f"/repos/{slug}/milestones"):
-            _LOGGER.debug("found %s: %s", slug, milestone)
+        try:
+            # and see if it exists
+            _LOGGER.debug("checking %s for %s", slug, title)
 
-            if (milestone["title"] == title) and (
-                (milestone["due_on"] != due_on) or (milestone["description"] != description)
-            ):
-                _LOGGER.debug("updating %s: %s", slug, milestone_data)
-                del milestone_data["title"]
-                await github_api.patch(f"/repos/{slug}/milestones/{milestone['number']}", data=milestone_data)
+            async for milestone in github_api.getiter(f"/repos/{slug}/milestones"):
+                _LOGGER.debug("found %s: %s", slug, milestone)
 
-                return
+                if (milestone["title"] == title) and (
+                    (milestone["due_on"] != due_on) or (milestone["description"] != description)
+                ):
+                    _LOGGER.debug("updating %s: %s", slug, milestone_data)
+                    del milestone_data["title"]
+                    await github_api.patch(f"/repos/{slug}/milestones/{milestone['number']}", data=milestone_data)
 
-        _LOGGER.debug("creating %s: %s", slug, milestone_data)
-        await github_api.post(f"/repos/{slug}/milestones", data=milestone_data)
+                    return
 
-    except gidgethub.BadRequest as bad:
-        _LOGGER.error(f"Milestone '{title}', Repo: '{slug}': {bad}")
+            _LOGGER.debug("creating %s: %s", slug, milestone_data)
+            await github_api.post(f"/repos/{slug}/milestones", data=milestone_data)
 
-    return
+        except gidgethub.BadRequest as bad:
+            _LOGGER.error(f"Milestone '{title}', Repo: '{slug}': {bad}")
+
+        return
 
 
 async def create_or_update_label(slug: str, name: str, color: str = "") -> str:
     """Create or update the label in the given repository."""
     access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
-    github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
 
-    try:
-        label = await github_api.getitem(f"/repos/{slug}/labels/{name}", preview_api_version="symmetra")
-
-        if label["color"] != color:
-            await github_api.patch(
-                f"/repos/{slug}/labels/{name}", preview_api_version="symmetra", data={"new_name": name, "color": color}
-            )
-
-    except gidgethub.BadRequest as bad:
-        _LOGGER.error(f"Label '{name}', Repo: '{slug}': {bad}")
+    async with aiohttp.ClientSession() as client:
+        github_api = RawGitHubAPI(access_token, session=client, user_agent="sesheta-actions")
 
         try:
-            resp = await github_api.post(
-                f"/repos/{slug}/labels", preview_api_version="symmetra", data={"name": name, "color": color}
-            )
-        except gidgethub.BadRequest as created:
-            _LOGGER.info(f"Label '{name}', Repo: '{slug}': created")  # TODO maybe this should be a little more robust?
-    return
+            label = await github_api.getitem(f"/repos/{slug}/labels/{name}", preview_api_version="symmetra")
+
+            if label["color"] != color:
+                await github_api.patch(
+                    f"/repos/{slug}/labels/{name}",
+                    preview_api_version="symmetra",
+                    data={"new_name": name, "color": color},
+                )
+
+        except gidgethub.BadRequest as bad:
+            _LOGGER.error(f"Label '{name}', Repo: '{slug}': {bad}")
+
+            try:
+                resp = await github_api.post(
+                    f"/repos/{slug}/labels", preview_api_version="symmetra", data={"name": name, "color": color}
+                )
+            except gidgethub.BadRequest as created:
+                _LOGGER.info(
+                    f"Label '{name}', Repo: '{slug}': created"
+                )  # TODO maybe this should be a little more robust?
+        return
 
 
 async def do_not_merge(pr_url: str) -> bool:
