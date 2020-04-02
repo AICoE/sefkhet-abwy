@@ -38,7 +38,7 @@ _LOGGER.info(f"Sesheta action: merge_master_into_pullrequest, Version v{__versio
 @click.command()
 @cocommand
 @click.option(
-    "--verbose", is_flag=True, default=False, envvar="SESHETA_ACTION_VERBOSE", help="Be verbose about what's going on."
+    "--verbose", is_flag=True, default=False, envvar="SESHETA_ACTION_VERBOSE", help="Be verbose about what's going on.",
 )
 @click.option(
     "-r",
@@ -75,7 +75,7 @@ async def cli(
     # TODO check if owner, repo, pull_request is not None or 0
 
     triggered = await merge_master_into_pullrequest(
-        owner, repo, pull_request, token=github_access_token, dry_run=dry_run
+        owner, repo, pull_request, token=github_access_token, dry_run=dry_run,
     )
 
     if not triggered:

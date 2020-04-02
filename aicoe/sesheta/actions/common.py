@@ -141,7 +141,7 @@ async def trigger_update_branch(owner: str, repo: str, pull_request: int) -> boo
     try:
         if github_api.is_initialized:
             triggered = await github_api.put(
-                f"/repos/{owner}/{repo}/pulls/{pull_request}/update-branch", preview_api_version="lydian", data=b""
+                f"/repos/{owner}/{repo}/pulls/{pull_request}/update-branch", preview_api_version="lydian", data=b"",
             )
 
         _LOGGER.debug(f"rebasing Pull Request {pull_request} in {owner}/{repo} triggered: {triggered}")

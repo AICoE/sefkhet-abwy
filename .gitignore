@@ -104,3 +104,4 @@ venv.bak/
 .mypy_cache/
 .vscode/
 review-manager.2019-09-30.private-key.pem
+.thoth_last_analysis_id

@@ -149,11 +149,11 @@ async def create_or_update_label(slug: str, name: str, color: str = "") -> str:
 
             try:
                 resp = await github_api.post(
-                    f"/repos/{slug}/labels", preview_api_version="symmetra", data={"name": name, "color": color}
+                    f"/repos/{slug}/labels", preview_api_version="symmetra", data={"name": name, "color": color},
                 )
             except gidgethub.BadRequest as created:
                 _LOGGER.info(
-                    f"Label '{name}', Repo: '{slug}': created"
+                    f"Label '{name}', Repo: '{slug}': created",
                 )  # TODO maybe this should be a little more robust?
         return
 
