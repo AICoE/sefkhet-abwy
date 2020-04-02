@@ -56,7 +56,7 @@ async def merge_master_into_pullrequest(
     if rebaseable and (base_sha != head_sha):
         _LOGGER.info(
             f"rebasing Pull Request {pull_request} in {owner}/{repo} into master"
-            f", head sha = {head_sha} and pull requests's base sha = {base_sha}"
+            f", head sha = {head_sha} and pull requests's base sha = {base_sha}",
         )
         if not dry_run:
             triggered = await trigger_update_branch(owner, repo, pull_request)
@@ -84,11 +84,11 @@ async def merge_master_into_pullrequest2(owner: str, repo: str, pull_request: in
     if rebaseable and (base_sha != head_sha):
         _LOGGER.debug(
             f"rebasing Pull Request {pull_request} in {owner}/{repo} into master"
-            f", head sha = {head_sha} and pull requests's base sha = {base_sha}"
+            f", head sha = {head_sha} and pull requests's base sha = {base_sha}",
         )
 
         await github_api.put(
-            f"/repos/{owner}/{repo}/pulls/{pull_request}/update-branch", preview_api_version="lydian", data=b""
+            f"/repos/{owner}/{repo}/pulls/{pull_request}/update-branch", preview_api_version="lydian", data=b"",
         )
     else:
         _LOGGER.debug(f"not triggering a rebase, head sha = {head_sha} and pull requests's base sha = {base_sha}")
@@ -177,7 +177,7 @@ async def needs_rebase_label(_pull_request: dict = None) -> bool:
 
         try:
             await github_api.post(
-                f"{issue_url}/labels", preview_api_version="symmetra", data={"labels": ["do-not-merge/needs-rebase"]}
+                f"{issue_url}/labels", preview_api_version="symmetra", data={"labels": ["do-not-merge/needs-rebase"]},
             )
             return True
         except gidgethub.BadRequest as err:
@@ -269,7 +269,7 @@ async def manage_label_and_check(github_api=None, pull_request: dict = None):
     else:
         try:
             await github_api.delete(
-                f"{issue_url}/labels/do-not-merge%2Fwork-in-progress", preview_api_version="symmetra"
+                f"{issue_url}/labels/do-not-merge%2Fwork-in-progress", preview_api_version="symmetra",
             )
         except gidgethub.BadRequest as err:
             if err.status_code == 404:  # This is ok, label was not present......
@@ -414,7 +414,7 @@ async def handle_release_pull_request(pullrequest: dict) -> (str, str):
 
     tag = {"tag": str(release), "message": f"v{release}\n", "object": str(commit_hash), "type": "commit"}
     response = await github_api.post(
-        f"{pullrequest['base']['repo']['url']}/git/tags", preview_api_version="lydian", data=tag
+        f"{pullrequest['base']['repo']['url']}/git/tags", preview_api_version="lydian", data=tag,
     )
 
     _LOGGER.debug("response: %s", response)
@@ -432,7 +432,7 @@ async def handle_release_pull_request(pullrequest: dict) -> (str, str):
     comment = {
         "body": f"I have tagged commit "
         f"[{commit_hash}]({pullrequest['base']['repo']['html_url']}/{commit_hash}) "
-        f"as release {release} :+1:"
+        f"as release {release} :+1:",
     }
     await github_api.post(
         f"{pullrequest['base']['repo']['url']}/issues/{release_issue}/comments", data=comment,

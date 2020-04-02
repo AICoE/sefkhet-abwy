@@ -138,7 +138,7 @@ def notify_channel(kind: str, message: str, thread_key: str, url: str) -> None:
     response = None
     scopes = ["https://www.googleapis.com/auth/chat.bot"]
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
-        "/opt/app-root/etc/gcloud/sesheta-chatbot-968e13a86991.json", scopes
+        "/opt/app-root/etc/gcloud/sesheta-chatbot-968e13a86991.json", scopes,
     )
     http_auth = credentials.authorize(Http())
 
@@ -224,13 +224,13 @@ def create_issue_response(message: str, url: str) -> dict:
                         "text": "list all open Issues",
                         "onClick": {
                             "openLink": {
-                                "url": "https://github.com/issues?q=is%3Aopen+is%3Apr+archived%3Afalse+user%3Athoth-station"  # Ignore PycodestyleBear (E501)
-                            }
+                                "url": "https://github.com/issues?q=is%3Aopen+is%3Apr+archived%3Afalse+user%3Athoth-station",  # Ignore PycodestyleBear (E501)
+                            },
                         },
-                    }
-                }
-            ]
-        }
+                    },
+                },
+            ],
+        },
     )
 
     cards.append({"sections": [{"widgets": widgets}]})
@@ -248,7 +248,7 @@ def eligible_release_pullrequest(pullrequest: dict) -> bool:
     try:
         if not any(label.get("name", None) == "bot" for label in pullrequest["labels"]):
             _LOGGER.debug(
-                f"No 'bot' label on Release Pull Request: '{pullrequest['title']}', not eligible for release!"
+                f"No 'bot' label on Release Pull Request: '{pullrequest['title']}', not eligible for release!",
             )
             return False
     except KeyError as exc:
@@ -259,7 +259,7 @@ def eligible_release_pullrequest(pullrequest: dict) -> bool:
     # check if Kebechet was the author pullrequest['user']['login']
     if pullrequest["user"]["login"] != "sesheta":
         _LOGGER.debug(
-            f"Author of Release Pull Request: '{pullrequest['title']}' is not 'Sesheta', not eligible for release!"
+            f"Author of Release Pull Request: '{pullrequest['title']}' is not 'Sesheta', not eligible for release!",
         )
         return False
 

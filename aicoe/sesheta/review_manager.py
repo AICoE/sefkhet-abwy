@@ -114,7 +114,7 @@ async def on_pr_closed(*, action, number, pull_request, repository, sender, orga
 
     # we do not notify on standard automated SrcOps
     if not pull_request["title"].startswith("Automatic update of dependency") and not pull_request["title"].startswith(
-        "Release of"
+        "Release of",
     ):
         if pull_request["merged"]:
             notify_channel(
@@ -173,11 +173,11 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
 
     try:
         await merge_master_into_pullrequest2(
-            pull_request["base"]["user"]["login"], pull_request["base"]["repo"]["name"], pull_request["id"]
+            pull_request["base"]["user"]["login"], pull_request["base"]["repo"]["name"], pull_request["id"],
         )
     except gidgethub.BadRequest as err:
         _LOGGER.warning(
-            f"merge_master_into_pullrequest2: status_code={err.status_code}, {str(err)}, {pull_request['html_url']}"
+            f"merge_master_into_pullrequest2: status_code={err.status_code}, {str(err)}, {pull_request['html_url']}",
         )
 
 
@@ -192,7 +192,7 @@ async def on_pull_request_review(*, action, review, pull_request, **kwargs):
 
     if needs_rebase:
         await merge_master_into_pullrequest2(
-            pull_request["base"]["user"]["login"], pull_request["base"]["repo"]["name"], pull_request["id"]
+            pull_request["base"]["user"]["login"], pull_request["base"]["repo"]["name"], pull_request["id"],
         )
 
     if review["state"] == "approved":
@@ -214,12 +214,12 @@ async def on_pull_request_review(*, action, review, pull_request, **kwargs):
 async def on_pull_request_review_requested(*, action, number, pull_request, requested_reviewer, **kwargs):
     """Someone requested a Pull Request Review, so we notify the Google Hangouts Chat Room."""
     _LOGGER.debug(
-        f"on_pull_request_review_requested: working on PR '{pull_request['title']}' {pull_request['html_url']}"
+        f"on_pull_request_review_requested: working on PR '{pull_request['title']}' {pull_request['html_url']}",
     )
 
     # we do not notify on standard automated SrcOps
     if pull_request["title"].startswith("Automatic update of dependency") or pull_request["title"].startswith(
-        "Release of"
+        "Release of",
     ):
         return
 
@@ -338,7 +338,7 @@ async def on_check_gate(*, action, issue, comment, repository, organization, sen
 
             # we do not notify on standard automated SrcOps
             if not pr["title"].startswith("Automatic update of dependency") and not pr["title"].startswith(
-                "Release of"
+                "Release of",
             ):
                 notify_channel(
                     "plain",
@@ -353,14 +353,14 @@ async def on_check_gate(*, action, issue, comment, repository, organization, sen
         elif not gate_passed and not len(current_reviewers) == 0:
             # if a review has been started we should not remove the reviewers
             _LOGGER.debug(
-                f"PR {pr['html_url']} is NOT ready for review! Removing reviewers: {unpack(current_reviewers)}"
+                f"PR {pr['html_url']} is NOT ready for review! Removing reviewers: {unpack(current_reviewers)}",
             )
 
 
 async def on_security_advisory(*, action, security_advisory, **kwargs):
     """Send a notification to Hangout."""
     _LOGGER.warning(
-        f"New information wrt GitHub security advisory {security_advisory['ghsa_id']} '{security_advisory['summary']}'"
+        f"New information wrt GitHub security advisory {security_advisory['ghsa_id']} '{security_advisory['summary']}'",
     )
 
     ecosystem_name = security_advisory["vulnerabilities"]["package"]["ecosystem"]
