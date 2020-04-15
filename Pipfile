@@ -14,11 +14,9 @@ oauth2client = "*"
 expiringdict = "*"
 
 [dev-packages]
-black = "*"
 pylint = "*"
 pytest = "*"
 pytest-asyncio = "*"
-pre-commit = "*"
 
 [requires]
 python_version = "3.7"
