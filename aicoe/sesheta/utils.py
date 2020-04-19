@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Sefkhet-Abwy
-# Copyright(C) 2019 Christoph Görn
+# Copyright(C) 2019,2020 Christoph Görn
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -82,7 +82,9 @@ REALNAME_HANGOUTS_MAP = {
     "Daniel Riek": "108515811437474839783",
     "Francesco Murdaca": "108929048208403662680",
     "Anand Sanmukhani": "109564390983160712413",
-    "Bissenbay Dauletbayev": "110216803169387301467",
+    "Bissenbay Dauletbayev": "114127285145989031675",
+    "Sai Sankar Gochhayat": "112057774963535139749",
+    "Rayna Levinson": "113654907706061112570",
     "Steven Huels": "110846043168213103522",
     "Devin de Hueck": "111891587601330012211",
     "Diane Feddema": "113993930213573634504",
