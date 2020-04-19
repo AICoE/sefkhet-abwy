@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # sesheta-actions
-# Copyright(C) 2019 Christoph Görn
+# Copyright(C) 2019,2020 Christoph Görn
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,4 +25,4 @@ from .pull_request import local_check_gate_passed, needs_rebase_label, needs_app
 
 
 __title__ = "sesheta-actions"
-__version__ = "0.6.1"
+__version__ = "0.6.2"

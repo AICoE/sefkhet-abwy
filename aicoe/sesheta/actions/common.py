@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # sesheta-actions
-# Copyright(C) 2019 Christoph Görn
+# Copyright(C) 2019,2020 Christoph Görn
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ import base64
 import re
 
 import gidgethub
+import aiohttp
 
 from functools import wraps
 from itertools import takewhile
@@ -111,47 +112,53 @@ async def get_master_head_sha(owner: str, repo: str) -> str:
     """Get the SHA of the HEAD of the master."""
     # TODO refactor this to a class? global variable?
     access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
-    github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
-    commits = await github_api.getitem(f"/repos/{owner}/{repo}/commits")
 
-    _LOGGER.debug(f"HEAD commit of {owner}/{repo}: {commits[0]['sha']}")
+    async with aiohttp.ClientSession() as client:
+        github_api = RawGitHubAPI(access_token, session=client, user_agent="sesheta-actions")
+        commits = await github_api.getitem(f"/repos/{owner}/{repo}/commits")
 
-    return commits[0]["sha"]  # FIXME could raise IndexError
+        _LOGGER.debug(f"HEAD commit of {owner}/{repo}: {commits[0]['sha']}")
+
+        return commits[0]["sha"]  # FIXME could raise IndexError
 
 
 async def get_pull_request(owner: str, repo: str, pull_request: int) -> dict:
     """Get PR from owner/repo."""
     access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
-    github_api = RawGitHubAPI(access_token, user_agent="sesheta-actions")
 
-    _LOGGER.debug(f"getting {owner}/{repo}: PR {pull_request}")
+    async with aiohttp.ClientSession() as client:
+        github_api = RawGitHubAPI(access_token, session=client, user_agent="sesheta-actions")
 
-    pr = await github_api.getitem(f"/repos/{owner}/{repo}/pulls/{pull_request}")  # TODO exception handling
+        _LOGGER.debug(f"getting {owner}/{repo}: PR {pull_request}")
 
-    _LOGGER.debug(f"got {owner}/{repo}: PR {pull_request}: {pr}")
+        pr = await github_api.getitem(f"/repos/{owner}/{repo}/pulls/{pull_request}")  # TODO exception handling
 
-    return pr
+        _LOGGER.debug(f"got {owner}/{repo}: PR {pull_request}: {pr}")
+
+        return pr
 
 
 async def trigger_update_branch(owner: str, repo: str, pull_request: int) -> bool:
     """Trigger /update-branch API on Pull Request."""
     access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
-    github_api = RawGitHubAPI(access_token, user_agent="sesheta")
 
-    try:
-        if github_api.is_initialized:
-            triggered = await github_api.put(
-                f"/repos/{owner}/{repo}/pulls/{pull_request}/update-branch", preview_api_version="lydian", data=b"",
-            )
+    async with aiohttp.ClientSession() as client:
+        github_api = RawGitHubAPI(access_token, session=client, user_agent="sesheta")
 
-        _LOGGER.debug(f"rebasing Pull Request {pull_request} in {owner}/{repo} triggered: {triggered}")
-        return True
-    except gidgethub.BadRequest as bad_request:
-        _LOGGER.error(f"{bad_request}: on /repos/{owner}/{repo}/pulls/{pull_request}/update-branch")
-        return False
-    except gidgethub.HTTPException as http_exception:
-        if http_exception.status_code == 202:
+        try:
+            if github_api.is_initialized:
+                triggered = await github_api.put(
+                    f"/repos/{owner}/{repo}/pulls/{pull_request}/update-branch", preview_api_version="lydian", data=b"",
+                )
+
+            _LOGGER.debug(f"rebasing Pull Request {pull_request} in {owner}/{repo} triggered: {triggered}")
             return True
-        else:
-            _LOGGER.error(http_exception)
+        except gidgethub.BadRequest as bad_request:
+            _LOGGER.error(f"{bad_request}: on /repos/{owner}/{repo}/pulls/{pull_request}/update-branch")
             return False
+        except gidgethub.HTTPException as http_exception:
+            if http_exception.status_code == 202:
+                return True
+            else:
+                _LOGGER.error(http_exception)
+                return False
