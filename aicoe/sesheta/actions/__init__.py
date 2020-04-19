@@ -25,4 +25,4 @@ from .pull_request import local_check_gate_passed, needs_rebase_label, needs_app
 
 
 __title__ = "sesheta-actions"
-__version__ = "0.6.2"
+__version__ = "0.6.3"

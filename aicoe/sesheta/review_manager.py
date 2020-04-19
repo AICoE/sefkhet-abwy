@@ -37,7 +37,6 @@ from octomachinery.utils.versiontools import get_version_from_scm_tag
 
 from expiringdict import ExpiringDict
 
-from aicoe.sesheta import get_github_client
 from aicoe.sesheta.actions.pull_request import (
     manage_label_and_check,
     merge_master_into_pullrequest2,

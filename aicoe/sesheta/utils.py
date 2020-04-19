@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+
 """Sesheta's actions."""
 
 
@@ -30,10 +31,7 @@ from httplib2 import Http
 from apiclient.discovery import build, build_from_document
 from oauth2client.service_account import ServiceAccountCredentials
 
-from thoth.common import init_logging
 
-
-init_logging()
 
 _LOGGER = logging.getLogger(__name__)
 

@@ -15,7 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+
 """Sesheta's actions."""
+
 
 import logging
 
@@ -30,10 +32,6 @@ from octomachinery.app.runtime.context import RUNTIME_CONTEXT
 from aicoe.sesheta.actions.common import get_master_head_sha, get_pull_request, trigger_update_branch
 from aicoe.sesheta.utils import eligible_release_pullrequest, get_release_issue
 
-from thoth.common import init_logging
-
-
-init_logging()
 
 _LOGGER = logging.getLogger(__name__)
 

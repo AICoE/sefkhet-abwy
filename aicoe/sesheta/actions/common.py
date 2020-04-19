@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
+
 """Sesheta's actions."""
 
 
@@ -36,10 +37,6 @@ from octomachinery.github.api.raw_client import RawGitHubAPI
 from octomachinery.app.runtime.context import RUNTIME_CONTEXT
 from codeowners import CodeOwners
 
-from thoth.common import init_logging
-
-
-init_logging()
 
 _LOGGER = logging.getLogger(__name__)
 
