@@ -12,6 +12,7 @@ codeowners = "*"
 google-api-python-client = "*"
 oauth2client = "*"
 expiringdict = "*"
+prometheus-async = {extras = ["aiohttp"],version = "*"}
 
 [dev-packages]
 pylint = "*"
