@@ -26,6 +26,7 @@ import logging
 
 import gidgethub
 
+
 from octomachinery.app.server.runner import run as run_app
 from octomachinery.app.routing import process_event_actions, process_event
 from octomachinery.app.routing.decorators import process_webhook_payload
@@ -34,6 +35,8 @@ from octomachinery.github.config.app import GitHubAppIntegrationConfig
 from octomachinery.github.api.app_client import GitHubApp
 from octomachinery.app.server.machinery import run_forever
 from octomachinery.utils.versiontools import get_version_from_scm_tag
+
+from prometheus_async.aio import time
 
 from expiringdict import ExpiringDict
 
@@ -55,13 +58,16 @@ from aicoe.sesheta.utils import notify_channel, hangouts_userid, realname, rando
 from thoth.common import init_logging
 
 
-__version__ = "0.8.0-dev"
+import aicoe.sesheta.metrics as metrics
+
+
+__version__ = "0.9.0"
 
 
 init_logging(logging_env_var_start="SEFKHET__ABWY_LOG_")
 
 _LOGGER = logging.getLogger("aicoe.sesheta")
-_LOGGER.info(f"AICoE's Review Manager, Version v{__version__}")
+_LOGGER.info(f"AICoE's SrcOps Cyborg, Version v{__version__}")
 logging.getLogger("octomachinery").setLevel(logging.DEBUG)
 logging.getLogger("googleapiclient.discovery_cache").setLevel(logging.ERROR)
 
@@ -107,6 +113,7 @@ async def on_install(
 
 @process_event_actions("pull_request", {"closed"})
 @process_webhook_payload
+@time(metrics.REQ_TIME)
 async def on_pr_closed(*, action, number, pull_request, repository, sender, organization, installation, **kwargs):
     """React to an closed PR event."""
     _LOGGER.debug(f"on_pr_closed: working on PR {pull_request['html_url']}")
