@@ -61,6 +61,7 @@ GITHUB_REALNAME_MAP = {
     "hemajv": "Hema Veeradhi",
     "zmhassan": "Zak Hassan",
     "humairak": "Humair Khan",
+    "chauhankaranraj": "Karan Chauhan",
     "sesheta": "Thoth Bot",
     "thoth-zuul[bot]": "Thoth's Zuul",
     "sentry-io[bot]": "Sentry",
@@ -91,6 +92,7 @@ REALNAME_HANGOUTS_MAP = {
     "Hema Veeradhi": "108530691726729807637",
     "Zak Hassan": "114160859808923634114",
     "Humair Khan": "117385119761143413973",
+    "Karan Chauhan": "110694159944095156438",
 }
 
 # pragma: no cover
