@@ -83,7 +83,7 @@ DEFAULT_LABELS = [
 ]
 
 DEFAULT_MILESTONES_THOTH = [
-    {"title": "v0.6.0", "description": "Tracking Milestone for v0.6.0", "due_on": "2020-04-01T19:00:00Z"},
+    {"title": "v0.6.0", "description": "Tracking Milestone for v0.6.0", "due_on": "2020-05-01T19:00:00Z"},
 ]
 
 
@@ -133,9 +133,11 @@ async def create_or_update_label(slug: str, name: str, color: str = "") -> str:
         github_api = RawGitHubAPI(access_token, session=client, user_agent="sesheta-actions")
 
         try:
+            _LOGGER.debug("get item...")
             label = await github_api.getitem(f"/repos/{slug}/labels/{name}", preview_api_version="symmetra")
 
             if label["color"] != color:
+                _LOGGER.debug("patching item color...")
                 await github_api.patch(
                     f"/repos/{slug}/labels/{name}",
                     preview_api_version="symmetra",
