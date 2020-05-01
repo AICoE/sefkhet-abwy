@@ -119,9 +119,8 @@ async def on_pr_closed(*, action, number, pull_request, repository, sender, orga
     _LOGGER.debug(f"on_pr_closed: working on PR {pull_request['html_url']}")
 
     # we do not notify on standard automated SrcOps
-    if not pull_request["title"].startswith("Automatic update of dependency") and not pull_request["title"].startswith(
-        "Release of",
-    ):
+    ignore_messages = ["Automatic update of dependency", "Release of", "Automatic dependency re-locking"]
+    if not pull_request["title"].startswith(tuple(ignore_messages)):
         if pull_request["merged"]:
             notify_channel(
                 "plain",
