@@ -32,9 +32,7 @@ from apiclient.discovery import build, build_from_document
 from oauth2client.service_account import ServiceAccountCredentials
 
 
-
 _LOGGER = logging.getLogger(__name__)
-
 THOTH_DEVOPS_SPACE = os.getenv("SESHETA_THOTH_DEVOPS_SPACE", None)  # pragma: no cover
 AIOPS_DEVOPS_SPACE = os.getenv("SESHETA_AIOPS_DEVOPS_SPACE", None)  # pragma: no cover
 
