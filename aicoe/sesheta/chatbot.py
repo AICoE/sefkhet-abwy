@@ -24,17 +24,13 @@ import asyncio
 import pathlib
 import logging
 
-
+import aiohttp
 from aiohttp import web
-
 
 from thoth.common import init_logging
 
-
 from aicoe.sesheta.utils import notify_channel, hangouts_userid, realname
-
-
-__version__ = "0.1.0-dev"
+from aicoe.sesheta.actions import __version__
 
 
 init_logging(logging_env_var_start="SEFKHET__ABWY_LOG_")
@@ -50,8 +46,26 @@ app = web.Application()
 
 async def get_intent(text: str,) -> (str, float, dict):
     """Get the Intent of the provided text, and assign it a score."""
+    repo_name = None
+    tag = None
+
     if text.startswith("assign"):
         return ("assign", 1.0, {})
+
+    if text.startswith("get tags of"):
+        repo_name = text.split(" ")[-1]
+
+        return ("get_tags_of_repo", 1.0, {"repo_name": repo_name})
+
+    if text.startswith("deliver"):
+        repo_name_tag = text.split(" ")[-1]
+
+        try:
+            (repo_name, tag) = repo_name_tag.split(":")
+        except Exception as e:
+            pass
+
+        return ("tag_release", 1.0, {"repo_name": repo_name, "tag": tag})
 
     return (None, 0.0, {})
 
@@ -59,7 +73,34 @@ async def get_intent(text: str,) -> (str, float, dict):
 async def process_user_text(thread_id: str, text: str) -> str:
     """Process the Text, get the intent, and schedule actions accordingly."""
     _LOGGER.info(f"message on thread {thread_id}: {text}")
-    return text
+
+    intent = await get_intent(text)
+
+    if intent[0] == "get_tags_of_repo":
+        _LOGGER.info(f"get tags of repo... {intent}")
+
+    if intent[0] == "tag_release":
+        _LOGGER.info(f"tag_release... {intent}")
+
+        if (intent[2]['tag'] is None) or (intent[2]['repo_name'] is None):
+            return "Uhh... cant find repo_name or tag, please use `repo_name:tag`!"
+
+        webhook_payload = {
+            "ref": intent[2]["tag"],
+            "ref_type": "tag",
+            "repo_url": f"https://github.com/thoth-station/{intent[2]['repo_name']}",
+            "repo_name": intent[2]["repo_name"],
+        }
+        webhook_url = "http://thoth-ci.thoth.ultrahook.com"
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(webhook_url, json=webhook_payload) as resp:
+                _LOGGER.debug(resp.status)
+                _LOGGER.debug(await resp.text())
+
+        return f"I have told TektonCD to deliver `{intent[2]['tag']}` of repository `{intent[2]['repo_name']}`, let's see what happens..."
+
+    return "Sorry, I didnt get that... try 'deliver' or 'get tags of'"
 
 
 @routes.get("/")
@@ -76,8 +117,8 @@ async def hangouts_handler(request):
     if event["type"] == "ADDED_TO_SPACE" and event["space"]["type"] == "ROOM":
         text = 'Thanks for adding me to "%s"!' % event["space"]["displayName"]
     elif event["type"] == "MESSAGE":
-        intend = await process_user_text(event["message"]["thread"]["name"], event["message"]["text"])
-        text = "You said: `%s`" % intend
+        intent = await process_user_text(event["message"]["thread"]["name"], event["message"]["text"])
+        text = intent
     else:
         return
     return web.json_response({"text": text})
