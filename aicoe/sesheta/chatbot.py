@@ -153,7 +153,7 @@ async def make_release_issue(request: dict):
 async def hangouts_handler(request):
     """Handle Google Hangouts Chat incoming webhooks."""
     event = await request.json()
-
+    _LOGGER.info(f"Incoming json is - {event}")
     if event["type"] == "ADDED_TO_SPACE" and event["space"]["type"] == "ROOM":
         text = 'Thanks for adding me to "%s"!' % event["space"]["displayName"]
     elif event["type"] == "MESSAGE":
