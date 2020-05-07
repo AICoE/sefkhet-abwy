@@ -84,6 +84,10 @@ async def process_user_text(thread_id: str, text: str) -> str:
     """Process the Text, get the intent, and schedule actions accordingly."""
     _LOGGER.info(f"message on thread {thread_id}: {text}")
 
+    # if the message was in a room, we need to strip the username
+    if text.startswith("@Sesheta"):
+        test = text.split(' ', 1)[1]
+
     intent = await get_intent(text)
 
     if intent[0] == "help":
@@ -134,7 +138,7 @@ async def make_release_issue(request: dict):
     json_payload = {"title": issue_title, "assignees": ["sesheta"], "labels": ["bot"]}
     async with aiohttp.ClientSession() as session:
         async with session.post(
-            web_url, headers={f"Authorization": f"token {GITHUB_TOKEN}"}, json=json_payload
+            web_url, headers={f"Authorization": f"token {GITHUB_TOKEN}"}, json=json_payload,
         ) as resp:
             status = resp.status
             resp_text = await resp.json()
