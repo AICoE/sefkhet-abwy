@@ -27,6 +27,8 @@ import logging
 import aiohttp
 from aiohttp import web
 
+from aicoe.sesheta.messages import HELP_MESSAGE
+
 from thoth.common import init_logging
 
 from aicoe.sesheta.utils import notify_channel, hangouts_userid, realname
@@ -43,18 +45,26 @@ logging.getLogger("googleapiclient.discovery_cache").setLevel(logging.ERROR)
 routes = web.RouteTableDef()
 app = web.Application()
 
+GITHUB_TOKEN = os.environ["GITHUB_ACCESS_TOKEN"]
+RELEASE_COMMANDS = ["create new minor release", "create new major release", "create new patch release"]
+
 
 async def get_intent(text: str,) -> (str, float, dict):
     """Get the Intent of the provided text, and assign it a score."""
     repo_name = None
     tag = None
+    repo_name = text.strip().split(" ")[-1]
+
+    if text.startswith("help"):
+        return ("help", 1.0, {})
 
     if text.startswith("assign"):
-        return ("assign", 1.0, {})
+        return ("assign", 1.0, {"repo_name": repo_name})
+
+    if text.lower().startswith(tuple(RELEASE_COMMANDS)):
+        return ("release", 1.0, {"repo_name": repo_name, "text": text})
 
     if text.startswith("get tags of"):
-        repo_name = text.split(" ")[-1]
-
         return ("get_tags_of_repo", 1.0, {"repo_name": repo_name})
 
     if text.startswith("deliver"):
@@ -76,13 +86,20 @@ async def process_user_text(thread_id: str, text: str) -> str:
 
     intent = await get_intent(text)
 
+    if intent[0] == "help":
+        return HELP_MESSAGE
+
+    if intent[0] == "release":
+        result = await make_release_issue(intent[-1])
+        return result
+
     if intent[0] == "get_tags_of_repo":
         _LOGGER.info(f"get tags of repo... {intent}")
 
     if intent[0] == "tag_release":
         _LOGGER.info(f"tag_release... {intent}")
 
-        if (intent[2]['tag'] is None) or (intent[2]['repo_name'] is None):
+        if (intent[2]["tag"] is None) or (intent[2]["repo_name"] is None):
             return "Uhh... cant find repo_name or tag, please use `repo_name:tag`!"
 
         webhook_payload = {
@@ -107,6 +124,25 @@ async def process_user_text(thread_id: str, text: str) -> str:
 async def hello(request):
     """Print just a Hello World."""
     return web.Response(text="Hello, world")
+
+
+async def make_release_issue(request: dict):
+    """Create a release issue on Github for Thoth Repos."""
+    repo_name, text = request.get("repo_name"), request.get("text")
+    issue_title = " ".join(text.split(" ")[1:-2])
+    web_url = f"https://api.github.com/repos/thoth-station/{repo_name}/issues"
+    json_payload = {"title": issue_title, "assignees": ["sesheta"], "labels": ["bot"]}
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+            web_url, headers={f"Authorization": f"token {GITHUB_TOKEN}"}, json=json_payload
+        ) as resp:
+            status = resp.status
+            resp_text = await resp.json()
+            _LOGGER.debug(status, resp_text)
+            if resp.status == 201:
+                issue_link = resp_text.get("html_url")
+                return f"Release issue is successfully created at - <{issue_link}|Link>"
+    return f"Creating the issue failed. \n Log - {resp_text}"
 
 
 @routes.post("/api/v1alpha1")
