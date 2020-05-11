@@ -410,7 +410,7 @@ async def handle_release_pull_request(pullrequest: dict) -> (str, str):
     # tag
     _LOGGER.info(f"Tagging release {release}: hash {commit_hash}.")
 
-    tag = {"tag": str(release), "message": f"v{release}\n", "object": str(commit_hash), "type": "commit"}
+    tag = {"tag": f"v{release}", "message": f"v{release}\n", "object": str(commit_hash), "type": "commit"}
     response = await github_api.post(
         f"{pullrequest['base']['repo']['url']}/git/tags", preview_api_version="lydian", data=tag,
     )
