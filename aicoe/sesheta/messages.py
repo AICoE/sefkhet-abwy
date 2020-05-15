@@ -19,7 +19,7 @@
 
 # TODO add more message types like deliver or tag release of.
 HELP_MESSAGE = """
-    Here are some thing's you can do - 
-    - Create releases using Kebechet - 
+    Here are some thing's you can do -
+    - Create releases using Kebechet -
       - `create new <minor/major/patch> release for <repository name>` to create a minor release.
     """
