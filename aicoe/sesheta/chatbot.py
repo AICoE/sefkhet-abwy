@@ -86,7 +86,7 @@ async def process_user_text(thread_id: str, text: str) -> str:
 
     # if the message was in a room, we need to strip the username
     if text.startswith("@Sesheta"):
-        parsed_text = text.split(' ', 1)[1]
+        parsed_text = text.split(" ", 1)[1]
 
     intent = await get_intent(parsed_text)
 
@@ -119,7 +119,7 @@ async def process_user_text(thread_id: str, text: str) -> str:
                 _LOGGER.debug(resp.status)
                 _LOGGER.debug(await resp.text())
 
-        return f"I have told TektonCD to deliver `{intent[2]['tag']}` of repository `{intent[2]['repo_name']}`, let's see what happens..."
+        return f"I have told TektonCD to deliver `{intent[2]['tag']}` of repository `{intent[2]['repo_name']}`"
 
     return "Sorry, I didnt get that... try 'deliver' or 'get tags of'"
 
