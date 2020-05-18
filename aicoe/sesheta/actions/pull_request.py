@@ -337,7 +337,7 @@ async def is_rebaseable(pull_request: dict = None) -> bool:
     if pull_request["merged"]:
         return False
 
-    if not pull_request["mergeable"]:
+    if not pull_request["mergeable"] and pull_request["mergeable"] is not None:
         return True
 
     return False
