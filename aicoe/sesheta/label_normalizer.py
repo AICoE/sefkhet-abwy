@@ -102,6 +102,5 @@ if __name__ == "__main__":
     #    asyncio.run(update_milestones())
 
     _LOGGER.info(f"updating labels")
-    #    for org in ["AICoE", "thoth-station"]:
-    for org in ["thoth-station"]:
+    for org in ["AICoE", "thoth-station"]:
         asyncio.run(update_labels(org))
