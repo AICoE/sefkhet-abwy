@@ -13,6 +13,7 @@ google-api-python-client = "*"
 oauth2client = "*"
 expiringdict = "*"
 prometheus-async = {extras = ["aiohttp"],version = "*"}
+aiographql-client = "*"
 
 [dev-packages]
 pylint = "*"

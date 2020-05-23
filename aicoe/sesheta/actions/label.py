@@ -33,22 +33,34 @@ from octomachinery.app.runtime.context import RUNTIME_CONTEXT
 _LOGGER = logging.getLogger(__name__)
 
 NEEDS_REBASE_LABEL_NAME = "do-not-merge/needs-rebase"
+GITHUB_DEFAULT_LABELS = [
+    "bug",
+    "documentation",
+    "duplicate",
+    "enhancement",
+    "good first issue",
+    "help wanted",
+    "invalid",
+    "question",
+    "wontfix",
+]
 
 DEFAULT_LABELS = [
-    {"name": "bot", "color": "698b69"},
-    {"name": "approved", "color": "00cc00"},
-    {"name": "do-not-merge", "color": "cc0000"},
-    {"name": "do-not-merge/work-in-progress", "color": "cc0000"},
-    {"name": NEEDS_REBASE_LABEL_NAME, "color": "cc0000"},
-    {"name": "work-in-progress", "color": "cc0000"},
-    {"name": "needs-rebase", "color": "cc0000"},
-    {"name": "human_intervention_required", "color": "f3ccff"},
-    {"name": "thoth/human_intervention_required", "color": "f3ccff"},
-    {"name": "thoth/potential-observation", "color": "f3ccff"},
-    {"name": "potential_flake", "color": "f3ccff"},
-    {"name": "test:flake", "color": "f3ccff"},
-    {"name": "test/flake", "color": "f3ccff"},
-    {"name": "priority/critical-urgent", "color": "e11d21"},
+    {"name": "bot", "color": "698b69", "description": "to a cyborg team mate!"},
+    {"name": "approved", "color": "00cc00", "description": ""},
+    {"name": "do-not-merge", "color": "cc0000", "description": ""},
+    {"name": "do-not-merge/work-in-progress", "color": "cc0000", "description": ""},
+    {"name": NEEDS_REBASE_LABEL_NAME, "color": "cc0000", "description": ""},
+    {"name": "work-in-progress", "color": "cc0000", "description": ""},
+    {"name": "needs-rebase", "color": "cc0000", "description": ""},
+    {"name": "human_intervention_required", "color": "f3ccff", "description": "to a human team mate!"},
+    {"name": "thoth/human_intervention_required", "color": "f3ccff", "description": "to a human team mate!"},
+    {"name": "thoth/potential-observation", "color": "f3ccff", "description": ""},
+    {"name": "thoth/group-programming", "color": "3bbf72", "description": ""},
+    {"name": "potential_flake", "color": "f3ccff", "description": ""},
+    {"name": "test:flake", "color": "f3ccff", "description": ""},
+    {"name": "test/flake", "color": "f3ccff", "description": ""},
+    {"name": "priority/critical-urgent", "color": "e11d21", "description": ""},
     {"name": "hacktoberfest", "color": "99cdf8", "description": "This might be something for Hacktoberfest"},
     {
         "name": "size/XS",
@@ -83,7 +95,7 @@ DEFAULT_LABELS = [
 ]
 
 DEFAULT_MILESTONES_THOTH = [
-    {"title": "v0.6.0", "description": "Tracking Milestone for v0.6.0", "due_on": "2020-05-01T19:00:00Z"},
+    {"title": "v0.6.0", "description": "Tracking Milestone for v0.6.0", "due_on": "2020-06-19T19:00:00Z"},
 ]
 
 
