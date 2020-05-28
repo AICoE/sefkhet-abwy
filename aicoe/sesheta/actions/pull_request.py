@@ -404,13 +404,12 @@ async def handle_release_pull_request(pullrequest: dict) -> (str, str):
 
     commit_hash = pullrequest["merge_commit_sha"]
     release_issue = get_release_issue(pullrequest)
-    # TODO this could use a try-except
-    release = pullrequest["head"]["ref"][1:]
+    release = pullrequest["head"]["ref"]
 
     # tag
     _LOGGER.info(f"Tagging release {release}: hash {commit_hash}.")
 
-    tag = {"tag": f"v{release}", "message": f"v{release}\n", "object": str(commit_hash), "type": "commit"}
+    tag = {"tag": str(release), "message": str(release), "object": str(commit_hash), "type": "commit"}
     response = await github_api.post(
         f"{pullrequest['base']['repo']['url']}/git/tags", preview_api_version="lydian", data=tag,
     )
