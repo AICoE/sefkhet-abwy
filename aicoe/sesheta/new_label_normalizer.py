@@ -203,7 +203,7 @@ async def reconcile_labels(login: str, repo: dict):
         _LOGGER.info("{0} does not need label reconciliation".format(repo["name"]))
 
     # TODO some exception handling would be nice...
-    token = os.getenv("GITHUB_SRCOPS_ACCESS_TOKEN")
+    token = os.getenv("GITHUB_ACCESS_TOKEN")
     client = GraphQLClient(
         endpoint="https://api.github.com/graphql",
         headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.bane-preview+json"},
