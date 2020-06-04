@@ -50,30 +50,6 @@ _LOGGER.info(f"Sesheta action: label_normalizer, Version v{__version__}")
 _LOGGER.debug(f"DEBUG mode is enabled")
 
 
-async def update_labels(org: str):
-    """Update Labels to comply to our standard."""
-    repos = []
-    access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
-
-    async with aiohttp.ClientSession() as client:
-        github_api = RawGitHubAPI(access_token, session=client, user_agent="sesheta-actions")
-
-        async for repo in github_api.getiter(f"/orgs/{org}/repos"):
-            slug = repo["full_name"]
-
-            _LOGGER.debug("working on %s", slug)
-            if repo["archived"]:
-                _LOGGER.debug("skipping %s, this repository was archived!", slug)
-                continue
-
-            for label in DEFAULT_LABELS:
-                _LOGGER.debug(f"looking for {label['name']} in {slug}")
-                await create_or_update_label(slug, label["name"], label["color"])
-
-            _LOGGER.debug(f"sleeping")
-            time.sleep(4.5)
-
-
 async def update_milestones(org: str = "thoth-station"):
     """Update Milestones for one org."""
     access_token = GitHubOAuthToken(os.environ["GITHUB_ACCESS_TOKEN"])
@@ -98,10 +74,5 @@ async def update_milestones(org: str = "thoth-station"):
 
 
 if __name__ == "__main__":
-    #    _LOGGER.info(f"updating milestones")
-    #    asyncio.run(update_milestones())
-
-    _LOGGER.info(f"updating labels")
-    # for org in ["AICoE", "thoth-station"]:
-    for org in ["thoth-station"]:
-        asyncio.run(update_labels(org))
+    _LOGGER.info(f"updating milestones")
+    asyncio.run(update_milestones(org="thoth-station"))
