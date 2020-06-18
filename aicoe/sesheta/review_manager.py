@@ -41,7 +41,6 @@ from prometheus_async.aio import time
 from expiringdict import ExpiringDict
 
 from aicoe.sesheta.actions.pull_request import (
-    manage_label_and_check,
     merge_master_into_pullrequest2,
     handle_release_pull_request,
 )
@@ -61,7 +60,7 @@ from thoth.common import init_logging
 import aicoe.sesheta.metrics as metrics
 
 
-__version__ = "0.9.0"
+__version__ = "0.10.0"
 
 
 init_logging(logging_env_var_start="SEFKHET__ABWY_LOG_")
@@ -170,7 +169,6 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
             )
 
     try:
-        await manage_label_and_check(github_api, pull_request)
         await needs_rebase_label(pull_request)
         await needs_size_label(pull_request)
     except gidgethub.BadRequest as err:
