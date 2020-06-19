@@ -50,6 +50,8 @@ DEFAULT_LABELS = [
     {"name": "approved", "color": "00cc00", "description": ""},
     {"name": "do-not-merge", "color": "cc0000", "description": ""},
     {"name": "do-not-merge/work-in-progress", "color": "cc0000", "description": ""},
+    {"name": "do-not-merge/hold", "color": "cc0000", "description": ""},
+    {"name": "do-not-merge/invalid-owners-file", "color": "cc0000", "description": ""},
     {"name": NEEDS_REBASE_LABEL_NAME, "color": "cc0000", "description": "The head of the PR needs to be rebased."},
     {"name": "work-in-progress", "color": "cc0000", "description": "... we are working on it!"},
     {"name": "needs-rebase", "color": "cc0000", "description": "The head of the PR needs to be rebased."},
