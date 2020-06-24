@@ -108,6 +108,8 @@ DEFAULT_LABELS = [
         "color": "ff0000",
         "description": "Denotes a PR that changes 500++ lines, ignoring generated files.",
     },
+    {"name": "kind/feature", "color": "a5d5f7", "description": "Categorize Issue or PR as related to a new feature."},
+    {"name": "kind/bug", "color": "d73a4a", "description": "Categorize Issue or PR as related to a bug."},
 ]
 
 DEFAULT_MILESTONES_THOTH = [

@@ -169,11 +169,14 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
             )
 
         if pull_request["title"].startswith("Automatic update of dependency"):
+            # TODO(goern) need to check if 'sesheta' opened the PR
             _LOGGER.debug(f"on_pr_open_or_edit: automatic update, will auto-approve {pull_request['html_url']}!")
 
             try:
                 await github_api.post(
-                    f"{pull_request['issue_url']}/labels", preview_api_version="symmetra", data={"labels": ["approved"]},
+                    f"{pull_request['issue_url']}/labels",
+                    preview_api_version="symmetra",
+                    data={"labels": ["approved"]},
                 )
             except gidgethub.BadRequest as err:
                 if err.status_code != 202:
