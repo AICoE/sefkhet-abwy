@@ -25,26 +25,26 @@ from aicoe.sesheta.actions.pull_request import has_label, is_rebaseable
 
 
 @pytest.fixture
-def pr_needs_rebase():
+def pr_needs_rebase():  # noqa: D103
     with open("fixtures/pull_request_150.json") as json_file:
         return json.load(json_file)
 
 
 @pytest.fixture
-def has_needs_rebase_label():
+def has_needs_rebase_label():  # noqa: D103
     with open("fixtures/pull_request_148.json") as json_file:
         return json.load(json_file)
 
 
 @pytest.fixture
-def doesnt_need_rebase():
+def doesnt_need_rebase():  # noqa: D103
     with open("fixtures/pull_request_2.json") as json_file:
         return json.load(json_file)
 
 
-class TestNeedsRebase:
+class TestNeedsRebase:  # noqa: D101
     @pytest.mark.asyncio
-    async def test_pull_request_needs_rebase(self, pr_needs_rebase, has_needs_rebase_label):
+    async def test_pull_request_needs_rebase(self, pr_needs_rebase, has_needs_rebase_label):  # noqa: D102
         assert pr_needs_rebase is not None
         assert has_needs_rebase_label is not None
 
@@ -55,7 +55,7 @@ class TestNeedsRebase:
         assert pr_needs_rebase_actual == False
 
     @pytest.mark.asyncio
-    async def test_pull_request_doesnt_need_rebase(self, doesnt_need_rebase):
+    async def test_pull_request_doesnt_need_rebase(self, doesnt_need_rebase):  # noqa: D102
         assert doesnt_need_rebase is not None
 
         doesnt_need_rebase_actual = await is_rebaseable(doesnt_need_rebase)

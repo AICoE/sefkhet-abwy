@@ -25,26 +25,26 @@ from aicoe.sesheta.actions.pull_request import has_label
 
 
 @pytest.fixture
-def no_work_in_progress_labeled_pull_request():
+def no_work_in_progress_labeled_pull_request():  # noqa: D103
     with open("fixtures/pull_request_148.json") as json_file:
         return json.load(json_file)
 
 
 @pytest.fixture
-def has_work_in_progress_labeled():
+def has_work_in_progress_labeled():  # noqa: D103
     with open("fixtures/pull_request_2.json") as json_file:
         return json.load(json_file)
 
 
-class TestHasLabel:
+class TestHasLabel:  # noqa: D101
     @pytest.mark.asyncio
-    async def test_label_is_not_present(self, no_work_in_progress_labeled_pull_request):
+    async def test_label_is_not_present(self, no_work_in_progress_labeled_pull_request):  # noqa: D102
         assert no_work_in_progress_labeled_pull_request is not None
 
         assert not has_label(no_work_in_progress_labeled_pull_request, "do-not-merge/work-in-progress")
 
     @pytest.mark.asyncio
-    async def test_label_is_present(self, has_work_in_progress_labeled):
+    async def test_label_is_present(self, has_work_in_progress_labeled):  # noqa: D102
         assert has_work_in_progress_labeled is not None
 
         assert has_label(has_work_in_progress_labeled, "do-not-merge/work-in-progress")
