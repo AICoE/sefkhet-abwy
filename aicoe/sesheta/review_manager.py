@@ -168,8 +168,10 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
                 pull_request["html_url"],
             )
 
-        if pull_request["title"].startswith("Automatic update of dependency") or pull_request["title"].startswith(
-            "Release of version",
+        if (
+            pull_request["title"].startswith("Automatic update of dependency")
+            or pull_request["title"].startswith("Release of version")
+            or pull_request["title"].startswith("Automatic dependency re-locking")
         ):
             if pull_request["user"]["login"] != "sesheta":
                 _LOGGER.error(

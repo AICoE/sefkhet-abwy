@@ -114,7 +114,8 @@ DEFAULT_LABELS = [
 
 DEFAULT_MILESTONES_THOTH = [
     {"title": "v0.6.0", "description": "Tracking Milestone for v0.6.0", "due_on": "2020-05-29T19:00:00Z"},
-    {"title": "v0.7.0", "description": "Security Indicator Aggregation", "due_on": "2020-06-12T23:00:00Z"},
+    {"title": "v0.7.0", "description": "Security Indicator Aggregation", "due_on": "2020-06-30T23:00:00Z"},
+    {"title": "v0.8.0", "description": "Advise-backed Kebechet", "due_on": "2020-07-17T23:00:00Z"},
 ]
 
 
