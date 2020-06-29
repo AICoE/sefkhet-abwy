@@ -180,11 +180,17 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
 
             _LOGGER.debug(f"on_pr_open_or_edit: automatic update, will auto-approve {pull_request['html_url']}!")
 
+            # Let's approve the PR and put the approved label on it...
             try:
                 await github_api.post(
                     f"{pull_request['url']}/reviews",
                     preview_api_version="symmetra",
                     data={"body": "This is an auto-approve of an auto-PR.", "event": "APPROVE"},
+                )
+                await github_api.post(
+                    f"{pull_request['issue_url']}/labels",
+                    preview_api_version="symmetra",
+                    data={"labels": ["approved"]},
                 )
 
             except gidgethub.BadRequest as err:
