@@ -182,22 +182,14 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
 
             try:
                 await github_api.post(
-                    f"{pull_request['issue_url']}/labels",
+                    f"{pull_request['url']}/reviews",
                     preview_api_version="symmetra",
-                    data={"labels": ["approved"]},
+                    data={"body": "This is an auto-approve of an auto-PR.", "event": "APPROVE"},
                 )
+
             except gidgethub.BadRequest as err:
                 if err.status_code != 202:
                     _LOGGER.error(str(err))
-
-    try:
-        await merge_master_into_pullrequest2(
-            pull_request["base"]["user"]["login"], pull_request["base"]["repo"]["name"], pull_request["id"],
-        )
-    except gidgethub.BadRequest as err:
-        _LOGGER.warning(
-            f"merge_master_into_pullrequest2: status_code={err.status_code}, {str(err)}, {pull_request['html_url']}",
-        )
 
 
 @process_event_actions("pull_request_review", {"submitted"})
