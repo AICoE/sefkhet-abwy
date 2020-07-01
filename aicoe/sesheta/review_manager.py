@@ -60,7 +60,7 @@ from thoth.common import init_logging
 import aicoe.sesheta.metrics as metrics
 
 
-__version__ = "0.11.0"
+__version__ = "0.12.0"
 
 
 init_logging(logging_env_var_start="SEFKHET__ABWY_LOG_")
