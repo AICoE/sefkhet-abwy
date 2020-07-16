@@ -208,8 +208,8 @@ async def on_pull_request_review(*, action, review, pull_request, **kwargs):
         )
 
     if review["state"] == "approved":
-        notification_text = f"📗 '{realname(review['user']['login'])}' *approved* this Pull Request!"
-        await needs_approved_label(pull_request)
+        if realname(review["user"]["login"]) != "Sesheta":
+            notification_text = f"📗 '{realname(review['user']['login'])}' *approved* this Pull Request!"
     else:
         notification_text = f"📔 some new comment by '{realname(review['user']['login'])}' has arrived..."
 
