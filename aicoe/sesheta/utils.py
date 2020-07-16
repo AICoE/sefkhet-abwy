@@ -64,6 +64,7 @@ GITHUB_REALNAME_MAP = {
     "thoth-zuul[bot]": "Thoth's Zuul",
     "xtuchyna": "Dominik Tuchyna",
     "zmhassan": "Zak Hassan",
+    "sefkhet-abwy[bot]": "Sesheta",
 }
 
 # pragma: no cover
