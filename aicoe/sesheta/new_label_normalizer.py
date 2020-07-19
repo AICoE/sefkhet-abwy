@@ -79,7 +79,7 @@ ALL_REPOSITORIES_INCLUDING_LABELS_CURSOR = Template(
     }
   }
 }
-"""
+""",
 )
 
 ALL_REPOSITORIES_INCLUDING_LABELS = Template(
@@ -112,7 +112,7 @@ ALL_REPOSITORIES_INCLUDING_LABELS = Template(
     }
   }
 }
-"""
+""",
 )
 
 CREATE_LABEL = Template(
@@ -124,7 +124,7 @@ mutation AddLabel {
     }
   }
 }
-"""
+""",
 )
 
 

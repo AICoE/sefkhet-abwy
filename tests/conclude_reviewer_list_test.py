@@ -23,21 +23,21 @@ import pytest
 from aicoe.sesheta.actions.common import conclude_reviewer_list
 
 
-class TestConcludeReviewers:
+class TestConcludeReviewers:  # noqa D101
     @pytest.mark.asyncio
-    async def test_conclude_reviewers_no_org(self):
+    async def test_conclude_reviewers_no_org(self):  # noqa D102
         reviewers = await conclude_reviewer_list(repo="repo")
 
         assert reviewers is None
 
     @pytest.mark.asyncio
-    async def test_conclude_reviewers_no_repo(self):
+    async def test_conclude_reviewers_no_repo(self):  # noqa D102
         reviewers = await conclude_reviewer_list("org")
 
         assert reviewers is None
 
     @pytest.mark.asyncio
-    async def test_conclude_reviewers_no_codeowners_file(self):
+    async def test_conclude_reviewers_no_codeowners_file(self):  # noqa D102
         reviewers = await conclude_reviewer_list("thoth-station", "user-api")
 
         assert reviewers is not None
@@ -45,7 +45,7 @@ class TestConcludeReviewers:
         assert reviewers[0] == "fridex"
 
     @pytest.mark.asyncio
-    async def test_conclude_reviewers(self):
+    async def test_conclude_reviewers(self):  # noqa D102
         reviewers = await conclude_reviewer_list("thoth-station", "storages")
 
         assert reviewers is not None
