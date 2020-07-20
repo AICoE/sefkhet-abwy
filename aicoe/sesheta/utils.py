@@ -89,11 +89,13 @@ REALNAME_HANGOUTS_MAP = {
     "Devin de Hueck": "111891587601330012211",
     "Diane Feddema": "113993930213573634504",
     "Marcel Hild": "116445288136441446998",
-    "Marek Cermak": "117060213919893996148",
     "Hema Veeradhi": "108530691726729807637",
-    "Zak Hassan": "114160859808923634114",
     "Humair Khan": "117385119761143413973",
     "Karan Chauhan": "110694159944095156438",
+    "Tom Coufal": "117471959508522471287",
+    "Tushar Sharma": "117540998919883245003",
+    "Srushti Vijay Kotak": "117644001277054930712",
+    "Giorgos Karantonis": "105147362480487195696",
 }
 
 # pragma: no cover
