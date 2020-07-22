@@ -188,6 +188,10 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
                     data={"body": "This is an auto-approve of an auto-PR.", "event": "APPROVE"},
                 )
 
+                await github_api.post(
+                    f"{issue_url}/labels", preview_api_version="symmetra", data={"labels": ["approved"]},
+                )
+
             except gidgethub.BadRequest as err:
                 if err.status_code != 202:
                     _LOGGER.error(str(err))
