@@ -304,7 +304,7 @@ async def on_issue_labeled(*, action, issue, label, repository, organization, se
     issue_labels = issue["labels"]
 
     for label in issue_labels:
-        if label["name"] == "bug":
+        if (label["name"] == "bug") or (label["name"] == "kind/bug"):
             _LOGGER.debug(f"I found a bug!! {issue['html_url']}")
 
             github_api = RUNTIME_CONTEXT.app_installation_client
