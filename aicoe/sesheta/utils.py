@@ -55,47 +55,46 @@ GITHUB_REALNAME_MAP = {
     "kpostoffice": "Kevin Postlethwait",
     "llunved": "Daniel Riek",
     "pacospace": "Francesco Murdaca",
-    "saisankargochhayat": "Saisankar Gochhayat",
+    "saisankargochhayat": "Sai Sankar Gochhayat",
+    "sefkhet-abwy[bot]": "Sesheta",
     "sentry-io[bot]": "Sentry",
     "sesheta": "Thoth Bot",
     "shruthi-raghuraman": "Shruthi Raghuraman",
     "shuels": "Steven Huels",
+    "srushtikotak": "Srushti Vijay Kotak",
     "sub-mod": "Subin Modeel",
     "thoth-zuul[bot]": "Thoth's Zuul",
+    "tumido": "Tomáš Coufal",
+    "tushar7sharma": "Tushar Sharma",
     "xtuchyna": "Dominik Tuchyna",
     "zmhassan": "Zak Hassan",
-    "sefkhet-abwy[bot]": "Sesheta",
-    "tumido": "Tomáš Coufal",
+    "GiorgosKarantonis": "Giorgos Karantonis",
 }
 
 # pragma: no cover
 REALNAME_HANGOUTS_MAP = {
-    "Michael McCune": "100013946388765536921",
-    "Subin Modeel": "100912928295723672901",
-    "Dominik Tuchyna": "101087488035276666197",
-    "Kevin Postlethwait": "102547849534309033904",
-    "Harshad Reddy Nalla": "102648456274370715335",
-    "Christoph Goern": "102814839969738411580",
-    "Shruthi Raghuraman": "103427213209555601141",
-    "Anish Asthana": "106581684824747208909",
-    "Frido Pokorny": "106810069271823707995",
-    "Daniel Riek": "108515811437474839783",
-    "Francesco Murdaca": "108929048208403662680",
     "Anand Sanmukhani": "109564390983160712413",
+    "Anish Asthana": "106581684824747208909",
     "Bissenbay Dauletbayev": "114127285145989031675",
-    "Sai Sankar Gochhayat": "112057774963535139749",
-    "Rayna Levinson": "113654907706061112570",
-    "Steven Huels": "110846043168213103522",
-    "Devin de Hueck": "111891587601330012211",
-    "Diane Feddema": "113993930213573634504",
-    "Marcel Hild": "116445288136441446998",
+    "Christoph Goern": "102814839969738411580",
+    "Daniel Riek": "108515811437474839783",
+    "Dominik Tuchyna": "101087488035276666197",
+    "Francesco Murdaca": "108929048208403662680",
+    "Frido Pokorny": "106810069271823707995",
+    "Giorgos Karantonis": "105147362480487195696",
+    "Harshad Reddy Nalla": "102648456274370715335",
     "Hema Veeradhi": "108530691726729807637",
     "Humair Khan": "117385119761143413973",
     "Karan Chauhan": "110694159944095156438",
-    "Tom Coufal": "117471959508522471287",
-    "Tushar Sharma": "117540998919883245003",
+    "Kevin Postlethwait": "102547849534309033904",
+    "Marcel Hild": "116445288136441446998",
+    "Sai Sankar Gochhayat": "112057774963535139749",
+    "Shruthi Raghuraman": "103427213209555601141",
     "Srushti Vijay Kotak": "117644001277054930712",
-    "Giorgos Karantonis": "105147362480487195696",
+    "Steven Huels": "110846043168213103522",
+    "Subin Modeel": "100912928295723672901",
+    "Tomáš Coufal": "117471959508522471287",
+    "Tushar Sharma": "117540998919883245003",
 }
 
 # pragma: no cover
@@ -135,7 +134,7 @@ def hangouts_userid(github_user: str) -> str:
 
 def realname(github_user: str) -> str:
     """Map GitHub user to Real Name."""
-    return GITHUB_REALNAME_MAP[github_user.lower()]
+    return GITHUB_REALNAME_MAP.get(github_user.lower(), github_user)
 
 
 def notify_channel(kind: str, message: str, thread_key: str, url: str) -> None:
