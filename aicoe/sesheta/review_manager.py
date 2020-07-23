@@ -189,7 +189,9 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
                 )
 
                 await github_api.post(
-                    f"{pull_request['url']}/labels", preview_api_version="symmetra", data={"labels": ["approved"]},
+                    f"{pull_request['issue_url']}/labels",
+                    preview_api_version="symmetra",
+                    data={"labels": ["approved"]},
                 )
 
             except gidgethub.BadRequest as err:
