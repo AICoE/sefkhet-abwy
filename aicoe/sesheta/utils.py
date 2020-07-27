@@ -142,7 +142,7 @@ def notify_channel(kind: str, message: str, thread_key: str, url: str) -> None:
     response = None
     scopes = ["https://www.googleapis.com/auth/chat.bot"]
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
-        "/opt/app-root/etc/gcloud/sesheta-chatbot-968e13a86991.json", scopes,
+        "/opt/app-root/etc/gcloud/sesheta-chatbot-c3b8b1207982.json", scopes,
     )
     http_auth = credentials.authorize(Http())
 
