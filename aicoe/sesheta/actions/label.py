@@ -110,6 +110,23 @@ DEFAULT_LABELS = [
     },
     {"name": "kind/feature", "color": "a5d5f7", "description": "Categorize Issue or PR as related to a new feature."},
     {"name": "kind/bug", "color": "d73a4a", "description": "Categorize Issue or PR as related to a bug."},
+    {"name": "kind/question", "color": "d73a4a", "description": "Categorize Issue as a User question."},
+    {"name": "kind/flake", "color": "f3ccff", "description": "A test flake."},
+    {
+        "name": "priority/critical-urgent",
+        "color": "00ff00",
+        "description": "Highest priority. Must be actively worked on as someone's top priority right now.",
+    },
+    {
+        "name": "priority/important-longterm",
+        "color": "00aa00",
+        "description": "Important over the long term, but may not be staffed and/or may need multiple releases to complete.",
+    },
+    {
+        "name": "priority/important-soon",
+        "color": "999900",
+        "description": "Must be staffed and worked on either currently, or very soon, ideally in time for the next release.",
+    },
 ]
 
 DEFAULT_MILESTONES_THOTH = [

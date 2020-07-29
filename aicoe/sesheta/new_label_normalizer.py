@@ -178,7 +178,7 @@ async def get_repositories(login: str = "thoth-station") -> dict:
     return allRepos
 
 
-async def reconcile_labels(login: str, repo: dict):
+async def reconcile_labels(repo: dict):
     """Reconcile Labels of the given Repository."""
     _LOGGER.info("reconciling labels of {0}".format(repo["name"]))
 
@@ -214,12 +214,12 @@ async def reconcile_labels(login: str, repo: dict):
             mutation = CREATE_LABEL.substitute(
                 id=repo["id"], name=label["name"], color=label["color"], desc=label["description"],
             )
-            _LOGGER.debug("updating {0} in {1}/{2}, mutation: {3}".format(label["name"], login, repo["name"], mutation))
+            _LOGGER.debug("updating {0} in {1}, mutation: {2}".format(label["name"], repo["name"], mutation))
 
             request = GraphQLRequest(query=mutation, operation="AddLabel")
-            _LOGGER.debug(request)
+            # _LOGGER.debug(request)
             response = await client.query(request=request)
-            _LOGGER.debug(response)
+            # _LOGGER.debug(response)
 
 
 async def main():
@@ -232,10 +232,10 @@ async def main():
             repos = json.load(f)
     else:
         _LOGGER.debug("querying github, there was no cache file...")
-        repos = await get_repositories()
+        repos = await get_repositories("thoth-station")
 
     for repo in repos:
-        await reconcile_labels("thoth-station", repo)  # FIXME hardcoded login!
+        await reconcile_labels(repo)
 
 
 if __name__ == "__main__":
