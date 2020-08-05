@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# sesheta-actions
+# sefkhet-abwy
 # Copyright(C) 2019 Christoph Görn
 #
 # This program is free software: you can redistribute it and / or modify
@@ -17,6 +17,9 @@
 
 
 """Sesheta."""
+
+__title__ = "sefkhet-abwy"
+__version__ = "0.3.0"
 
 
 async def get_github_client(github_app, account):
