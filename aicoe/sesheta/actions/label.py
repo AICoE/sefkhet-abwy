@@ -114,19 +114,35 @@ DEFAULT_LABELS = [
     {"name": "kind/flake", "color": "f3ccff", "description": "A test flake."},
     {
         "name": "priority/critical-urgent",
-        "color": "00ff00",
+        "color": "ff0000",
         "description": "Highest priority. Must be actively worked on as someone's top priority right now.",
     },
     {
         "name": "priority/important-longterm",
-        "color": "00aa00",
+        "color": "ff9900",
         "description": "Important over the long term, but may not be staffed and/or may need multiple releases to complete.",
     },
     {
         "name": "priority/important-soon",
-        "color": "999900",
+        "color": "ffcd00",
         "description": "Must be staffed and worked on either currently, or very soon, ideally in time for the next release.",
     },
+    {
+        "name": "deployment_name/moc",
+        "color": "d5f48d",
+        "description": "This issue is related to our deployment on MOC",
+    },
+    {
+        "name": "deployment_name/ocp-test",
+        "color": "d5f48d",
+        "description": "this issue is related to our test environment deployment on ocp/psi",
+    },
+    {
+        "name": "deployment_name/ocp-stage",
+        "color": "d5f48d",
+        "description": "this issue is related to our stage environment deployment on ocp/psi",
+    },
+
 ]
 
 DEFAULT_MILESTONES_THOTH = [
