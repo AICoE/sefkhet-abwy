@@ -34,10 +34,8 @@ import aiohttp
 
 from thoth.common import init_logging
 
+from aicoe.sesheta import __version__
 from aicoe.sesheta.actions.label import GITHUB_DEFAULT_LABELS, DEFAULT_LABELS, create_or_update_label
-
-
-__version__ = "0.1.0"
 
 
 init_logging(logging_env_var_start="SEFKHET__ABWY_LOG_")

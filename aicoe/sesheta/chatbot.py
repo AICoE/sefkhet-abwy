@@ -32,7 +32,7 @@ from aicoe.sesheta.messages import HELP_MESSAGE
 from thoth.common import init_logging
 
 from aicoe.sesheta.utils import notify_channel, hangouts_userid, realname
-from aicoe.sesheta.actions import __version__
+from aicoe.sesheta import __version__
 
 
 init_logging(logging_env_var_start="SEFKHET__ABWY_LOG_")

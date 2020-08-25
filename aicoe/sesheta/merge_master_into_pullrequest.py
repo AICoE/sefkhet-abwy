@@ -24,7 +24,7 @@ import click
 import logging
 
 from thoth.common import init_logging
-from aicoe.sesheta.actions import __version__
+from aicoe.sesheta import __version__
 from aicoe.sesheta.actions.common import cocommand
 from aicoe.sesheta.actions.pull_request import merge_master_into_pullrequest
 
