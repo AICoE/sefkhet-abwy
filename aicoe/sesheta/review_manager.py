@@ -40,6 +40,7 @@ from prometheus_async.aio import time
 
 from expiringdict import ExpiringDict
 
+from aicoe.sesheta import __version__
 from aicoe.sesheta.actions.pull_request import (
     merge_master_into_pullrequest2,
     handle_release_pull_request,
@@ -56,11 +57,7 @@ from aicoe.sesheta.actions import (
 from aicoe.sesheta.utils import notify_channel, hangouts_userid, realname, random_positive_emoji2
 from thoth.common import init_logging
 
-
 import aicoe.sesheta.metrics as metrics
-
-
-__version__ = "0.12.0"
 
 
 init_logging(logging_env_var_start="SEFKHET__ABWY_LOG_")

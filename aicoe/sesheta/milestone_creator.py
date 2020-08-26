@@ -32,7 +32,7 @@ from octomachinery.github.api.tokens import GitHubOAuthToken
 from octomachinery.github.api.raw_client import RawGitHubAPI
 
 from thoth.common import init_logging
-from aicoe.sesheta.actions import __version__
+from aicoe.sesheta import __version__
 from aicoe.sesheta.actions.label import (
     DEFAULT_LABELS,
     DEFAULT_MILESTONES_THOTH,
@@ -46,7 +46,7 @@ init_logging(logging_env_var_start="SEFKHET__ABWY_LOG_")
 _LOGGER = logging.getLogger("thoth.labelnormalizer")
 _LOGGER.setLevel(logging.DEBUG if bool(int(os.getenv("DEBUG", 0))) else logging.INFO)
 
-_LOGGER.info(f"Sesheta action: label_normalizer, Version v{__version__}")
+_LOGGER.info(f"Sesheta action: milestone_creator, Version v{__version__}")
 _LOGGER.debug(f"DEBUG mode is enabled")
 
 
