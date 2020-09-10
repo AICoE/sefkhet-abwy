@@ -142,13 +142,14 @@ DEFAULT_LABELS = [
         "color": "d5f48d",
         "description": "this issue is related to our stage environment deployment on ocp/psi",
     },
-
 ]
 
 DEFAULT_MILESTONES_THOTH = [
     {"title": "v0.6.0", "description": "Tracking Milestone for v0.6.0", "due_on": "2020-05-29T19:00:00Z"},
     {"title": "v0.7.0", "description": "Security Indicator Aggregation", "due_on": "2020-06-30T23:00:00Z"},
     {"title": "v0.8.0", "description": "Advise-backed Kebechet", "due_on": "2020-07-17T23:00:00Z"},
+    {"title": "adviser-v0.17.0", "description": "moar stable Adviser!", "due_on": "2020-09-14T13:00:00Z"},
+    {"title": "adviser-v0.18.0", "description": "Security Indicator advise", "due_on": "2020-09-28T13:00:00Z"},
 ]
 
 
