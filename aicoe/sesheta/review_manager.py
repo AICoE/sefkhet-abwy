@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Sefkhet-Abwy
-# Copyright(C) 2019 Christoph Görn
+# Copyright(C) 2019,2020 Christoph Görn
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ import asyncio
 import pathlib
 import logging
 
+import socket
 import gidgethub
 
 
@@ -396,8 +397,12 @@ if __name__ == "__main__":
     _LOGGER.setLevel(logging.DEBUG)
     _LOGGER.debug("Debug mode turned on")
 
-    run_app(  # pylint: disable=expression-not-assigned
-        name="Sefkhet-Abwy",
-        version=get_version_from_scm_tag(root="../..", relative_to=__file__),
-        url="https://github.com/apps/Sefkhet-Abwy",
-    )
+    try:
+        run_app(  # pylint: disable=expression-not-assigned
+            name="Sefkhet-Abwy",
+            version=get_version_from_scm_tag(root="../..", relative_to=__file__),
+            url="https://github.com/apps/Sefkhet-Abwy",
+        )
+    except socket.gaierror as gai:
+        # TODO add a error/exception metric inc here, and in general a metric exporter
+        _LOGGER.exception(gai)
