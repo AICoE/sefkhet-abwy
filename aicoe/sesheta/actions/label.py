@@ -150,6 +150,13 @@ DEFAULT_MILESTONES_THOTH = [
     {"title": "v0.8.0", "description": "Advise-backed Kebechet", "due_on": "2020-07-17T23:00:00Z"},
     {"title": "adviser-v0.17.0", "description": "moar stable Adviser!", "due_on": "2020-09-14T13:00:00Z"},
     {"title": "adviser-v0.18.0", "description": "Security Indicator advise", "due_on": "2020-09-28T13:00:00Z"},
+    {
+        "title": "investigator-v0.5.0",
+        "description": "add Kafka to our infrastructure",
+        "due_on": "2020-09-28T13:00:00Z",
+    },
+    {"title": "slo-reporter-v0.7.0", "description": "more SLI and docs", "due_on": "2020-09-28T13:00:00Z"},
+    {"title": "kebechet-v1.1.0", "description": "proactive cyborg nr. 1", "due_on": "2020-10-12T13:00:00Z"},
 ]
 
 
