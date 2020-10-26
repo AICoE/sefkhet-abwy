@@ -73,11 +73,12 @@ async def get_intent(text: str,) -> (str, float, dict):
         try:
             (repo_name, tag) = repo_name_tag.split(":")
         except Exception as e:
+            _LOGGER.error(e)
             pass
 
         return ("tag_release", 1.0, {"repo_name": repo_name, "tag": tag})
 
-    if text.startswith("status"):
+    if text.startswith("status") or text.startswith("how are you"):
         return ("status", 1.0, {})
 
     return (None, 0.0, {})
@@ -99,7 +100,7 @@ async def process_user_text(thread_id: str, text: str) -> str:
         return HELP_MESSAGE
 
     if intent[0] == "status":
-        return "feeling great today!"
+        return f"✨ it feels great to run v{__version__} of myself today!"
 
     if intent[0] == "release":
         result = await make_release_issue(intent[-1])
