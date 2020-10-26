@@ -61,7 +61,7 @@ async def update_milestones(org: str = "thoth-station"):
             slug = repo["full_name"]
 
             _LOGGER.debug("working on %s", slug)
-            if repo["archived"]:
+            if repo["archived"] or (slug == "thoth-station/notebooks"):
                 _LOGGER.debug("skipping %s, this repository was archived!", slug)
                 continue
 

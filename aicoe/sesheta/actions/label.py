@@ -142,6 +142,11 @@ DEFAULT_LABELS = [
         "color": "d5f48d",
         "description": "this issue is related to our stage environment deployment on ocp/psi",
     },
+    {
+        "name": "hacktoberfest-accepted",
+        "color": "d4c5f9",
+        "description": "This Pull Request has been accepted for Hacktoberfest 2020!",
+    },
 ]
 
 DEFAULT_MILESTONES_THOTH = [
