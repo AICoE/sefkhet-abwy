@@ -99,7 +99,7 @@ async def process_user_text(thread_id: str, text: str) -> str:
         return HELP_MESSAGE
 
     if intent[0] == "status":
-        return "feeling great today!"
+        return f":sparkles: it feels great to run v{__version__} of myself today!"
 
     if intent[0] == "release":
         result = await make_release_issue(intent[-1])
