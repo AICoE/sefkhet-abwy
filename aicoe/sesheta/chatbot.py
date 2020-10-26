@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Sefkhet-Abwy
-# Copyright(C) 2019 Christoph Görn
+# Copyright(C) 2019,2020 Christoph Görn
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -77,6 +77,9 @@ async def get_intent(text: str,) -> (str, float, dict):
 
         return ("tag_release", 1.0, {"repo_name": repo_name, "tag": tag})
 
+    if text.startswith("status"):
+        return ("status", 1.0, {})
+
     return (None, 0.0, {})
 
 
@@ -93,12 +96,12 @@ async def process_user_text(thread_id: str, text: str) -> str:
     if intent[0] == "help":
         return HELP_MESSAGE
 
+    if intent[0] == "status":
+        return "feeling great today!"
+
     if intent[0] == "release":
         result = await make_release_issue(intent[-1])
         return result
-
-    if intent[0] == "get_tags_of_repo":
-        _LOGGER.info(f"get tags of repo... {intent}")
 
     if intent[0] == "tag_release":
         _LOGGER.info(f"tag_release... {intent}")
