@@ -90,6 +90,8 @@ async def process_user_text(thread_id: str, text: str) -> str:
     # if the message was in a room, we need to strip the username
     if text.startswith("@Sesheta"):
         parsed_text = text.split(" ", 1)[1]
+    else:
+        parsed_text = text
 
     intent = await get_intent(parsed_text)
 
