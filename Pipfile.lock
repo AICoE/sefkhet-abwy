@@ -673,11 +673,19 @@
         },
         "thoth-common": {
             "hashes": [
-                "sha256:08f5942d54e85cce69067f6e4b3f07f079ef273b2b09ae8df711d8228ec56b2b",
-                "sha256:7ee03535ccc369d822817c9ce62c7b3ffee37632fd10425d07f646012d7ee60d"
+                "sha256:1c6a2d0ec91006d07af0ad825823339bab10131e1c884c970faee03bffab6fca",
+                "sha256:215cb5534deaf51126b63c335c2eb9a7a7e7511f46e03bc8de2a972b14a6bea6"
             ],
             "index": "pypi",
-            "version": "==0.16.1"
+            "version": "==0.20.2"
+        },
+        "typing-extensions": {
+            "hashes": [
+                "sha256:7cb407020f00f7bfc3cb3e7881628838e69d8f3fcab2f64742a5e76b2f841918",
+                "sha256:99d4073b617d30288f569d3f13d2bd7548c3a7e4c8de87db09a9d29bb3a4a60c",
+                "sha256:dafc7639cde7f1b6e1acc0f457842a83e722ccca8eef5270af2d74792619a89f"
+            ],
+            "version": "==3.7.4.3"
         },
         "typing-extensions": {
             "hashes": [
