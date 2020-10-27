@@ -429,11 +429,11 @@
         },
         "octomachinery": {
             "hashes": [
-                "sha256:a503dd06a392b9e9ad4ee7ec4998e8bbbbf700372eb099ffed3578166146137e",
-                "sha256:d58cde0feca59075f49ad49196ee60e83ce9d8bcb45fa6aecdadf4226ad2a432"
+                "sha256:f33af95821e09c23e5e548e3608858e359a0718caaaf2b7f086423e77012e1a9",
+                "sha256:f364be1c22d3ab1be7ac0f00fdc64872038f88dc4e2f8a6380812e5c22583958"
             ],
             "index": "pypi",
-            "version": "==0.2.2"
+            "version": "==0.3.2"
         },
         "openshift": {
             "hashes": [
