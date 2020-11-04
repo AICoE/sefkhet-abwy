@@ -55,19 +55,13 @@ async def get_intent(text: str,) -> (str, float, dict):
     tag = None
     repo_name = text.strip().split(" ")[-1]
 
-    if text.startswith("help"):
+    if text.lower().startswith("help"):
         return ("help", 1.0, {})
-
-    if text.startswith("assign"):
-        return ("assign", 1.0, {"repo_name": repo_name})
 
     if text.lower().startswith(tuple(RELEASE_COMMANDS)):
         return ("release", 1.0, {"repo_name": repo_name, "text": text})
 
-    if text.startswith("get tags of"):
-        return ("get_tags_of_repo", 1.0, {"repo_name": repo_name})
-
-    if text.startswith("deliver"):
+    if text.lower().startswith("deliver"):
         repo_name_tag = text.split(" ")[-1]
 
         try:
@@ -78,7 +72,7 @@ async def get_intent(text: str,) -> (str, float, dict):
 
         return ("tag_release", 1.0, {"repo_name": repo_name, "tag": tag})
 
-    if text.startswith("status") or text.startswith("how are you"):
+    if text.lower().startswith("status") or text.lower().startswith("how are you"):
         return ("status", 1.0, {})
 
     return (None, 0.0, {})
