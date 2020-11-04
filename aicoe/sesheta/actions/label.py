@@ -22,6 +22,8 @@
 import os
 import logging
 
+from datetime import datetime
+
 import aiohttp
 import gidgethub
 
@@ -162,6 +164,11 @@ DEFAULT_MILESTONES_THOTH = [
     },
     {"title": "slo-reporter-v0.7.0", "description": "more SLI and docs", "due_on": "2020-09-28T13:00:00Z"},
     {"title": "kebechet-v1.1.0", "description": "proactive cyborg nr. 1", "due_on": "2020-10-12T13:00:00Z"},
+    {
+        "title": "python38-migration",
+        "description": "migrate libraries and applications to Python 3.8",
+        "due_on": "2020-11-23T13:00:00Z",
+    },
 ]
 
 
@@ -177,6 +184,12 @@ async def create_or_update_milestone(slug: str, title: str, description: str, st
 
         if due_on is not None:
             milestone_data["due_on"] = due_on
+
+            due_on_datetime = datetime.strptime(due_on, "%Y-%m-%dT%H:%M:%SZ")
+
+            if due_on_datetime < datetime.utcnow():
+                _LOGGER.info(f"Milestone '{title}' has a due date in the past... skipping!")
+                return
 
         try:
             # and see if it exists

@@ -215,9 +215,10 @@ async def reconcile_labels(repo: dict):
             _LOGGER.debug("updating {0} in {1}, mutation: {2}".format(label["name"], repo["name"], mutation))
 
             request = GraphQLRequest(query=mutation, operation="AddLabel")
-            # _LOGGER.debug(request)
+            _LOGGER.debug(request)
+
             response = await client.query(request=request)
-            # _LOGGER.debug(response)
+            _LOGGER.debug(response)
 
 
 async def main():
