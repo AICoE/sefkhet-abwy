@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # sefkhet-abwy
-# Copyright(C) 2019 Christoph Görn
+# Copyright(C) 2019,2020 Christoph Görn
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 """Sesheta."""
 
 __title__ = "sefkhet-abwy"
-__version__ = "0.14.1"
+__version__ = "0.15.0"
 
 
 async def get_github_client(github_app, account):
