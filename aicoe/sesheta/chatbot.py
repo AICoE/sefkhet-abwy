@@ -23,6 +23,7 @@ import os
 import asyncio
 import pathlib
 import logging
+import random
 
 import aiohttp
 from aiohttp import web
@@ -40,6 +41,17 @@ init_logging(logging_env_var_start="SEFKHET__ABWY_LOG_")
 _LOGGER = logging.getLogger("aicoe.sesheta")
 _LOGGER.info(f"AICoE's Chat Bot, Version v{__version__}")
 logging.getLogger("googleapiclient.discovery_cache").setLevel(logging.ERROR)
+_THOTH_INHABITANTS = [
+ "bissenbay",
+ "fridex",
+ "goern",
+ "harshad16",
+ "KPostOffice",
+ "pacospace",
+ "saisankargochhayat",
+ "sub-mod",
+ "xtuchyna",
+]
 
 
 routes = web.RouteTableDef()
@@ -74,6 +86,12 @@ async def get_intent(text: str,) -> (str, float, dict):
 
     if text.lower().startswith("status") or text.lower().startswith("how are you"):
         return ("status", 1.0, {})
+
+    if text.lower().startswith(("gti", "get thoth inhabitants")):
+        return ("gti", 1.0, {})
+
+    if text.lower().startswith(("grti", "get random thoth inhabitant")):
+        return ("grti", 1.0, {})
 
     return (None, 0.0, {})
 
@@ -120,6 +138,13 @@ async def process_user_text(thread_id: str, text: str) -> str:
                 _LOGGER.debug(await resp.text())
 
         return f"I have told TektonCD to deliver `{intent[2]['tag']}` of repository `{intent[2]['repo_name']}`"
+
+    if intent[0] == "gti":
+        return ", ".join(_THOTH_INHABITANTS)
+
+    if intent[0] == "grti":
+        return f"⭐ In this Universe, based on relative position of planets and all the galaxies " \
+               f"I picked {random.choice(_THOTH_INHABITANTS)} ⭐"
 
     return "Sorry, I didnt get that... try 'deliver' or 'get tags of'"
 
