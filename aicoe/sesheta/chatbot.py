@@ -144,7 +144,7 @@ async def process_user_text(thread_id: str, text: str) -> str:
 
     if intent[0] == "grti":
         return f"⭐ In this Universe, based on relative position of planets and all the galaxies " \
-               f"I picked {random.choice(_THOTH_INHABITANTS)} ⭐"
+               f"I picked {hangouts_userid(random.choice(_THOTH_INHABITANTS))} ⭐"
 
     return "Sorry, I didnt get that... try 'deliver' or 'get tags of'"
 
