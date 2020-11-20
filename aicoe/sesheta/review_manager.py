@@ -404,5 +404,4 @@ if __name__ == "__main__":
             url="https://github.com/apps/Sefkhet-Abwy",
         )
     except socket.gaierror as gai:
-        # TODO add a error/exception metric inc here, and in general a metric exporter
         _LOGGER.exception(gai)
