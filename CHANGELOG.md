@@ -376,3 +376,14 @@ An `merge-master-into-pullrequest` script.
 * :pushpin: Automatic update of dependency pytest from 5.4.3 to 6.0.0rc1
 * :pushpin: Automatic update of dependency google-api-python-client from 1.9.3 to 1.10.0
 * :pushpin: Automatic update of dependency thoth-common from 0.14.1 to 0.14.2
+
+## Release 0.17.0 (2020-11-23T19:45:42)
+### Features
+* :arrow_up: Automatic update of dependencies by kebechet. (#94)
+### Improvements
+* manage kebechet auto updates while processing (#95)
+### Automatic Updates
+* :pushpin: Automatic update of dependency pytest from 6.1.1 to 6.1.2 (#92)
+* :pushpin: Automatic update of dependency google-api-python-client from 1.12.5 to 1.12.8 (#91)
+* :pushpin: Automatic update of dependency aiohttp from 3.7.2 to 3.7.3 (#89)
+* :pushpin: Automatic update of dependency thoth-common from 0.20.2 to 0.20.4 (#88)
