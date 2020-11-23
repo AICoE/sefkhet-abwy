@@ -261,7 +261,7 @@ def eligible_release_pullrequest(pullrequest: dict) -> bool:
         return False
 
     # check if Kebechet was the author pullrequest['user']['login']
-    if pullrequest["user"]["login"] != "sesheta":
+    if pullrequest["user"]["login"] not in ["sesheta", "khebhut[bot]"]:
         _LOGGER.debug(
             f"Author of Release Pull Request: '{pullrequest['title']}' is not 'Sesheta', not eligible for release!",
         )

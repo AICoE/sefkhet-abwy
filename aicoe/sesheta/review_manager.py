@@ -116,7 +116,7 @@ async def on_pr_closed(*, action, number, pull_request, repository, sender, orga
     _LOGGER.debug(f"on_pr_closed: working on PR {pull_request['html_url']}")
 
     # we do not notify on standard automated SrcOps
-    ignore_messages = ["Automatic update of dependency", "Release of", "Automatic dependency re-locking"]
+    ignore_messages = ["Automatic update of", "Release of", "Automatic dependency re-locking"]
     if not pull_request["title"].startswith(tuple(ignore_messages)):
         if pull_request["merged"]:
             notify_channel(
@@ -167,7 +167,7 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
             )
 
         if (
-            pull_request["title"].startswith("Automatic update of dependency")
+            pull_request["title"].startswith("Automatic update of")
             or pull_request["title"].startswith("Release of version")
             or pull_request["title"].startswith("Automatic dependency re-locking")
         ):
@@ -234,9 +234,7 @@ async def on_pull_request_review_requested(*, action, number, pull_request, requ
     )
 
     # we do not notify on standard automated SrcOps
-    if pull_request["title"].startswith("Automatic update of dependency") or pull_request["title"].startswith(
-        "Release of",
-    ):
+    if pull_request["title"].startswith("Automatic update of") or pull_request["title"].startswith("Release of"):
         return
 
     for requested_reviewer in pull_request["requested_reviewers"]:
@@ -257,7 +255,7 @@ async def on_issue_opened(*, action, issue, repository, sender, **kwargs):
     """Take actions if an issue got opened."""
     _LOGGER.info(f"working on Issue {issue['html_url']}: opened")
 
-    if issue["title"].startswith("Automatic update of dependency"):
+    if issue["title"].startswith("Automatic update of"):
         _LOGGER.debug(f"{issue['url']} is an 'Automatic update of dependencies', not sending notification")
         return
 
