@@ -73,7 +73,7 @@ notifications = ExpiringDict(max_len=100, max_age_seconds=10)
 
 def send_notification(repository_name: str, pull_request_id: int, requested_reviewer_login: str) -> bool:
     """Decide if we need to send a notification."""
-    if requested_reviewer_login in ["sesheta", "khebhut[bot]"]:
+    if requested_reviewer_login in ["sesheta", "khebhut[bot]", "khebhut"]:
         return False  # we never want to send notifications for Sesheta
 
     if notifications.get(f"{repository_name}_{pull_request_id}_{requested_reviewer_login}"):
@@ -171,7 +171,7 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
             or pull_request["title"].startswith("Release of version")
             or pull_request["title"].startswith("Automatic dependency re-locking")
         ):
-            if pull_request["user"]["login"] not in ["sesheta", "khebhut[bot]"]:
+            if pull_request["user"]["login"] not in ["sesheta", "khebhut[bot]", "khebhut"]:
                 _LOGGER.error(
                     f"on_pr_open_or_edit: automatic update not by Sesheta?! have a look at {pull_request['html_url']}!",
                 )
