@@ -387,3 +387,8 @@ An `merge-master-into-pullrequest` script.
 * :pushpin: Automatic update of dependency google-api-python-client from 1.12.5 to 1.12.8 (#91)
 * :pushpin: Automatic update of dependency aiohttp from 3.7.2 to 3.7.3 (#89)
 * :pushpin: Automatic update of dependency thoth-common from 0.20.2 to 0.20.4 (#88)
+
+## Release 0.17.1 (2020-11-24T19:36:32)
+### Features
+* port to python 38 (#98)
+* Ignore automated message from kebechet along with sesheta (#99)
