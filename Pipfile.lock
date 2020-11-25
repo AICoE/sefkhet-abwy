@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "0e5f26abe5acf1129dbf158371ba28d1cb0663fd0029995258622fb84b88342e"
+            "sha256": "564435f9839203dc3f8032e3b12b84b65ecfd249e2f1960b98ef5d89f7c69535"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -126,7 +126,7 @@
                 "sha256:bdd27412b75589cee1f45274e4da74dd5fb0105a6052516209ac59cbe5945e15",
                 "sha256:f519c95bfdc4cc777f1e4e507529e7a7b13e1d8ceaa0024c4b6ec054535f297e"
             ],
-            "markers": "python_version >= '3.6' and python_version < '4'",
+            "markers": "python_version >= '3.6' and python_version < '4.0'",
             "version": "==0.20.0"
         },
         "cafeteria-asyncio": {
@@ -134,7 +134,7 @@
                 "sha256:1bb8158b029570154006ad7f0160c45a6de77227a601c60cb3c80d65a878fc97",
                 "sha256:b3f5eac4bea103cc8baebb9592bcd3ecf7cf895cd0748d0f7cc16ea60469202e"
             ],
-            "markers": "python_version >= '3.7' and python_version < '4'",
+            "markers": "python_version >= '3.7' and python_version < '4.0'",
             "version": "==0.2.1"
         },
         "certifi": {
@@ -267,11 +267,11 @@
         },
         "gidgethub": {
             "hashes": [
-                "sha256:5526cc2a06bfad707d10ec118393e0d33c2aa524605255d96958c22c93e8e7aa",
-                "sha256:d1c39d17d3c775f9d3267df44d907cf94411077e4b0872f120d9e8a8714fbbf8"
+                "sha256:95674e830110e9d9a0d01ee51a5d74fa28cffa4ba62376ab8b7f2303cfb5369b",
+                "sha256:f87910ddf17147c6c9f644848d6584680202f816b2dd7113cab6269369051aea"
             ],
-            "markers": "python_version >= '3.6'",
-            "version": "==4.2.0"
+            "index": "pypi",
+            "version": "==4.1.0"
         },
         "google-api-core": {
             "hashes": [
