@@ -275,7 +275,7 @@ def get_release_issue(pullrequest: dict) -> int:
     try:
         # TODO maybe we need to split the body by \n and process each line?!
         for line in pullrequest["body"].splitlines():
-            if line.upper().startswith("RELATED"):
+            if line.upper().startswith("CLOSES"):
                 _, issue = line.split("#", maxsplit=1)
                 return int(issue)  # FIXME this might fail
     except KeyError as exc:
