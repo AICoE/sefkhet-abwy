@@ -52,7 +52,7 @@ _THOTH_INHABITANTS = [
  "sub-mod",
  "xtuchyna",
 ]
-_CHATBOT = ChatBot("Sesheta")
+_CHATBOT = ChatBot("Sesheta", read_only=True)
 _TRAINER = ChatterBotCorpusTrainer(_CHATBOT)
 _TRAINER.train("chatterbot.corpus.english")
 
