@@ -73,7 +73,6 @@ DEFAULT_LABELS = [
     {"name": "thoth/potential-flake", "color": "f3ccff", "description": "This might be a flake of some kind."},
     {"name": "test:flake", "color": "f3ccff", "description": "A test flake."},
     {"name": "test/flake", "color": "f3ccff", "description": "A test flake."},
-    {"name": "component/user-api", "color": "dcdcdc", "description": "The User-API component."},
     {
         "name": "priority/critical-urgent",
         "color": "e11d21",
@@ -148,6 +147,42 @@ DEFAULT_LABELS = [
         "name": "hacktoberfest-accepted",
         "color": "d4c5f9",
         "description": "This Pull Request has been accepted for Hacktoberfest 2020!",
+    },
+    {
+        "name": "sig/documentation",
+        "color": "1d76db",
+        "description": "Issues or PRs related to documentation, tutorials, examples, ...",
+    },
+    {
+        "name": "sig/cyborgs",
+        "color": "1d76db",
+        "description": "Issues or PRs related to Kebechet and all the other Cyborgs.",
+    },
+    {
+        "name": "sig/investigator",
+        "color": "1d76db",
+        "description": "Issues or PRs related to https://github.com/orgs/thoth-station/projects/14",
+    },
+    {
+        "name": "sig/indicators",
+        "color": "1d76db",
+        "description": "Issues or PRs related to {meta|performance|security} indicators.",
+    },
+    {
+        "name": "sig/knowledge-graph",
+        "color": "1d76db",
+        "description": "Issues or PRs related to https://github.com/orgs/thoth-station/projects/8",
+    },
+    {"name": "sig/solvers", "color": "1d76db", "description": "Issues or PRs related to Solvers"},
+    {
+        "name": "sig/slo",
+        "color": "1d76db",
+        "description": "Issues or PRs related to Service Level Indicators and Objectives and their reporting",
+    },
+    {
+        "name": "sig/advisor",
+        "color": "1d76db",
+        "description": "Issues or PRs related to https://github.com/orgs/thoth-station/projects/4",
     },
 ]
 
