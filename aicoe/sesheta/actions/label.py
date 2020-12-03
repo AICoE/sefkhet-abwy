@@ -184,6 +184,11 @@ DEFAULT_LABELS = [
         "color": "1d76db",
         "description": "Issues or PRs related to https://github.com/orgs/thoth-station/projects/4",
     },
+    {
+        "name": "sig/build",
+        "color": "1d76db",
+        "description": "Issues or PRs related to building and continuous delivery of build artifacts.",
+    },
 ]
 
 DEFAULT_MILESTONES_THOTH = [
