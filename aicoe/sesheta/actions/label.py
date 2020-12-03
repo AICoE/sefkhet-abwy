@@ -189,6 +189,11 @@ DEFAULT_LABELS = [
         "color": "1d76db",
         "description": "Issues or PRs related to building and continuous delivery of build artifacts.",
     },
+    {
+        "name": "sig/devops",
+        "color": "1d76db",
+        "description": "Issues or PRs related to DevOps and continuous deployment.",
+    },
 ]
 
 DEFAULT_MILESTONES_THOTH = [
