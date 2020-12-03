@@ -392,3 +392,14 @@ An `merge-master-into-pullrequest` script.
 ### Features
 * port to python 38 (#98)
 * Ignore automated message from kebechet along with sesheta (#99)
+
+## Release 0.18.0 (2020-12-03T22:13:48)
+### Features
+* :arrow_up: add sig/build label
+* add some SIG labels as discussed in https://github.com/thoth-station/core/issues/261
+* :arrow_up: Automatic update of dependencies by kebechet. (#110)
+* update .aicoe-ci.yaml (#109)
+* :arrow_up: Automatic update of dependencies by kebechet. (#107)
+* update .thoth.yaml (#102)
+### Improvements
+* adjust the method to gather issue relatedto pull request (#112)
