@@ -14,6 +14,8 @@ oauth2client = "*"
 expiringdict = "*"
 prometheus-async = {extras = ["aiohttp"],version = "*"}
 aiographql-client = "*"
+chatterbot-corpus = "*"
+chatterbot = {ref = "relax-py38", git = "https://github.com/fridex/ChatterBot.git"}
 
 [dev-packages]
 pylint = "*"

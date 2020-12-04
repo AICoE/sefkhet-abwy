@@ -20,13 +20,13 @@
 
 
 import os
-import asyncio
-import pathlib
 import logging
 import random
 
 import aiohttp
 from aiohttp import web
+from chatterbot import ChatBot
+from chatterbot.trainers import ChatterBotCorpusTrainer
 
 from aicoe.sesheta.messages import HELP_MESSAGE
 
@@ -52,6 +52,9 @@ _THOTH_INHABITANTS = [
  "sub-mod",
  "xtuchyna",
 ]
+_CHATBOT = ChatBot("Sesheta", read_only=True)
+_TRAINER = ChatterBotCorpusTrainer(_CHATBOT)
+_TRAINER.train("chatterbot.corpus.english")
 
 
 routes = web.RouteTableDef()
@@ -148,7 +151,7 @@ async def process_user_text(thread_id: str, text: str) -> str:
         return f"⭐ In this Universe, based on relative position of planets and all the galaxies " \
                f"I picked {hangouts_userid(random.choice(_THOTH_INHABITANTS))} ⭐"
 
-    return "Sorry, I didnt get that... try 'deliver' or 'get tags of'"
+    return _CHATBOT.get_response(text)
 
 
 @routes.get("/")
