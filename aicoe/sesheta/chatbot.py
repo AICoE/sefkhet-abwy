@@ -140,7 +140,9 @@ async def process_user_text(thread_id: str, text: str) -> str:
         return f"I have told TektonCD to deliver `{intent[2]['tag']}` of repository `{intent[2]['repo_name']}`"
 
     if intent[0] == "gti":
-        return ", ".join(_THOTH_INHABITANTS)
+        inhabitants = [hangouts_userid(i) for i in  _THOTH_INHABITANTS]
+        random.shuffle(inhabitants)
+        return " 🔗 ".join(inhabitants)
 
     if intent[0] == "grti":
         return f"⭐ In this Universe, based on relative position of planets and all the galaxies " \
