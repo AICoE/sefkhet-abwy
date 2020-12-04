@@ -403,3 +403,8 @@ An `merge-master-into-pullrequest` script.
 * update .thoth.yaml (#102)
 ### Improvements
 * adjust the method to gather issue relatedto pull request (#112)
+
+## Release 0.19.0 (2020-12-04T13:57:13)
+### Features
+* Use ChatterBot for Sesheta (#117)
+* Randomize order when reporting Thoth inhabitants (#114)
