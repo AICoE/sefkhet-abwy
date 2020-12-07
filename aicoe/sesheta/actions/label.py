@@ -194,6 +194,11 @@ DEFAULT_LABELS = [
         "color": "1d76db",
         "description": "Issues or PRs related to DevOps and continuous deployment.",
     },
+    {
+        "name": "sig/user-experience",
+        "color": "1d76db",
+        "description": "Issues or PRs related to the User Experience of our Services, Tools, and Libraries.",
+    },
 ]
 
 DEFAULT_MILESTONES_THOTH = [
