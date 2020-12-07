@@ -16,6 +16,7 @@ prometheus-async = {extras = ["aiohttp"],version = "*"}
 aiographql-client = "*"
 chatterbot-corpus = "*"
 chatterbot = {ref = "relax-py38", git = "https://github.com/fridex/ChatterBot.git"}
+spacy = "*"
 
 [dev-packages]
 pylint = "*"
