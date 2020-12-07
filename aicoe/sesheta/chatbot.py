@@ -151,7 +151,8 @@ async def process_user_text(thread_id: str, text: str) -> str:
         return f"⭐ In this Universe, based on relative position of planets and all the galaxies " \
                f"I picked {hangouts_userid(random.choice(_THOTH_INHABITANTS))} ⭐"
 
-    return _CHATBOT.get_response(text)
+    chatterbox_response = _CHATBOT.get_response(text[len("@sesheta "):])
+    return str(chatterbox_response)
 
 
 @routes.get("/")
