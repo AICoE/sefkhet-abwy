@@ -408,3 +408,10 @@ An `merge-master-into-pullrequest` script.
 ### Features
 * Use ChatterBot for Sesheta (#117)
 * Randomize order when reporting Thoth inhabitants (#114)
+
+## Release 0.20.0 (2020-12-08T07:59:25)
+### Features
+* Fixed json reponse error.  (#126)
+* Provide a custom assemble script for spacy (#124)
+* Added en-core-web-sm = (#123)
+* Add spacy as a dependency
