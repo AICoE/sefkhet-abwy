@@ -415,3 +415,11 @@ An `merge-master-into-pullrequest` script.
 * Provide a custom assemble script for spacy (#124)
 * Added en-core-web-sm = (#123)
 * Add spacy as a dependency
+
+## Release 0.20.1 (2020-12-17T20:46:31)
+### Features
+* :arrow_up: added the UX SIG
+* :arrow_up: add SIG labels
+### Improvements
+* :sparkles: some reformatting and clean up
+* :sparkles: some reformatting and clean up
