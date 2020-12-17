@@ -22,6 +22,7 @@
 import os
 import logging
 import random
+from typing import Tuple
 
 import aiohttp
 from aiohttp import web
@@ -32,7 +33,7 @@ from aicoe.sesheta.messages import HELP_MESSAGE
 
 from thoth.common import init_logging
 
-from aicoe.sesheta.utils import notify_channel, hangouts_userid, realname
+from aicoe.sesheta.utils import hangouts_userid
 from aicoe.sesheta import __version__
 
 
@@ -42,15 +43,15 @@ _LOGGER = logging.getLogger("aicoe.sesheta")
 _LOGGER.info(f"AICoE's Chat Bot, Version v{__version__}")
 logging.getLogger("googleapiclient.discovery_cache").setLevel(logging.ERROR)
 _THOTH_INHABITANTS = [
- "bissenbay",
- "fridex",
- "goern",
- "harshad16",
- "KPostOffice",
- "pacospace",
- "saisankargochhayat",
- "sub-mod",
- "xtuchyna",
+    "bissenbay",
+    "fridex",
+    "goern",
+    "harshad16",
+    "KPostOffice",
+    "pacospace",
+    "saisankargochhayat",
+    "sub-mod",
+    "xtuchyna",
 ]
 _CHATBOT = ChatBot("Sesheta", read_only=True)
 _TRAINER = ChatterBotCorpusTrainer(_CHATBOT)
@@ -64,7 +65,7 @@ GITHUB_TOKEN = os.environ["GITHUB_ACCESS_TOKEN"]
 RELEASE_COMMANDS = ["create new minor release", "create new major release", "create new patch release"]
 
 
-async def get_intent(text: str,) -> (str, float, dict):
+async def get_intent(text: str,) -> Tuple(str, float, dict):
     """Get the Intent of the provided text, and assign it a score."""
     repo_name = None
     tag = None
