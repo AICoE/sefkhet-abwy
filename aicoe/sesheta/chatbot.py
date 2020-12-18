@@ -24,14 +24,16 @@ import logging
 import random
 
 import aiohttp
+
 from aiohttp import web
+
 from chatterbot import ChatBot
 from chatterbot.trainers import ChatterBotCorpusTrainer
 
-from aicoe.sesheta.messages import HELP_MESSAGE
-
 from thoth.common import init_logging
 
+from aicoe.sesheta.messages import HELP_MESSAGE
+from aicoe.sesheta.actions.chat import process_user_text
 from aicoe.sesheta.utils import hangouts_userid
 from aicoe.sesheta import __version__
 
@@ -61,100 +63,6 @@ routes = web.RouteTableDef()
 app = web.Application()
 
 GITHUB_TOKEN = os.environ["GITHUB_ACCESS_TOKEN"]
-RELEASE_COMMANDS = ["create new minor release", "create new major release", "create new patch release"]
-
-
-async def get_intent(text: str,) -> (str, float, dict):
-    """Get the Intent of the provided text, and assign it a score."""
-    repo_name = None
-    tag = None
-    repo_name = text.strip().split(" ")[-1]
-
-    if text.lower().startswith("help"):
-        return ("help", 1.0, {})
-
-    if text.lower().startswith(tuple(RELEASE_COMMANDS)):
-        return ("release", 1.0, {"repo_name": repo_name, "text": text})
-
-    if text.lower().startswith("deliver"):
-        repo_name_tag = text.split(" ")[-1]
-
-        try:
-            (repo_name, tag) = repo_name_tag.split(":")
-        except Exception as e:
-            _LOGGER.error(e)
-            pass
-
-        return ("tag_release", 1.0, {"repo_name": repo_name, "tag": tag})
-
-    if text.lower().startswith("status") or text.lower().startswith("how are you"):
-        return ("status", 1.0, {})
-
-    if text.lower().startswith(("gti", "get thoth inhabitants")):
-        return ("gti", 1.0, {})
-
-    if text.lower().startswith(("grti", "get random thoth inhabitant")):
-        return ("grti", 1.0, {})
-
-    return (None, 0.0, {})
-
-
-async def process_user_text(thread_id: str, text: str) -> str:
-    """Process the Text, get the intent, and schedule actions accordingly."""
-    _LOGGER.info(f"message on thread {thread_id}: {text}")
-
-    # if the message was in a room, we need to strip the username
-    if text.startswith("@Sesheta"):
-        parsed_text = text.split(" ", 1)[1]
-    else:
-        parsed_text = text
-
-    intent = await get_intent(parsed_text)
-
-    if intent[0] == "help":
-        return HELP_MESSAGE
-
-    if intent[0] == "status":
-        return f"✨ it feels great to run v{__version__} of myself today!"
-
-    if intent[0] == "release":
-        result = await make_release_issue(intent[-1])
-        return result
-
-    if intent[0] == "tag_release":
-        _LOGGER.info(f"tag_release... {intent}")
-
-        if (intent[2]["tag"] is None) or (intent[2]["repo_name"] is None):
-            return "Uhh... cant find repo_name or tag, please use `repo_name:tag`!"
-
-        webhook_payload = {
-            "ref": intent[2]["tag"],
-            "ref_type": "tag",
-            "repo_url": f"https://github.com/thoth-station/{intent[2]['repo_name']}",
-            "repo_name": intent[2]["repo_name"],
-        }
-        webhook_url = "http://thoth-ci.thoth.ultrahook.com"
-
-        async with aiohttp.ClientSession() as session:
-            async with session.post(webhook_url, json=webhook_payload) as resp:
-                _LOGGER.debug(resp.status)
-                _LOGGER.debug(await resp.text())
-
-        return f"I have told TektonCD to deliver `{intent[2]['tag']}` of repository `{intent[2]['repo_name']}`"
-
-    if intent[0] == "gti":
-        inhabitants = [hangouts_userid(i) for i in _THOTH_INHABITANTS]
-        random.shuffle(inhabitants)
-        return " 🔗 ".join(inhabitants)
-
-    if intent[0] == "grti":
-        return \
-            f"⭐ In this Universe, based on relative position of planets and all the galaxies " \
-            f"I picked {hangouts_userid(random.choice(_THOTH_INHABITANTS))} ⭐"
-
-
-    chatterbox_response = _CHATBOT.get_response(text[len("@sesheta "):])
-    return str(chatterbox_response)
 
 
 @routes.get("/")
