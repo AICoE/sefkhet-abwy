@@ -160,11 +160,7 @@ async def process_user_text(thread_id: str, text: str) -> str:
         return " 🔗 ".join(inhabitants)
 
     if intent[0] == "grti":
-        return (
-            f"⭐ In this Universe, based on relative position of planets ",
-            f" and all the galaxies ",
-            f"I picked {hangouts_userid(random.choice(_THOTH_INHABITANTS))} ⭐",
-        )
+        return f"⭐ In this Universe, based on relative position of planets  and all the galaxies I picked {hangouts_userid(random.choice(_THOTH_INHABITANTS))} ⭐"
 
     chatterbox_response = CHATBOT.get_response(text[len("@sesheta ") :])
     return str(chatterbox_response)
