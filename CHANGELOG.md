@@ -423,3 +423,11 @@ An `merge-master-into-pullrequest` script.
 ### Improvements
 * :sparkles: some reformatting and clean up
 * :sparkles: some reformatting and clean up
+
+## Release 0.20.2 (2020-12-18T11:24:12)
+### Features
+* :sparkles: add a little testing for get_intent
+* :pencil: remove the reno based release notes
+### Improvements
+* :sparkles: add tox and clean up the rest
+* :pencil: :bug: :sparkles: remove the tests, as they dont really test anything
