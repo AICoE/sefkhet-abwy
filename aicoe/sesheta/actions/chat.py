@@ -50,8 +50,8 @@ _THOTH_INHABITANTS = [
     "xtuchyna",
 ]
 
-_CHATBOT = ChatBot("Sesheta", read_only=True)
-_TRAINER = ChatterBotCorpusTrainer(_CHATBOT)
+CHATBOT = ChatBot("Sesheta", read_only=True)
+_TRAINER = ChatterBotCorpusTrainer(CHATBOT)
 _TRAINER.train("chatterbot.corpus.english")
 _GITHUB_TOKEN = os.environ["GITHUB_ACCESS_TOKEN"]
 _RELEASE_COMMANDS = ["create new minor release", "create new major release", "create new patch release"]
@@ -160,9 +160,11 @@ async def process_user_text(thread_id: str, text: str) -> str:
         return " 🔗 ".join(inhabitants)
 
     if intent[0] == "grti":
-        return f"⭐ In this Universe, based on relative position of planets and all the galaxies " \
-            f"I picked {hangouts_userid(random.choice(_THOTH_INHABITANTS))} ⭐"
+        return (
+            f"⭐ In this Universe, based on relative position of planets ",
+            f" and all the galaxies ",
+            f"I picked {hangouts_userid(random.choice(_THOTH_INHABITANTS))} ⭐",
+        )
 
-
-    chatterbox_response = _CHATBOT.get_response(text[len("@sesheta ") :])
+    chatterbox_response = CHATBOT.get_response(text[len("@sesheta ") :])
     return str(chatterbox_response)

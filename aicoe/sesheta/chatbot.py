@@ -28,7 +28,7 @@ from aiohttp import web
 
 from thoth.common import init_logging
 
-from aicoe.sesheta.actions.chat import process_user_text
+from aicoe.sesheta.actions.chat import process_user_text, CHATBOT
 from aicoe.sesheta.utils import hangouts_userid
 from aicoe.sesheta import __version__
 
@@ -51,6 +51,15 @@ GITHUB_TOKEN = os.environ["GITHUB_ACCESS_TOKEN"]
 async def hello(request):
     """Print just a Hello World."""
     return web.Response(text="Hello, world")
+
+
+@routes.get("/healthz")
+async def hello(request):
+    """Return readiness and liveness informationg."""
+    if CHATBOT is not None:
+        return web.Response(text="Ok.")
+
+    return web.Response(text="Not Ok!", status=503)
 
 
 @routes.post("/api/v1alpha1")
