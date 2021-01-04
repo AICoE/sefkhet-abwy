@@ -68,7 +68,7 @@ GITHUB_REALNAME_MAP = {
     "tushar7sharma": "Tushar Sharma",
     "xtuchyna": "Dominik Tuchyna",
     "zmhassan": "Zak Hassan",
-    "GiorgosKarantonis": "Giorgos Karantonis",
+    "giorgoskarantonis": "Giorgos Karantonis",
 }
 
 # pragma: no cover
@@ -96,6 +96,22 @@ REALNAME_HANGOUTS_MAP = {
     "Tomáš Coufal": "117471959508522471287",
     "Tushar Sharma": "117540998919883245003",
 }
+
+# pragma: no cover
+# this is a set of github logins we dont want to see in hangout notifications
+GITHUB_LOGIN_FILTER = [
+    "bissenbay",
+    "cermakm",
+    "ddehueck",
+    "dfeddema",
+    "elmiko",
+    "saisankargochhayat",
+    "shruthi-raghuraman",
+    "shuels",
+    "srushtikotak",
+    "zmhassan",
+    "giorgoskarantonis",
+]
 
 # pragma: no cover
 POSITIVE_GOOGLE_CHAT_EMOJIS = ["😸", "😊", "😌", "🙏", "👍", "😇", "☺️", "👌", "ヽ(ヅ)ノ"]

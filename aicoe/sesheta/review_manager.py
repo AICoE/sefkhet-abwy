@@ -55,7 +55,7 @@ from aicoe.sesheta.actions import (
     needs_approved_label,
     needs_size_label,
 )
-from aicoe.sesheta.utils import notify_channel, hangouts_userid, realname, random_positive_emoji2
+from aicoe.sesheta.utils import GITHUB_LOGIN_FILTER, notify_channel, hangouts_userid, realname, random_positive_emoji2
 from thoth.common import init_logging
 
 import aicoe.sesheta.metrics as metrics
@@ -241,12 +241,17 @@ async def on_pull_request_review_requested(*, action, number, pull_request, requ
         if send_notification(kwargs["repository"]["name"], pull_request["id"], requested_reviewer["login"]):
             _LOGGER.info(f"requesting review by {requested_reviewer['login']} on {pull_request['html_url']}")
 
-            notify_channel(
-                "plain",
-                f"🔎 a review by " f"{hangouts_userid(requested_reviewer['login'])}" f" has been requested",
-                f"pull_request_{kwargs['repository']['name']}_{pull_request['id']}",
-                pull_request["html_url"],
-            )
+            if requested_reviewer["login"] not in GITHUB_LOGIN_FILTER:
+                notify_channel(
+                    "plain",
+                    f"🔎 a review by " f"{hangouts_userid(requested_reviewer['login'])}" f" has been requested",
+                    f"pull_request_{kwargs['repository']['name']}_{pull_request['id']}",
+                    pull_request["html_url"],
+                )
+            else:
+                _LOGGER.info(
+                    f"did not send review notification, as {requested_reviewer['login']} is in GITHUB_LOGIN_FILTER",
+                )
 
 
 @process_event_actions("issues", {"opened", "reopened"})
