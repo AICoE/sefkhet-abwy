@@ -43,18 +43,18 @@ from expiringdict import ExpiringDict
 
 from aicoe.sesheta import __version__
 from aicoe.sesheta.actions.pull_request import (
-    merge_master_into_pullrequest2,
-    handle_release_pull_request,
-)
-from aicoe.sesheta.actions import (
-    do_not_merge,
-    local_check_gate_passed,
-    conclude_reviewer_list,
-    unpack,
+    needs_size_label,
     needs_rebase_label,
     needs_approved_label,
-    needs_size_label,
+    local_check_gate_passed,
+    handle_release_pull_request,
+    merge_master_into_pullrequest2,
 )
+from aicoe.sesheta.actions.common import (
+    conclude_reviewer_list,
+    unpack,
+)
+from aicoe.sesheta.actions.label import do_not_merge
 from aicoe.sesheta.utils import GITHUB_LOGIN_FILTER, notify_channel, hangouts_userid, realname, random_positive_emoji2
 from thoth.common import init_logging
 
