@@ -431,3 +431,10 @@ An `merge-master-into-pullrequest` script.
 ### Improvements
 * :sparkles: add tox and clean up the rest
 * :pencil: :bug: :sparkles: remove the tests, as they dont really test anything
+
+## Release 0.20.3 (2021-01-06T11:46:09)
+### Features
+* :sparkles: filter out some github logins, as we dont need notifications for them on thoth's devops chat
+* :sparkles: add liveness/readiness probe
+* :sparkles: add liveness/readiness probe
+* add a liveness/readiness probe (#136)
