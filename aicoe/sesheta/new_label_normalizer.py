@@ -56,7 +56,6 @@ def cocommand(f):
 init_logging()
 _LOGGER = logging.getLogger("sefkhet-abwy.label-normalizer")
 
-endpoint = None
 token = None
 
 
@@ -200,7 +199,8 @@ async def reconcile_labels(repo: dict):
 
     _LOGGER.debug(
         "total number of labels: '{0}', hasNextPage: {1}".format(
-            repo["labels"]["totalCount"], repo["labels"]["pageInfo"]["hasNextPage"],
+            repo["labels"]["totalCount"],
+            repo["labels"]["pageInfo"]["hasNextPage"],
         ),
     )
 
@@ -226,7 +226,10 @@ async def reconcile_labels(repo: dict):
     for label in DEFAULT_LABELS:
         if label["name"] in missingLabels:
             mutation = CREATE_LABEL.substitute(
-                id=repo["id"], name=label["name"], color=label["color"], desc=label["description"],
+                id=repo["id"],
+                name=label["name"],
+                color=label["color"],
+                desc=label["description"],
             )
             _LOGGER.debug("updating {0} in {1}, mutation: {2}".format(label["name"], repo["name"], mutation))
 
