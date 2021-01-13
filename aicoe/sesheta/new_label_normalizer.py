@@ -231,7 +231,7 @@ async def main():
             repos = json.load(f)
     else:
         _LOGGER.debug("querying github, there was no cache file...")
-        repos = await get_repositories("thoth-station")
+        repos = await get_repositories("operate-first")
 
     for repo in repos:
         await reconcile_labels(repo)

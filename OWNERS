@@ -4,6 +4,11 @@ approvers:
   - harshad16
   - goern
   - sesheta
+
 reviewers:
   - fridex
   - saisankargochhayat
+
+labels:
+  - sig/user-experience
+  - sig/cyborgs
