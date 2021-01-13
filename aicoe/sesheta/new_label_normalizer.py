@@ -56,6 +56,7 @@ def cocommand(f):
 init_logging()
 _LOGGER = logging.getLogger("sefkhet-abwy.label-normalizer")
 
+endpoint = None
 token = None
 
 
