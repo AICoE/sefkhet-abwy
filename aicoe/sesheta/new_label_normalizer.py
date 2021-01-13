@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Sefkeht-Abwy
-# Copyright(C) 2020 Christoph Görn
+# Copyright(C) 2020, 2021 Christoph Görn
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ from string import Template
 from aiographql.client import GraphQLClient, GraphQLResponse, GraphQLRequest
 
 import aiohttp
+import click
 
 from thoth.common import init_logging
 
@@ -38,13 +39,24 @@ from aicoe.sesheta import __version__
 from aicoe.sesheta.actions.label import GITHUB_DEFAULT_LABELS, DEFAULT_LABELS, create_or_update_label
 
 
-init_logging(logging_env_var_start="SEFKHET__ABWY_LOG_")
+import asyncio
+from functools import wraps
 
-_LOGGER = logging.getLogger("thoth.labelnormalizer")
-_LOGGER.setLevel(logging.DEBUG if bool(int(os.getenv("DEBUG", 0))) else logging.INFO)
 
-_LOGGER.info(f"Sesheta action: new_label_normalizer, Version v{__version__}")
-_LOGGER.debug(f"DEBUG mode is enabled")
+def cocommand(f):
+    """Support async click command."""
+
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        return asyncio.run(f(*args, **kwargs))
+
+    return wrapper
+
+
+init_logging()
+_LOGGER = logging.getLogger("sefkhet-abwy.label-normalizer")
+
+token = None
 
 
 ALL_REPOSITORIES_INCLUDING_LABELS_CURSOR = Template(
@@ -128,7 +140,8 @@ mutation AddLabel {
 
 async def _get_repositories(login: str, cursor: str = None) -> GraphQLResponse:
     """Get Repositories and their labels based on a cursor."""
-    token = os.getenv("GITHUB_ACCESS_TOKEN")
+    global token
+
     client = GraphQLClient(endpoint="https://api.github.com/graphql", headers={"Authorization": f"Bearer {token}"})
 
     if cursor is not None:
@@ -139,7 +152,7 @@ async def _get_repositories(login: str, cursor: str = None) -> GraphQLResponse:
     return await client.query(request=request)
 
 
-async def get_repositories(login: str = "thoth-station") -> dict:
+async def get_repositories(login: str) -> dict:
     """Get all Repositories using pagination, only Repositories that are not archived will be returned."""
     allRepos = []
     hasNextPage = True
@@ -178,6 +191,8 @@ async def get_repositories(login: str = "thoth-station") -> dict:
 
 async def reconcile_labels(repo: dict):
     """Reconcile Labels of the given Repository."""
+    global token
+
     _LOGGER.info("reconciling labels of {0}".format(repo["name"]))
 
     _LOGGER.debug(
@@ -200,8 +215,6 @@ async def reconcile_labels(repo: dict):
     if len(missingLabels) == 0:
         _LOGGER.info("{0} does not need label reconciliation".format(repo["name"]))
 
-    # TODO some exception handling would be nice...
-    token = os.getenv("GITHUB_ACCESS_TOKEN")
     client = GraphQLClient(
         endpoint="https://api.github.com/graphql",
         headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.bane-preview+json"},
@@ -221,21 +234,41 @@ async def reconcile_labels(repo: dict):
             _LOGGER.debug(response)
 
 
-async def main():
-    """Execute the main function."""
+@click.command()
+@cocommand
+@click.option("--verbose", is_flag=True, help="Be verbose about what's going on.")
+@click.option("--github-access-token", help="The GitHub Access Token to be used for API requests.")
+@click.option("--github-org", default="thoth-station", help="The GitHub Organization to be operated on.")
+async def cli(
+    verbose: bool = False, github_access_token: str = None, github_org: str = None,
+):
+    """CLI tool for creating/updating Labels on all Repositories of a GitHub Organization."""
+    _LOGGER.info(f"Sesheta action: new_label_normalizer, Version v{__version__}")
+
+    global token
+
+    if verbose:
+        _LOGGER.setLevel(logging.DEBUG)
+        _LOGGER.debug("Debug mode turned on")
+
+    if github_access_token is None:
+        _LOGGER.error("the required GitHub Access Token has not been provided.")
+        return
+    else:
+        _LOGGER.debug("GitHub Token has been provided.")
+        token = github_access_token
+
+    if github_org is None:
+        _LOGGER.error("the required GitHub Organization was not provided!")
+        return
+
     repos = []
 
-    if os.path.exists("allRepos.json"):
-        _LOGGER.debug("cache file exists: reading it...")
-        with open("allRepos.json") as f:
-            repos = json.load(f)
-    else:
-        _LOGGER.debug("querying github, there was no cache file...")
-        repos = await get_repositories("operate-first")
+    _LOGGER.debug(f"querying github org '{github_org}'")
+    repos = await get_repositories(github_org)
 
     for repo in repos:
         await reconcile_labels(repo)
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+__name__ == "__main__" and cli(auto_envvar_prefix="SESHETA")
