@@ -56,6 +56,7 @@ def cocommand(f):
 init_logging()
 _LOGGER = logging.getLogger("sefkhet-abwy.label-normalizer")
 
+endpoint = None
 token = None
 
 
@@ -140,9 +141,10 @@ mutation AddLabel {
 
 async def _get_repositories(login: str, cursor: str = None) -> GraphQLResponse:
     """Get Repositories and their labels based on a cursor."""
+    global endpoint
     global token
 
-    client = GraphQLClient(endpoint="https://api.github.com/graphql", headers={"Authorization": f"Bearer {token}"})
+    client = GraphQLClient(endpoint=f"{endpoint}/graphql", headers={"Authorization": f"Bearer {token}"})
 
     if cursor is not None:
         request = GraphQLRequest(query=ALL_REPOSITORIES_INCLUDING_LABELS_CURSOR.substitute(login=login, cursor=cursor))
@@ -191,6 +193,7 @@ async def get_repositories(login: str) -> dict:
 
 async def reconcile_labels(repo: dict):
     """Reconcile Labels of the given Repository."""
+    global endpoint
     global token
 
     _LOGGER.info("reconciling labels of {0}".format(repo["name"]))
@@ -216,7 +219,7 @@ async def reconcile_labels(repo: dict):
         _LOGGER.info("{0} does not need label reconciliation".format(repo["name"]))
 
     client = GraphQLClient(
-        endpoint="https://api.github.com/graphql",
+        endpoint=f"{endpoint}/graphql",
         headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github.bane-preview+json"},
     )
 
@@ -239,12 +242,13 @@ async def reconcile_labels(repo: dict):
 @click.option("--verbose", is_flag=True, help="Be verbose about what's going on.")
 @click.option("--github-access-token", help="The GitHub Access Token to be used for API requests.")
 @click.option("--github-org", default="thoth-station", help="The GitHub Organization to be operated on.")
-async def cli(
-    verbose: bool = False, github_access_token: str = None, github_org: str = None,
-):
+@click.option("--github-endpoint", default="https://api.github.com", help="The GitHub API Endpoint to be used.")
+async def cli(verbose: bool = False, github_access_token: str = None, github_org: str = None, github_endpoint=None):
     """CLI tool for creating/updating Labels on all Repositories of a GitHub Organization."""
     _LOGGER.info(f"Sesheta action: new_label_normalizer, Version v{__version__}")
 
+    # FIXME this is where we store global configuration...
+    global endpoint
     global token
 
     if verbose:
@@ -261,6 +265,11 @@ async def cli(
     if github_org is None:
         _LOGGER.error("the required GitHub Organization was not provided!")
         return
+
+    if github_endpoint is None:
+        endpoint = "https://api.github.com"
+    else:
+        endpoint = github_endpoint
 
     repos = []
 
