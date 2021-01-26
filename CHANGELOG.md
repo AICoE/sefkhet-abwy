@@ -438,3 +438,11 @@ An `merge-master-into-pullrequest` script.
 * :sparkles: add liveness/readiness probe
 * :sparkles: add liveness/readiness probe
 * add a liveness/readiness probe (#136)
+
+## Release 0.20.4 (2021-01-26T16:32:27)
+### Features
+* add the SIG label
+### Bug Fixes
+* :telescope: fix the function import from proper path (#140)
+### Improvements
+* command line interface and proxy config (#141)
