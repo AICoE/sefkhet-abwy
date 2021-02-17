@@ -49,14 +49,6 @@ GITHUB_DEFAULT_LABELS = [
 
 DEFAULT_LABELS = [
     {"name": "bot", "color": "698b69", "description": "to a cyborg team mate!"},
-    {"name": "approved", "color": "00cc00", "description": ""},
-    {"name": "do-not-merge", "color": "cc0000", "description": ""},
-    {"name": "do-not-merge/work-in-progress", "color": "cc0000", "description": ""},
-    {"name": "do-not-merge/hold", "color": "cc0000", "description": ""},
-    {"name": "do-not-merge/invalid-owners-file", "color": "cc0000", "description": ""},
-    {"name": NEEDS_REBASE_LABEL_NAME, "color": "cc0000", "description": "The head of the PR needs to be rebased."},
-    {"name": "work-in-progress", "color": "cc0000", "description": "... we are working on it!"},
-    {"name": "needs-rebase", "color": "cc0000", "description": "The head of the PR needs to be rebased."},
     {"name": "human_intervention_required", "color": "f3ccff", "description": "to a human team mate!"},
     {"name": "thoth/human_intervention_required", "color": "f3ccff", "description": "to a human team mate!"},
     {
@@ -73,132 +65,6 @@ DEFAULT_LABELS = [
     {"name": "thoth/potential-flake", "color": "f3ccff", "description": "This might be a flake of some kind."},
     {"name": "test:flake", "color": "f3ccff", "description": "A test flake."},
     {"name": "test/flake", "color": "f3ccff", "description": "A test flake."},
-    {
-        "name": "priority/critical-urgent",
-        "color": "e11d21",
-        "description": "A critical item needing immediate treatments!",
-    },
-    {"name": "hacktoberfest", "color": "99cdf8", "description": "This might be something for Hacktoberfest"},
-    {
-        "name": "size/XS",
-        "color": "00ff00",
-        "description": "Denotes a PR that changes 0-9 lines, ignoring generated files.",
-    },
-    {
-        "name": "size/S",
-        "color": "00aa00",
-        "description": "Denotes a PR that changes 10-29 lines, ignoring generated files.",
-    },
-    {
-        "name": "size/M",
-        "color": "999900",
-        "description": "Denotes a PR that changes 30-99 lines, ignoring generated files.",
-    },
-    {
-        "name": "size/L",
-        "color": "ffff00",
-        "description": "Denotes a PR that changes 100-299 lines, ignoring generated files.",
-    },
-    {
-        "name": "size/XL",
-        "color": "ff9900",
-        "description": "Denotes a PR that changes 300-499 lines, ignoring generated files.",
-    },
-    {
-        "name": "size/XXL",
-        "color": "ff0000",
-        "description": "Denotes a PR that changes 500++ lines, ignoring generated files.",
-    },
-    {"name": "kind/feature", "color": "a5d5f7", "description": "Categorize Issue or PR as related to a new feature."},
-    {"name": "kind/bug", "color": "d73a4a", "description": "Categorize Issue or PR as related to a bug."},
-    {"name": "kind/question", "color": "d73a4a", "description": "Categorize Issue as a User question."},
-    {"name": "kind/flake", "color": "f3ccff", "description": "A test flake."},
-    {
-        "name": "priority/critical-urgent",
-        "color": "ff0000",
-        "description": "Highest priority. Must be actively worked on as someone's top priority right now.",
-    },
-    {
-        "name": "priority/important-longterm",
-        "color": "ff9900",
-        "description": "Important over the long term, but may not be staffed and/or may need multiple releases to complete.",
-    },
-    {
-        "name": "priority/important-soon",
-        "color": "ffcd00",
-        "description": "Must be staffed and worked on either currently, or very soon, ideally in time for the next release.",
-    },
-    {
-        "name": "deployment_name/moc",
-        "color": "d5f48d",
-        "description": "This issue is related to our deployment on MOC",
-    },
-    {
-        "name": "deployment_name/ocp-test",
-        "color": "d5f48d",
-        "description": "this issue is related to our test environment deployment on ocp/psi",
-    },
-    {
-        "name": "deployment_name/ocp-stage",
-        "color": "d5f48d",
-        "description": "this issue is related to our stage environment deployment on ocp/psi",
-    },
-    {
-        "name": "hacktoberfest-accepted",
-        "color": "d4c5f9",
-        "description": "This Pull Request has been accepted for Hacktoberfest 2020!",
-    },
-    {
-        "name": "sig/documentation",
-        "color": "1d76db",
-        "description": "Issues or PRs related to documentation, tutorials, examples, ...",
-    },
-    {
-        "name": "sig/cyborgs",
-        "color": "1d76db",
-        "description": "Issues or PRs related to Kebechet and all the other Cyborgs.",
-    },
-    {
-        "name": "sig/investigator",
-        "color": "1d76db",
-        "description": "Issues or PRs related to https://github.com/orgs/thoth-station/projects/14",
-    },
-    {
-        "name": "sig/indicators",
-        "color": "1d76db",
-        "description": "Issues or PRs related to {meta|performance|security} indicators.",
-    },
-    {
-        "name": "sig/knowledge-graph",
-        "color": "1d76db",
-        "description": "Issues or PRs related to https://github.com/orgs/thoth-station/projects/8",
-    },
-    {"name": "sig/solvers", "color": "1d76db", "description": "Issues or PRs related to Solvers"},
-    {
-        "name": "sig/slo",
-        "color": "1d76db",
-        "description": "Issues or PRs related to Service Level Indicators and Objectives and their reporting",
-    },
-    {
-        "name": "sig/advisor",
-        "color": "1d76db",
-        "description": "Issues or PRs related to https://github.com/orgs/thoth-station/projects/4",
-    },
-    {
-        "name": "sig/build",
-        "color": "1d76db",
-        "description": "Issues or PRs related to building and continuous delivery of build artifacts.",
-    },
-    {
-        "name": "sig/devops",
-        "color": "1d76db",
-        "description": "Issues or PRs related to DevOps and continuous deployment.",
-    },
-    {
-        "name": "sig/user-experience",
-        "color": "1d76db",
-        "description": "Issues or PRs related to the User Experience of our Services, Tools, and Libraries.",
-    },
 ]
 
 DEFAULT_MILESTONES_THOTH = [
@@ -290,7 +156,9 @@ async def create_or_update_label(slug: str, name: str, color: str = "") -> str:
 
             try:
                 resp = await github_api.post(
-                    f"/repos/{slug}/labels", preview_api_version="symmetra", data={"name": name, "color": color},
+                    f"/repos/{slug}/labels",
+                    preview_api_version="symmetra",
+                    data={"name": name, "color": color},
                 )
             except gidgethub.BadRequest as created:
                 _LOGGER.info(
