@@ -178,23 +178,37 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
 
             _LOGGER.debug(f"on_pr_open_or_edit: automatic update, will auto-approve {pull_request['html_url']}!")
 
-            # Let's approve the PR and put the approved label on it...
-            try:
-                await github_api.post(
-                    f"{pull_request['url']}/reviews",
-                    preview_api_version="symmetra",
-                    data={"body": "This is an auto-approve of an auto-PR.", "event": "APPROVE"},
-                )
+            if pull_request["organization"]["login"] == "thoth-station":
+                # Let's approve the PR and put the approved label on it...
+                try:
+                    await github_api.post(
+                        f"{pull_request['url']}/reviews",
+                        preview_api_version="symmetra",
+                        data={"body": "This is an auto-approve of an auto-PR.", "event": "APPROVE"},
+                    )
 
-                await github_api.post(
-                    f"{pull_request['issue_url']}/labels",
-                    preview_api_version="symmetra",
-                    data={"labels": ["approved"]},
-                )
+                    await github_api.post(
+                        f"{pull_request['issue_url']}/labels",
+                        preview_api_version="symmetra",
+                        data={"labels": ["approved"]},
+                    )
 
-            except gidgethub.BadRequest as err:
-                if err.status_code != 202:
-                    _LOGGER.error(str(err))
+                except gidgethub.BadRequest as err:
+                    if err.status_code != 202:
+                        _LOGGER.error(str(err))
+                # Set ok-to-test for the automatic PR's as we trust khebhut and sesheta
+                try:
+                    await github_api.post(
+                        f"{pull_request['comments_url']}",
+                        preview_api_version="symmetra",
+                        data={"body": "/ok-to-test\nThis auto-PR is allowed to be tested."},
+                    )
+                except gidgethub.BadRequest as err:
+                    if err.status_code != 202:
+                        _LOGGER.error(str(err))
+            else:
+                # Don't approve for the other users , until they explicitly ask for turning on this feature.
+                _LOGGER.info(f"on_pr_open_or_edit: This PR is {pull_request['html_url']} not a part of thoth-station.")
 
 
 @process_event_actions("pull_request_review", {"submitted"})
