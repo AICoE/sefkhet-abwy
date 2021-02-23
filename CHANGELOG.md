@@ -446,3 +446,7 @@ An `merge-master-into-pullrequest` script.
 * :telescope: fix the function import from proper path (#140)
 ### Improvements
 * command line interface and proxy config (#141)
+
+## Release 0.20.5 (2021-02-23T12:38:25)
+### Features
+* auto allowed ok-to-test for auto pr's in thoth-station (#147)
