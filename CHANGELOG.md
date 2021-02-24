@@ -450,3 +450,13 @@ An `merge-master-into-pullrequest` script.
 ## Release 0.20.5 (2021-02-23T12:38:25)
 ### Features
 * auto allowed ok-to-test for auto pr's in thoth-station (#147)
+
+## Release 0.20.6 (2021-02-24T13:37:43)
+### Features
+* :sparkles: let's run pre-commit
+* :sparkles: add an options to use a github endpoint (a proxy)
+* :sparkles: add command line handling to new_label_normalizer
+### Bug Fixes
+* use user.login rather than org.login, which is not present in pull_request payload on webhooks
+### Improvements
+* removed all the labels that are under prow control
