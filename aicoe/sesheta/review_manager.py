@@ -305,6 +305,17 @@ async def on_issue_opened(*, action, issue, repository, sender, **kwargs):
         _LOGGER.debug(f"{issue['url']} is an 'Failed to update dependencies', not sending notification")
         return
 
+    # only of the ml-prague-workshop feb26-2021
+    if issue["title"].startswith("Workshop issue ML Prague"):
+
+        github_api = RUNTIME_CONTEXT.app_installation_client
+
+        await github_api.post(
+            f"{issue['url']}/assignees",
+            preview_api_version="symmetra",
+            data={"assignees": ["vpavlin", "pacospace", "tumido"]},
+        )
+
     if issue["title"].startswith("Release of version"):
         _LOGGER.debug(f"{issue['url']} is a 'release issue'")
 
