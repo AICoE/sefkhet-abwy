@@ -428,7 +428,7 @@ async def handle_release_pull_request(pullrequest: dict) -> (str, str):
 
     comment = {
         "body": f"I have tagged commit "
-        f"[{commit_hash}]({pullrequest['base']['repo']['html_url']}/{commit_hash}) "
+        f"[{commit_hash}]({pullrequest['base']['repo']['html_url']}/commit/{commit_hash}) "
         f"as release {release} :+1:",
     }
     await github_api.post(
