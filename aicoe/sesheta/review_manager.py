@@ -134,15 +134,23 @@ async def on_pr_closed(*, action, number, pull_request, repository, sender, orga
                 pull_request["html_url"],
             )
     elif pull_request["title"].startswith("Release of"):
-        commit_hash, release = await handle_release_pull_request(pull_request)
+        if pull_request["merged"]:
+            commit_hash, release = await handle_release_pull_request(pull_request)
 
-        notify_channel(
-            "plain",
-            f" I have tagged {commit_hash} to be release {release} of"
-            f" {pull_request['base']['repo']['full_name']} " + random_positive_emoji2(),
-            f"pull_request_{repository['name']}",
-            pull_request["url"],
-        )
+            notify_channel(
+                "plain",
+                f" I have tagged {commit_hash} to be release {release} of"
+                f" {pull_request['base']['repo']['full_name']} " + random_positive_emoji2(),
+                f"pull_request_{repository['name']}",
+                pull_request["url"],
+            )
+        else:
+            notify_channel(
+                "plain",
+                f"👌 Pull Request *{pull_request['title']}* has been *closed* with *unmerged commits*! 🚧",
+                f"pull_request_{repository['name']}_{pull_request['id']}",
+                pull_request["html_url"],
+            )
 
 
 @process_event_actions("pull_request", {"opened", "reopened", "synchronize", "edited"})
@@ -206,9 +214,7 @@ async def on_pull_request_review(*, action, review, pull_request, **kwargs):
 
     if needs_rebase:
         await merge_master_into_pullrequest2(
-            pull_request["base"]["user"]["login"],
-            pull_request["base"]["repo"]["name"],
-            pull_request["id"],
+            pull_request["base"]["user"]["login"], pull_request["base"]["repo"]["name"], pull_request["id"],
         )
 
     if review["state"] == "approved":
@@ -282,9 +288,7 @@ async def on_issue_opened(*, action, issue, repository, sender, **kwargs):
         github_api = RUNTIME_CONTEXT.app_installation_client
 
         await github_api.post(
-            f"{issue['url']}/labels",
-            preview_api_version="symmetra",
-            data={"labels": ["bot"]},
+            f"{issue['url']}/labels", preview_api_version="symmetra", data={"labels": ["bot"]},
         )
 
     notify_channel(
