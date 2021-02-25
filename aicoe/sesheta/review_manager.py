@@ -173,20 +173,16 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
                 f"pull_request_{repository['name']}_{pull_request['id']}",
                 pull_request["html_url"],
             )
+        # Auto comments and labels added for Release version PR's
+        if pull_request["title"].startswith("Release of version"):
 
-        if (
-            pull_request["title"].startswith("Automatic update of")
-            or pull_request["title"].startswith("Release of version")
-            or pull_request["title"].startswith("Automatic dependency re-locking")
-        ):
             if pull_request["user"]["login"] not in ["sesheta", "khebhut[bot]"]:
                 _LOGGER.error(
                     f"on_pr_open_or_edit: automatic update not by Sesheta?! have a look at {pull_request['html_url']}!",
                 )
 
             _LOGGER.debug(f"on_pr_open_or_edit: automatic update, will auto-approve {pull_request['html_url']}!")
-
-            if pull_request["user"]["login"] == "thoth-station":
+            if pull_request["base"]["user"]["login"] in ["thoth-station", "opendatahub-io"]:
                 # Let's approve the PR and put the approved label on it...
                 # Set ok-to-test for the automatic PR's as we trust khebhut and sesheta
                 try:
@@ -199,7 +195,34 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
                     if err.status_code != 202:
                         _LOGGER.error(str(err))
             else:
-                # Don't approve for the other users , until they explicitly ask for turning on this feature.
+                # Don't approve for the other users, until they explicitly ask for turning on this feature.
+                _LOGGER.info(f"on_pr_open_or_edit: This PR is {pull_request['html_url']} not a part of thoth-station.")
+
+        # Auto comments and labels added for Package update PR's
+        if pull_request["title"].startswith("Automatic update of") or pull_request["title"].startswith(
+            "Automatic dependency re-locking",
+        ):
+            if pull_request["user"]["login"] not in ["sesheta", "khebhut[bot]"]:
+                _LOGGER.error(
+                    f"on_pr_open_or_edit: automatic update not by Sesheta?! have a look at {pull_request['html_url']}!",
+                )
+
+            _LOGGER.debug(f"on_pr_open_or_edit: automatic update, will auto-approve {pull_request['html_url']}!")
+
+            if pull_request["base"]["user"]["login"] == "thoth-station":
+                # Let's approve the PR and put the approved label on it...
+                # Set ok-to-test for the automatic PR's as we trust khebhut and sesheta
+                try:
+                    await github_api.post(
+                        f"{pull_request['comments_url']}",
+                        preview_api_version="symmetra",
+                        data={"body": "This auto-PR is allowed to be tested.\n\n/ok-to-test\n/approve"},
+                    )
+                except gidgethub.BadRequest as err:
+                    if err.status_code != 202:
+                        _LOGGER.error(str(err))
+            else:
+                # Don't approve for the other users, until they explicitly ask for turning on this feature.
                 _LOGGER.info(f"on_pr_open_or_edit: This PR is {pull_request['html_url']} not a part of thoth-station.")
 
 
