@@ -460,3 +460,10 @@ An `merge-master-into-pullrequest` script.
 * use user.login rather than org.login, which is not present in pull_request payload on webhooks
 ### Improvements
 * removed all the labels that are under prow control
+
+## Release 0.21.0 (2021-02-25T10:32:41)
+### Features
+* :brain: auto assign specific developer for ml-prague-workshop issues
+* :brain: auto approve for only requested github orgs
+### Bug Fixes
+* :brain: create tag only on merge of release pr, not on close
