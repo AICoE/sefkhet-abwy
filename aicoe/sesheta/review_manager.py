@@ -187,9 +187,15 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
                 # Set ok-to-test for the automatic PR's as we trust khebhut and sesheta
                 try:
                     await github_api.post(
-                        f"{pull_request['comments_url']}",
+                        f"{pull_request['url']}/reviews",
                         preview_api_version="symmetra",
-                        data={"body": "This auto-PR is allowed to be tested.\n\n/ok-to-test\n/approve"},
+                        data={"body": "This is an auto-approve of the releases.", "event": "APPROVE"},
+                    )
+
+                    await github_api.post(
+                        f"{pull_request['issue_url']}/labels",
+                        preview_api_version="symmetra",
+                        data={"labels": ["approved", "ok-to-test"]},
                     )
                 except gidgethub.BadRequest as err:
                     if err.status_code != 202:
@@ -214,9 +220,15 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
                 # Set ok-to-test for the automatic PR's as we trust khebhut and sesheta
                 try:
                     await github_api.post(
-                        f"{pull_request['comments_url']}",
+                        f"{pull_request['url']}/reviews",
                         preview_api_version="symmetra",
-                        data={"body": "This auto-PR is allowed to be tested.\n\n/ok-to-test\n/approve"},
+                        data={"body": "This is an auto-approve of an auto-PR.", "event": "APPROVE"},
+                    )
+
+                    await github_api.post(
+                        f"{pull_request['issue_url']}/labels",
+                        preview_api_version="symmetra",
+                        data={"labels": ["approved", "ok-to-test"]},
                     )
                 except gidgethub.BadRequest as err:
                     if err.status_code != 202:
