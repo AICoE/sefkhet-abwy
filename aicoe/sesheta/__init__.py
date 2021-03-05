@@ -20,7 +20,7 @@
 
 
 __title__ = "sefkhet-abwy"
-__version__ = "0.21.0"
+__version__ = "0.21.1"
 
 
 async def get_github_client(github_app, account):
