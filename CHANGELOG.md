@@ -467,3 +467,7 @@ An `merge-master-into-pullrequest` script.
 * :brain: auto approve for only requested github orgs
 ### Bug Fixes
 * :brain: create tag only on merge of release pr, not on close
+
+## Release 0.21.1 (2021-03-05T06:48:31)
+### Features
+* Auto add the labels for automatic updates (#158)
