@@ -20,14 +20,15 @@
 
 
 __title__ = "sefkhet-abwy"
-__version__ = "0.21.1"
+__version__ = "0.22.0-dev"
 
 
 async def get_github_client(github_app, account):
     """Get GitHub Client by Account."""
     github_app_installations = await github_app.get_installations()
     target_github_app_installation = next(
-        (i for n, i in github_app_installations.items() if i._metadata.account["login"] == account), None,
+        (i for n, i in github_app_installations.items() if i._metadata.account["login"] == account),
+        None,
     )
 
     return target_github_app_installation.get_github_api_client()

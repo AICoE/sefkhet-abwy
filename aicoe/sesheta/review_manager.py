@@ -237,6 +237,18 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
                 # Don't approve for the other users, until they explicitly ask for turning on this feature.
                 _LOGGER.info(f"on_pr_open_or_edit: This PR is {pull_request['html_url']} not a part of thoth-station.")
 
+        if pull_request["title"].lower().startswith("bump version of") and pull_request["title"].lower().endswith(
+            "stage",
+        ):
+            _LOGGER.debug(f"on_pr_open_or_edit: {pull_request['html_url']} is a version bump in STAGE")
+
+            notify_channel(
+                "plain",
+                f"🆕 {pull_request['html_url']} is bumping a version in STAGE, please check if the new tag is available on quay",
+                f"pull_request_{repository['name']}",
+                pull_request["html_url"],
+            )
+
 
 @process_event_actions("pull_request_review", {"submitted"})
 @process_webhook_payload
@@ -249,7 +261,9 @@ async def on_pull_request_review(*, action, review, pull_request, **kwargs):
 
     if needs_rebase:
         await merge_master_into_pullrequest2(
-            pull_request["base"]["user"]["login"], pull_request["base"]["repo"]["name"], pull_request["id"],
+            pull_request["base"]["user"]["login"],
+            pull_request["base"]["repo"]["name"],
+            pull_request["id"],
         )
 
     if review["state"] == "approved":
@@ -334,7 +348,9 @@ async def on_issue_opened(*, action, issue, repository, sender, **kwargs):
         github_api = RUNTIME_CONTEXT.app_installation_client
 
         await github_api.post(
-            f"{issue['url']}/labels", preview_api_version="symmetra", data={"labels": ["bot"]},
+            f"{issue['url']}/labels",
+            preview_api_version="symmetra",
+            data={"labels": ["bot"]},
         )
 
     notify_channel(
