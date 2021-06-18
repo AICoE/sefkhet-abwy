@@ -19,9 +19,6 @@
 """This will handle all the GitHub webhooks."""
 
 
-import os
-import asyncio
-import pathlib
 import logging
 
 import socket
@@ -34,7 +31,6 @@ from octomachinery.app.routing.decorators import process_webhook_payload
 from octomachinery.app.runtime.context import RUNTIME_CONTEXT
 from octomachinery.github.config.app import GitHubAppIntegrationConfig
 from octomachinery.github.api.app_client import GitHubApp
-from octomachinery.app.server.machinery import run_forever
 from octomachinery.utils.versiontools import get_version_from_scm_tag
 
 from prometheus_async.aio import time
@@ -43,9 +39,7 @@ from expiringdict import ExpiringDict
 
 from aicoe.sesheta import __version__
 from aicoe.sesheta.actions.pull_request import (
-    needs_size_label,
     needs_rebase_label,
-    needs_approved_label,
     local_check_gate_passed,
     handle_release_pull_request,
     merge_master_into_pullrequest2,
