@@ -251,14 +251,6 @@ async def on_pull_request_review(*, action, review, pull_request, **kwargs):
     _LOGGER.debug(f"on_pull_request_review: working on PR {pull_request['html_url']}")
 
     notification_text = ""
-    needs_rebase = await needs_rebase_label(pull_request)
-
-    if needs_rebase:
-        await merge_master_into_pullrequest2(
-            pull_request["base"]["user"]["login"],
-            pull_request["base"]["repo"]["name"],
-            pull_request["id"],
-        )
 
     if review["state"] == "approved":
         notification_text = f"📗 '{realname(review['user']['login'])}' *approved* this Pull Request!"
