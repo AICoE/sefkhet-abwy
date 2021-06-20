@@ -104,5 +104,6 @@ venv.bak/
 .mypy_cache/
 .vscode/
 review-manager.2019-09-30.private-key.pem
+sesheta-chatbot-b5a97b40eeab.json
 .thoth_last_analysis_id
 allRepos.json

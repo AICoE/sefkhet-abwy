@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # Sefkhet-Abwy
-# Copyright(C) 2019,2020 Christoph Görn
+# Copyright(C) 2019-2021 Christoph Görn
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -39,10 +39,8 @@ from expiringdict import ExpiringDict
 
 from aicoe.sesheta import __version__
 from aicoe.sesheta.actions.pull_request import (
-    needs_rebase_label,
     local_check_gate_passed,
     handle_release_pull_request,
-    merge_master_into_pullrequest2,
 )
 from aicoe.sesheta.actions.common import (
     conclude_reviewer_list,

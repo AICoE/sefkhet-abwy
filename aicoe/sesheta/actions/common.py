@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # sesheta-actions
-# Copyright(C) 2019,2020 Christoph Görn
+# Copyright(C) 2019-2021 Christoph Görn
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,13 +24,11 @@ import os
 import logging
 import typing
 import base64
-import re
 
 import gidgethub
 import aiohttp
 
 from functools import wraps
-from itertools import takewhile
 
 from octomachinery.github.api.tokens import GitHubOAuthToken
 from octomachinery.github.api.raw_client import RawGitHubAPI
