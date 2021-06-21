@@ -346,35 +346,6 @@ async def on_issue_opened(*, action, issue, repository, sender, **kwargs):
     )
 
 
-@process_event_actions("issues", {"labeled"})
-@process_webhook_payload
-async def on_issue_labeled(*, action, issue, label, repository, organization, sender, installation):
-    """Take actions if an issue got labeled.
-
-    If it is labeled 'bug' we add the 'human_intervention_required' label
-    """
-    _LOGGER.info(f"working on Issue {issue['html_url']}")
-    issue_id = issue["id"]
-    issue_url = issue["url"]
-    issue_labels = issue["labels"]
-
-    for label in issue_labels:
-        if (label["name"] == "bug") or (label["name"] == "kind/bug"):
-            _LOGGER.debug(f"I found a bug!! {issue['html_url']}")
-
-            github_api = RUNTIME_CONTEXT.app_installation_client
-
-            try:
-                await github_api.post(
-                    f"{issue_url}/labels",
-                    preview_api_version="symmetra",
-                    data={"labels": ["human_intervention_required"]},
-                )
-            except gidgethub.BadRequest as err:
-                if err.status_code != 202:
-                    _LOGGER.error(f"status_code={err.status_code}, {str(err)}")
-
-
 @process_event_actions("issue_comment", {"created"})
 @process_webhook_payload
 async def on_check_gate(*, action, issue, comment, repository, organization, sender, installation):
