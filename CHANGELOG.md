@@ -471,3 +471,13 @@ An `merge-master-into-pullrequest` script.
 ## Release 0.21.1 (2021-03-05T06:48:31)
 ### Features
 * Auto add the labels for automatic updates (#158)
+
+## Release 0.22.1 (2021-07-16T12:16:04)
+### Features
+* remove 'human intervention' feature
+* relocked
+* update AICoE-CI image versions
+### Improvements
+* add some more realnames, clean up some imports
+* removed auto-rebase
+* remove some unused imports
