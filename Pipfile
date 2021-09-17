@@ -24,6 +24,7 @@ pylint = "*"
 tox = "*"
 pytest = "*"
 pytest-asyncio = "*"
+httplib2 = "*"
 
 [requires]
 python_version = "3.8"
