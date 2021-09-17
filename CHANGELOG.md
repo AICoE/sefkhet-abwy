@@ -1,5 +1,19 @@
 # Changelog for Sesheta's actions Project
 
+## Release 0.22.1 (2021-09-17T15:08:21)
+### Features
+* :sparkles: tiny tool to get member user id from a channel (#166)
+* Update .prow.yaml
+* remove 'human intervention' feature
+* relocked
+* update AICoE-CI image versions
+### Bug Fixes
+* Sync the pre-commit fixes
+### Improvements
+* add some more realnames, clean up some imports
+* removed auto-rebase
+* remove some unused imports
+
 ## [0.3.0] - 2019-Oct-02 - goern
 
 ### Added
