@@ -1,0 +1,23 @@
+---
+apiVersion: pipelines.meteor.zone/v1alpah1
+kind: ContinuousDeliveryConfig
+metadata:
+  name: sefkheyt-abwy
+spec:
+  checks: # was 'check'
+    - thoth-build
+  build:
+    builder-image-uri: quay.io/thoth-station/s2i-thoth-ubi8-py38:v0.31.1 # was base-image
+    build-stratergy: Source
+    registry:
+      host: quay.io
+      org: thoth-station
+      project: sefkhet-abwy-webhook-receiver # should be repository?
+      secret: thoth-station-thoth-pusher-secret
+  deploy:
+    project:
+      org: thoth-station
+      name: thoth-application
+    image:
+      name: sefkhet-abwy-webhook-receiver
+    overlay-contextpath: sefkhet-abwy/overlays/ocp/imagestreamtag.yaml
