@@ -1,2 +1,2 @@
-# OBSOLETED by .aicoe-ci.d
-# run `kustomize build .aicoe-ci.d/`
+# OBSOLETED by .meteor.d
+# run `kustomize build .meteor.d/`
