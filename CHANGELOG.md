@@ -1,5 +1,8 @@
 # Changelog for Sesheta's actions Project
 
+## Release 0.22.2 (2021-10-19T14:26:21)
+* Add Maya and Pep to the user list / map (#171)
+
 ## Release 0.22.1 (2021-09-17T15:08:21)
 ### Features
 * :sparkles: tiny tool to get member user id from a channel (#166)
