@@ -1,5 +1,8 @@
 # Changelog for Sesheta's actions Project
 
+## Release 0.22.3 (2021-10-27T09:44:00)
+* :whale: set the spacy to pined version 2.3.5 (#179)
+
 ## Release 0.22.2 (2021-10-19T14:26:21)
 * Add Maya and Pep to the user list / map (#171)
 
