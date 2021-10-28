@@ -60,7 +60,7 @@ GITHUB_REALNAME_MAP = {
     "kpostoffice": "Kevin Postlethwait",
     "larsks": "Lars Kellogg-Stedman",
     "llunved": "Daniel Riek",
-    "mayaCostantini": "Maya Costantini",
+    "mayacostantini": "Maya Costantini",
     "pacospace": "Francesco Murdaca",
     "saisankargochhayat": "Sai Sankar Gochhayat",
     "sefkhet-abwy[bot]": "Sesheta",
