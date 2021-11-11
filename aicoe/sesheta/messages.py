@@ -28,4 +28,6 @@ HELP_MESSAGE = """
     - Get one Thoth inhabitant, randomly
       - `get random thoth inhabitant` to randomly pick one Thoth inhabitant
       - `grti` is the abbreviated form
+    - Trigger Kebechet updates for all the Thoth repositories that depend on thoth-storages
+      - `schema updated` to open "Kebechet update" on all the repositories that use thoth-storages
     """
