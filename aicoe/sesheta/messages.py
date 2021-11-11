@@ -22,4 +22,10 @@ HELP_MESSAGE = """
     Here are some thing's you can do -
     - Create releases using Kebechet -
       - `create new <minor/major/patch> release for <repository name>` to create a minor release.
+    - Get a listing of Thoth inhabitants
+      - `get thoth inhabitants` to get a listing of Thoth inhabitants in random order
+      - `gti` is the abbreviated form
+    - Get one Thoth inhabitant, randomly
+      - `get random thoth inhabitant` to randomly pick one Thoth inhabitant
+      - `grti` is the abbreviated form
     """
