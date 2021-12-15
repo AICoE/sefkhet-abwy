@@ -1,13 +1,15 @@
 # See the OWNERS docs at https://go.k8s.io/owners
 
 approvers:
-  - harshad16
+  - codificat
+  - fridex
   - goern
-  - sesheta
+  - harshad16
 
 reviewers:
+  - codificat
   - fridex
-  - saisankargochhayat
+  - harshad16
 
 labels:
   - sig/user-experience

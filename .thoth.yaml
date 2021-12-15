@@ -17,10 +17,6 @@ managers:
   - name: info
   - name: version
     configuration:
-      maintainers:
-        - goern
-        - fridex
-        - harshad16
       assignees:
         - sesheta
       labels: [bot]
