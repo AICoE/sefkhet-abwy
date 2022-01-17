@@ -25,6 +25,7 @@ tox = "*"
 pytest = "*"
 pytest-asyncio = "*"
 httplib2 = "*"
+mypy = "*"
 
 [requires]
 python_version = "3.8"
