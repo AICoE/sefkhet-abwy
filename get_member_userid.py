@@ -45,7 +45,7 @@ http_auth = credentials.authorize(Http())
 
 chat = build("chat", "v1", http=http_auth)
 
-response = chat.spaces().members().list(parent=THOTH_DEVOPS_SPACE)
+response = chat.spaces().members().list(parent="spaces/AAAAVjnVXFk")
 
 if response is not None:
     r = response.execute()

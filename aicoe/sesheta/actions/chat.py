@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # sesheta-actions
-# Copyright(C) 2020 Christoph Görn
+# Copyright(C) 2020-2022 The Authors of Project Thoth
 #
 # This program is free software: you can redistribute it and / or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,9 +24,6 @@ import logging
 import random
 import aiohttp
 
-from chatterbot import ChatBot
-from chatterbot.trainers import ChatterBotCorpusTrainer
-
 from thoth.common import init_logging
 
 from aicoe.sesheta import __version__
@@ -41,39 +38,16 @@ _LOGGER = logging.getLogger("aicoe.sesheta.chat")
 _THOTH_INHABITANTS = [
     "codificat",
     "fridex",
+    "Gkrumbach07",
     "goern",
+    "Gregory-Pereira",
     "harshad16",
     "KPostOffice",
     "mayaCostantini",
-    "pacospace",
-    "sub-mod",
+    "meile18",
     "xtuchyna",
 ]
 
-_THOTH_STORAGE_REPOS = [
-    "adviser",
-    "cve-update-job",
-    "graph-backup-job",
-    "graph-metrics-exporter",
-    "graph-refresh-job",
-    "graph-sync-job",
-    "init-job",
-    "investigator",
-    "management-api",
-    "metrics-exporter",
-    "package-releases-job",
-    "package-update-job",
-    "prescriptions-refresh-job",
-    "pulp-pypi-sync-job",
-    "revsolver",
-    "slo-reporter",
-    "user-api",
-    "workflow-helpers",
-]
-
-CHATBOT = ChatBot("Sesheta", read_only=True)
-_TRAINER = ChatterBotCorpusTrainer(CHATBOT)
-_TRAINER.train("chatterbot.corpus.english")
 _GITHUB_TOKEN = os.environ["GITHUB_ACCESS_TOKEN"]
 _RELEASE_COMMANDS = ["create new minor release", "create new major release", "create new patch release"]
 
@@ -97,23 +71,7 @@ async def make_release_issue(request: dict):
     return f"Creating the issue failed. \n Log - {resp_text}"
 
 
-async def make_kebechet_update_issue(repo_name: str) -> str:
-    web_url = f"https://api.github.com/repos/thoth-station/{repo_name}/issues"
-    json_payload = {"title": "Kebechet update", "assignees": ["sesheta"], "labels": ["bot"]}
-    async with aiohttp.ClientSession() as session:
-        async with session.post(
-            web_url, headers={f"Authorization": f"token {_GITHUB_TOKEN}"}, json=json_payload,
-        ) as resp:
-            status = resp.status
-            resp_text = await resp.json()
-            _LOGGER.debug(status, resp_text)
-            if resp.status == 201:
-                issue_link = resp_text.get("html_url")
-                return f"Kebechet update issue is successfully created for {repo_name} at - <{issue_link}|Link>"
-    return f"Creating the issue failed. \n Log - {resp_text}"
-
-
-async def get_intent(text: str,) -> (str, float, dict):
+async def get_intent(text: str) -> (str, float, dict):
     """Get the Intent of the provided text, and assign it a score."""
     repo_name = None
     tag = None
@@ -200,13 +158,4 @@ async def process_user_text(thread_id: str, text: str) -> str:
         return " 🔗 ".join(inhabitants)
 
     if intent[0] == "grti":
-        return f"⭐ In this Universe, based on relative position of planets and all the galaxies I picked {hangouts_userid(random.choice(_THOTH_INHABITANTS))} ⭐"
-
-    if intent[0] == "tsu":
-        text = ""
-        for repo_name in _THOTH_STORAGE_REPOS:
-            text += f"{make_kebechet_update_issue(repo_name)}\n"
-        return text
-
-    chatterbox_response = CHATBOT.get_response(text[len("@sesheta ") :])
-    return str(chatterbox_response)
+        return f"⭐ In this Universe, based on relative position of planets  and all the galaxies I picked {hangouts_userid(random.choice(_THOTH_INHABITANTS))} ⭐"
