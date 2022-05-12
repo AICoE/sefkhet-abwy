@@ -1,17 +1,17 @@
 ---
 repos:
-  - repo: git://github.com/asottile/add-trailing-comma
-    rev: v2.0.1
+  - repo: https://github.com/asottile/add-trailing-comma
+    rev: v2.2.3
     hooks:
       - id: add-trailing-comma
 
-  - repo: git://github.com/Lucas-C/pre-commit-hooks
-    rev: v1.1.9
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.1.14
     hooks:
       - id: remove-tabs
 
-  - repo: git://github.com/pre-commit/pre-commit-hooks
-    rev: v3.4.0
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.2.0
     hooks:
       - id: trailing-whitespace
       - id: check-merge-conflict
@@ -27,7 +27,7 @@ repos:
       - id: check-ast
       - id: debug-statements
 
-  - repo: git://github.com/pycqa/pydocstyle.git
-    rev: "5.1.1"
+  - repo: https://github.com/pycqa/pydocstyle.git
+    rev: "6.1.1"
     hooks:
       - id: pydocstyle
