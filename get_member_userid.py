@@ -35,20 +35,26 @@ init_logging()
 
 _LOGGER = logging.getLogger(__name__)
 
-THOTH_DEVOPS_SPACE = os.getenv("SESHETA_THOTH_DEVOPS_SPACE", None)
-AIOPS_DEVOPS_SPACE = os.getenv("SESHETA_AIOPS_DEVOPS_SPACE", None)
+SPACE = os.getenv("SESHETA_THOTH_DEVOPS_SPACE", None)
 
 
-scopes = ["https://www.googleapis.com/auth/chat.bot"]
-credentials = ServiceAccountCredentials.from_json_keyfile_name("sesheta-chatbot-b5a97b40eeab.json", scopes)
-http_auth = credentials.authorize(Http())
+def main():
+    """Get a List of user from a Google Chat Space and print it to stdout."""
+    if SPACE is not None:
+        scopes = ["https://www.googleapis.com/auth/chat.bot"]
+        credentials = ServiceAccountCredentials.from_json_keyfile_name("sesheta-chatbot-b5a97b40eeab.json", scopes)
+        http_auth = credentials.authorize(Http())
 
-chat = build("chat", "v1", http=http_auth)
+        chat = build("chat", "v1", http=http_auth)
 
-response = chat.spaces().members().list(parent="spaces/AAAAVjnVXFk")
+        response = chat.spaces().members().list(parent=SPACE)
 
-if response is not None:
-    r = response.execute()
+        if response is not None:
+            r = response.execute()
 
-for member in r["memberships"]:
-    print(f"\"{member['member']['displayName']}\": \"{member['member']['name']}\",")
+        for member in r["memberships"]:
+            print(f"\"{member['member']['displayName']}\": \"{member['member']['name'].replace('users/', '')}\",")
+
+
+if __name__ == "__main__":
+    main()
