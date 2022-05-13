@@ -30,11 +30,52 @@ import re
 from httplib2 import Http
 from apiclient.discovery import build, build_from_document
 from oauth2client.service_account import ServiceAccountCredentials
+from aiographql.client import GraphQLClient, GraphQLRequest, GraphQLResponse
 
 
 _LOGGER = logging.getLogger(__name__)
+_LOGGER.setLevel(logging.DEBUG if bool(os.getenv("DEBUG", False)) else logging.INFO)
 THOTH_DEVOPS_SPACE = os.getenv("SESHETA_THOTH_DEVOPS_SPACE", None)  # pragma: no cover
 AIOPS_DEVOPS_SPACE = os.getenv("SESHETA_AIOPS_DEVOPS_SPACE", None)  # pragma: no cover
+
+_GITHUB_ORG_MEMBERS_REQUEST = GraphQLRequest(
+    query="""
+{
+  organization(login: "thoth-station") {
+    membersWithRole(first: 100) {
+      edges {
+        node {
+          name
+          login
+        }
+      }
+    }
+  }
+}
+""",
+)
+
+
+async def get_github_members(org: str = "thoth-station") -> dict:
+    """Get a list of GitHub org members including their names."""
+    client = GraphQLClient(
+        endpoint="https://api.github.com/graphql",
+        headers={"Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}"},
+    )
+    members = dict()
+
+    resp: GraphQLResponse = await client.query(request=_GITHUB_ORG_MEMBERS_REQUEST)
+    _LOGGER.debug(resp.data)
+
+    for member in resp.data["organization"]["membersWithRole"]["edges"]:
+        login = member["node"]["login"].lower()
+        name = member["node"]["name"]
+        members[login] = name
+
+    _LOGGER.debug(members)
+
+    return members
+
 
 # pragma: no cover
 GITHUB_REALNAME_MAP = {
@@ -52,8 +93,10 @@ GITHUB_REALNAME_MAP = {
     "erikerlandson": "Erik Erlandson",
     "fridex": "Frido Pokorny",
     "giorgoskarantonis": "Giorgos Karantonis",
+    "gkrumbach07": "Gage Krumbach",
     "goern": "Christoph Goern",
-    "Gregory-Pereira": "Gregory Pereira",
+    "gregory-pereira": "Gregory Pereira",
+    "harshad16": "Harshad Reddy Nalla",
     "harshad16": "Harshad Reddy Nalla",
     "hemajv": "Hema Veeradhi",
     "humairak": "Humair Khan",
@@ -61,8 +104,12 @@ GITHUB_REALNAME_MAP = {
     "larsks": "Lars Kellogg-Stedman",
     "llunved": "Daniel Riek",
     "mayacostantini": "Maya Costantini",
+    "mayacostantini": "Maya Costantini",
+    "meile18": "Viliam Podhajecký",
+    "pacospace": "Francesco Murdaca",
     "pacospace": "Francesco Murdaca",
     "saisankargochhayat": "Sai Sankar Gochhayat",
+    "schwesig": "Thor*sten Schwesig",
     "sefkhet-abwy[bot]": "Sesheta",
     "sentry-io[bot]": "Sentry",
     "sesheta": "Thoth Bot",
@@ -71,7 +118,7 @@ GITHUB_REALNAME_MAP = {
     "srushtikotak": "Srushti Vijay Kotak",
     "sub-mod": "Subin Modeel",
     "thoth-zuul[bot]": "Thoth's Zuul",
-    "tumido": "Tomáš Coufal",
+    "tumido": "Tom Coufal",
     "tushar7sharma": "Tushar Sharma",
     "xtuchyna": "Dominik Tuchyna",
     "zmhassan": "Zak Hassan",
@@ -181,7 +228,8 @@ def notify_channel(kind: str, message: str, thread_key: str, url: str) -> None:
     response = None
     scopes = ["https://www.googleapis.com/auth/chat.bot"]
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
-        "/opt/app-root/etc/gcloud/sesheta-chatbot.json", scopes,
+        "/opt/app-root/etc/gcloud/sesheta-chatbot.json",
+        scopes,
     )
     http_auth = credentials.authorize(Http())
 
