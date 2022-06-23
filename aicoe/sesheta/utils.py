@@ -104,7 +104,6 @@ GITHUB_REALNAME_MAP = {
     "larsks": "Lars Kellogg-Stedman",
     "llunved": "Daniel Riek",
     "mayacostantini": "Maya Costantini",
-    "mayacostantini": "Maya Costantini",
     "meile18": "Viliam Podhajecký",
     "pacospace": "Francesco Murdaca",
     "saisankargochhayat": "Sai Sankar Gochhayat",
