@@ -5,6 +5,9 @@ approvers:
   - goern
   - harshad16
 
+emeritus_approvers:
+  - fridex  # 2022 Jun
+
 reviewers:
   - codificat
   - harshad16
