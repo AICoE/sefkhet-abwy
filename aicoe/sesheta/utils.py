@@ -107,7 +107,6 @@ GITHUB_REALNAME_MAP = {
     "mayacostantini": "Maya Costantini",
     "meile18": "Viliam Podhajecký",
     "pacospace": "Francesco Murdaca",
-    "pacospace": "Francesco Murdaca",
     "saisankargochhayat": "Sai Sankar Gochhayat",
     "schwesig": "Thor*sten Schwesig",
     "sefkhet-abwy[bot]": "Sesheta",
