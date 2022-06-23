@@ -37,14 +37,14 @@ init_logging()
 _LOGGER = logging.getLogger("aicoe.sesheta.chat")
 _THOTH_INHABITANTS = [
     "codificat",
-    "fridex",
-    "Gkrumbach07",
+    "gkrumbach07",
     "goern",
-    "Gregory-Pereira",
+    "gregory-pereira",
     "harshad16",
-    "KPostOffice",
-    "mayaCostantini",
+    "kpostoffice",
+    "mayacostantini",
     "meile18",
+    "shreekarss",
     "xtuchyna",
 ]
 
