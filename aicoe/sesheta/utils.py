@@ -118,6 +118,7 @@ GITHUB_REALNAME_MAP = {
     "thoth-zuul[bot]": "Thoth's Zuul",
     "tumido": "Tom Coufal",
     "tushar7sharma": "Tushar Sharma",
+    "vannten": "Max Gautier",
     "xtuchyna": "Dominik Tuchyna",
     "zmhassan": "Zak Hassan",
 }
@@ -147,6 +148,7 @@ REALNAME_HANGOUTS_MAP = {
     "Lumir Balhar": "112869503906875156604",
     "Marcel Hild": "116445288136441446998",
     "Maya Costantini": "114714675359837244370",
+    "Max Gautier": "107931994420105252840",
     "Michael Clifford": "109712205974970623061",
     "Oindrilla Chatterjee": "116534249849252473521",
     "Pep Turro Mauri": "116298489646489899913",
