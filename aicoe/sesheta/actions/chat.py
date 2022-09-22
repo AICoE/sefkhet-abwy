@@ -43,7 +43,7 @@ _THOTH_INHABITANTS = [
     "harshad16",
     "kpostoffice",
     "mayacostantini",
-    "meile18",
+    "vannten",
     "shreekarss",
     "xtuchyna",
 ]
