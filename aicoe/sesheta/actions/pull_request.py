@@ -37,7 +37,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 async def merge_master_into_pullrequest(
-    owner: str, repo: str, pull_request: int, token: str = None, dry_run: bool = False
+    owner: str, repo: str, pull_request: int, token: str = None, dry_run: bool = False,
 ) -> bool:
     """Merge the master branch into the Pull Request."""
     triggered = True

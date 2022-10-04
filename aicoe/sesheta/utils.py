@@ -30,11 +30,52 @@ import re
 from httplib2 import Http
 from apiclient.discovery import build, build_from_document
 from oauth2client.service_account import ServiceAccountCredentials
+from aiographql.client import GraphQLClient, GraphQLRequest, GraphQLResponse
 
 
 _LOGGER = logging.getLogger(__name__)
+_LOGGER.setLevel(logging.DEBUG if bool(os.getenv("DEBUG", False)) else logging.INFO)
 THOTH_DEVOPS_SPACE = os.getenv("SESHETA_THOTH_DEVOPS_SPACE", None)  # pragma: no cover
 AIOPS_DEVOPS_SPACE = os.getenv("SESHETA_AIOPS_DEVOPS_SPACE", None)  # pragma: no cover
+
+_GITHUB_ORG_MEMBERS_REQUEST = GraphQLRequest(
+    query="""
+{
+  organization(login: "thoth-station") {
+    membersWithRole(first: 100) {
+      edges {
+        node {
+          name
+          login
+        }
+      }
+    }
+  }
+}
+""",
+)
+
+
+async def get_github_members(org: str = "thoth-station") -> dict:
+    """Get a list of GitHub org members including their names."""
+    client = GraphQLClient(
+        endpoint="https://api.github.com/graphql",
+        headers={"Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}"},
+    )
+    members = dict()
+
+    resp: GraphQLResponse = await client.query(request=_GITHUB_ORG_MEMBERS_REQUEST)
+    _LOGGER.debug(resp.data)
+
+    for member in resp.data["organization"]["membersWithRole"]["edges"]:
+        login = member["node"]["login"].lower()
+        name = member["node"]["name"]
+        members[login] = name
+
+    _LOGGER.debug(members)
+
+    return members
+
 
 # pragma: no cover
 GITHUB_REALNAME_MAP = {
@@ -52,8 +93,10 @@ GITHUB_REALNAME_MAP = {
     "erikerlandson": "Erik Erlandson",
     "fridex": "Frido Pokorny",
     "giorgoskarantonis": "Giorgos Karantonis",
+    "gkrumbach07": "Gage Krumbach",
     "goern": "Christoph Goern",
-    "Gregory-Pereira": "Gregory Pereira",
+    "gregory-pereira": "Gregory Pereira",
+    "harshad16": "Harshad Reddy Nalla",
     "harshad16": "Harshad Reddy Nalla",
     "hemajv": "Hema Veeradhi",
     "humairak": "Humair Khan",
@@ -61,8 +104,10 @@ GITHUB_REALNAME_MAP = {
     "larsks": "Lars Kellogg-Stedman",
     "llunved": "Daniel Riek",
     "mayacostantini": "Maya Costantini",
+    "meile18": "Viliam Podhajecký",
     "pacospace": "Francesco Murdaca",
     "saisankargochhayat": "Sai Sankar Gochhayat",
+    "schwesig": "Thor*sten Schwesig",
     "sefkhet-abwy[bot]": "Sesheta",
     "sentry-io[bot]": "Sentry",
     "sesheta": "Thoth Bot",
@@ -71,14 +116,16 @@ GITHUB_REALNAME_MAP = {
     "srushtikotak": "Srushti Vijay Kotak",
     "sub-mod": "Subin Modeel",
     "thoth-zuul[bot]": "Thoth's Zuul",
-    "tumido": "Tomáš Coufal",
+    "tumido": "Tom Coufal",
     "tushar7sharma": "Tushar Sharma",
+    "vannten": "Max Gautier",
     "xtuchyna": "Dominik Tuchyna",
     "zmhassan": "Zak Hassan",
 }
 
 # pragma: no cover
 REALNAME_HANGOUTS_MAP = {
+    "Aakanksha Duggal": "116540001948970893165",
     "Anand Sanmukhani": "109564390983160712413",
     "Anish Asthana": "106581684824747208909",
     "Bissenbay Dauletbayev": "114127285145989031675",
@@ -88,26 +135,36 @@ REALNAME_HANGOUTS_MAP = {
     "Dominik Tuchyna": "101087488035276666197",
     "Francesco Murdaca": "108929048208403662680",
     "Frido Pokorny": "106810069271823707995",
+    "Gage Krumbach": "113871793657874355068",
     "Giorgos Karantonis": "105147362480487195696",
     "Gregory Pereira": "110871412292783354026",
     "Harshad Reddy Nalla": "102648456274370715335",
     "Hema Veeradhi": "108530691726729807637",
     "Humair Khan": "117385119761143413973",
+    "Jay Koehler": "114322650206028409507",
     "Karan Chauhan": "110694159944095156438",
     "Kevin Postlethwait": "102547849534309033904",
     "Lars Kellogg-Stedman": "115262905965225092168",
+    "Lumir Balhar": "112869503906875156604",
     "Marcel Hild": "116445288136441446998",
     "Maya Costantini": "114714675359837244370",
-    "Peter Patnaik": "110765933482047866243",
+    "Max Gautier": "107931994420105252840",
+    "Michael Clifford": "109712205974970623061",
+    "Oindrilla Chatterjee": "116534249849252473521",
     "Pep Turro Mauri": "116298489646489899913",
+    "Peter Patnaik": "110765933482047866243",
     "Sai Sankar Gochhayat": "112057774963535139749",
     "Sanjay Arora": "113204564998958160149",
+    "Shrey Anand": "111485576658452106792",
     "Shruthi Raghuraman": "103427213209555601141",
     "Srushti Vijay Kotak": "117644001277054930712",
     "Steven Huels": "110846043168213103522",
     "Subin Modeel": "100912928295723672901",
+    "Thorsten Schwesig": "113225722019550298128",
+    "Tom Coufal": "117471959508522471287",
     "Tomáš Coufal": "117471959508522471287",
     "Tushar Sharma": "117540998919883245003",
+    "Viliam Podhajecky": "107991398788108238503",
 }
 
 # pragma: no cover
@@ -171,7 +228,8 @@ def notify_channel(kind: str, message: str, thread_key: str, url: str) -> None:
     response = None
     scopes = ["https://www.googleapis.com/auth/chat.bot"]
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
-        "/opt/app-root/etc/gcloud/sesheta-chatbot.json", scopes,
+        "/opt/app-root/etc/gcloud/sesheta-chatbot.json",
+        scopes,
     )
     http_auth = credentials.authorize(Http())
 
