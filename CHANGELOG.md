@@ -1,5 +1,30 @@
 # Changelog for Sesheta's actions Project
 
+## Release 0.23.0 (2022-10-06T18:28:57)
+* cc2a5aa :arrow_up: Automatic update of dependencies by Kebechet for the rhel8 environment (#200)
+* 631944c :arrow_up: Automatic update of dependencies by Kebechet for the rhel8 environment (#197)
+* 0e0c7f8 Update aicoe/sesheta/actions/chat.py
+* e0e20bd :sparkles: :rockt: :ship: add Max
+* 8e2778b Update aicoe/sesheta/utils.py
+* 1526add Update aicoe/sesheta/utils.py
+* 015cccd Update OWNERS
+* e2a90fc :pencil: updated the list of thoth inhabitants
+* 90d8388 🥹 removing @Fridex from the OWNERS file, thanks for all the great work!!!
+* 5d5d1e3 :arrow_up: update the GITHUB_REALNAME_MAP
+* 29b471f :bug: fix a pre-commit error
+* 6a1d50c :arrow_up: add black to dev deps
+* ffd8e7d :sparkles: more better handling of spaces
+* fec7e0a :arrow_up: update a few people-github-meetid mappings, remove chatterbot functions (to reducte complexity)
+* 8d78a82 removed chatterbot dependencies :arrow_down:
+* ddda903 :ship: Bump up base image initialized in CI. (#194)
+* 433951f Create Thoth schema updated command (#185)
+* 653be97 Enable TLS verification (#187)
+* 1d02dd1 add a tiny script to find issues requiring attention
+* 628d8f8 add 'mypy' and relock
+* 1fa87f7 Add missing known commands (#183)
+* 2c8ebbe Add Pep and sync approvers/reviewers/maintainers
+* cbf48f9 fixed my name to lowercase in sesheta/utils.py
+
 ## Release 0.22.3 (2021-10-27T09:44:00)
 * :whale: set the spacy to pined version 2.3.5 (#179)
 
