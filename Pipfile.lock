@@ -452,11 +452,11 @@
         },
         "gidgethub": {
             "hashes": [
-                "sha256:390caafb3e9c6125bb9c8c9865a78d09e028f19592352d5b88e0ed881b8dea18",
-                "sha256:c359b769194e72f984d2e328de0ee8eb81b702342b0a44dc5cebac92104ecf4b"
+                "sha256:8ac9cf5314aac0f3a33f46127d4a538d0ed1a7030027eb2fc4aa3b55c66abcef",
+                "sha256:a533f85a57955261433c250701476304cc374037c0ab66b0e5372b4846749d5c"
             ],
-            "markers": "python_version >= '3.6'",
-            "version": "==5.2.0"
+            "markers": "python_version >= '3.7'",
+            "version": "==5.2.1"
         },
         "google-api-core": {
             "hashes": [
@@ -468,11 +468,11 @@
         },
         "google-api-python-client": {
             "hashes": [
-                "sha256:5cc828499a2cfec5845e095d32f68265c344eb32969f07a8e3774564153178bd",
-                "sha256:ccb198e11a60324693f8eaff4bee09502e5f35a6c829a7a1ef41a654c8fc2561"
+                "sha256:0dc4c967a5c795e981af01340f1bd22173a986534de968b5456cb208ed6775a6",
+                "sha256:90545cd71969f8bcf15a6362c2a8c44c38b94ec35a88cfd60cf2c0df68a5eb74"
             ],
             "index": "pypi",
-            "version": "==2.63.0"
+            "version": "==2.64.0"
         },
         "google-auth": {
             "hashes": [
