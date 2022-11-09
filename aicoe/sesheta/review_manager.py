@@ -187,7 +187,7 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
                     await github_api.post(
                         f"{pull_request['issue_url']}/labels",
                         preview_api_version="symmetra",
-                        data={"labels": ["approved", "ok-to-test"]},
+                        data={"labels": ["approved", "ok-to-test", "lgtm"]},
                     )
                 except gidgethub.BadRequest as err:
                     if err.status_code != 202:
@@ -220,7 +220,7 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
                     await github_api.post(
                         f"{pull_request['issue_url']}/labels",
                         preview_api_version="symmetra",
-                        data={"labels": ["approved", "ok-to-test"]},
+                        data={"labels": ["approved", "ok-to-test", "lgtm"]},
                     )
                 except gidgethub.BadRequest as err:
                     if err.status_code != 202:
