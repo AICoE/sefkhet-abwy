@@ -1,5 +1,10 @@
 # Changelog for Sesheta's actions Project
 
+## Release 0.23.1 (2022-11-10T19:11:42)
+* 1c3da6f Include lgtm label on Bots automatic PRs (#206)
+* a738369 :arrow_up: Automatic update of dependencies by Kebechet for the rhel8 environment (#205)
+* 6f108ad :arrow_up: Automatic update of dependencies by Kebechet for the rhel8 environment (#203)
+
 ## Release 0.23.0 (2022-10-06T18:28:57)
 * cc2a5aa :arrow_up: Automatic update of dependencies by Kebechet for the rhel8 environment (#200)
 * 631944c :arrow_up: Automatic update of dependencies by Kebechet for the rhel8 environment (#197)
