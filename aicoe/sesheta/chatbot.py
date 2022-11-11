@@ -28,7 +28,7 @@ from aiohttp import web
 
 from thoth.common import init_logging
 
-from aicoe.sesheta.actions.chat import process_user_text, CHATBOT
+from aicoe.sesheta.actions.chat import process_user_text
 from aicoe.sesheta.utils import hangouts_userid
 from aicoe.sesheta import __version__
 
@@ -56,10 +56,7 @@ async def hello(request):
 @routes.get("/healthz")
 async def hello(request):
     """Return readiness and liveness informationg."""
-    if CHATBOT is not None:
-        return web.Response(text="Ok.")
-
-    return web.Response(text="Not Ok!", status=503)
+    return web.Response(text="Ok!", status=200)
 
 
 @routes.post("/api/v1alpha1")
