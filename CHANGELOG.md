@@ -1,5 +1,8 @@
 # Changelog for Sesheta's actions Project
 
+## Release 0.23.2 (2022-11-11T09:01:33)
+* b97e30c Remove the left chatbot reference (#209)
+
 ## Release 0.23.1 (2022-11-10T19:11:42)
 * 1c3da6f Include lgtm label on Bots automatic PRs (#206)
 * a738369 :arrow_up: Automatic update of dependencies by Kebechet for the rhel8 environment (#205)
