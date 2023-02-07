@@ -37,6 +37,7 @@ _LOGGER = logging.getLogger(__name__)
 _LOGGER.setLevel(logging.DEBUG if bool(os.getenv("DEBUG", False)) else logging.INFO)
 THOTH_DEVOPS_SPACE = os.getenv("SESHETA_THOTH_DEVOPS_SPACE", None)  # pragma: no cover
 AIOPS_DEVOPS_SPACE = os.getenv("SESHETA_AIOPS_DEVOPS_SPACE", None)  # pragma: no cover
+DISABLE_CHAT_NOTIFICATIONS = os.getenv("DISABLE_CHAT_NOTIFICATIONS", True)  # pragma: no cover
 
 _GITHUB_ORG_MEMBERS_REQUEST = GraphQLRequest(
     query="""
@@ -225,6 +226,10 @@ def realname(github_user: str) -> str:
 
 def notify_channel(kind: str, message: str, thread_key: str, url: str) -> None:
     """Send message to a Google Hangouts Chat space."""
+    if DISABLE_CHAT_NOTIFICATION:
+        _LOGGER.info("Chat notification is disabled, skipping...")
+        return
+
     response = None
     scopes = ["https://www.googleapis.com/auth/chat.bot"]
     credentials = ServiceAccountCredentials.from_json_keyfile_name(
