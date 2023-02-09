@@ -1,5 +1,12 @@
 # Changelog for Sesheta's actions Project
 
+## Release 0.24.0 (2023-02-09T15:47:16)
+* b517824 silent google meet notifications (#214)
+* 811c5ab ':arrow_up: Automatic update of dependencies by Kebechet for the rhel8 environment' (#218)
+* 89e12cd ':arrow_up: Automatic update of dependencies by Kebechet for the rhel8 environment' (#216)
+* 8b03f04 ':arrow_up: Automatic update of dependencies by Kebechet for the rhel8 environment' (#213)
+* bd6533f :ship: Bump up base image initialized in CI.
+
 ## Release 0.23.2 (2022-11-11T09:01:33)
 * b97e30c Remove the left chatbot reference (#209)
 
