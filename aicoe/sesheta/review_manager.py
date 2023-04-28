@@ -200,14 +200,14 @@ async def on_pr_open_or_edit(*, action, number, pull_request, repository, sender
         if pull_request["title"].startswith("Automatic update of") or pull_request["title"].startswith(
             "Automatic dependency re-locking",
         ):
-            if pull_request["user"]["login"] not in ["sesheta", "khebhut[bot]"]:
+            if pull_request["user"]["login"] not in ["sesheta", "khebhut[bot]", "dependabot[bot]"]:
                 _LOGGER.error(
-                    f"on_pr_open_or_edit: automatic update not by Sesheta?! have a look at {pull_request['html_url']}!",
+                    f"on_pr_open_or_edit: automatic update not by Sesheta or Dependabot?! have a look at {pull_request['html_url']}!",
                 )
 
             _LOGGER.debug(f"on_pr_open_or_edit: automatic update, will auto-approve {pull_request['html_url']}!")
 
-            if pull_request["base"]["user"]["login"] == "thoth-station":
+            if pull_request["base"]["user"]["login"] in ["AICoE", "thoth-station"]:
                 # Let's approve the PR and put the approved label on it...
                 # Set ok-to-test for the automatic PR's as we trust khebhut and sesheta
                 try:
